@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="optionsKeysToggle" translatable="false">
+        <item>music</item>
+        <item>sound</item>
+        <item>scale</item>
+        <item>speed</item>
+    </string-array>
+    <string-array name="optionsKeysSeek" translatable="false">
+        <item>music_volume</item>
+        <item>sound_volume</item>
+        <item>scale_volume</item>
+        <item>speed_volume</item>
+    </string-array>
+    <string-array name="optionsKeysCheck" translatable="false">
+        <item>classic</item>
+        <item>master</item>
+        <item>author</item>
+    </string-array>
+    <string-array name="settings" translatable="false">
+        <item>scale,false</item>
+        <item>speed,false</item>
+        <item>music,true</item>
+        <item>sound,true</item>
+        <item>master,false</item>
+        <item>classic,false</item>
+        <item>author,false</item>
+        <item>#author_count,0</item>
+        <item>scale_volume,15,</item>
+        <item>speed_volume,15</item>
+        <item>music_volume,5</item>
+        <item>sound_volume,5</item>
+        <item>#theme,0</item>
+        <item>player,PLAYER</item>
+        <item>#pack,CLASSIC</item>
+        <item>first_start,true</item>
+        <item>#type_planet,0</item>
+        <item>#edit_planet,0#CLASSIC</item>
+        <item>#edit_tile,0</item>
+        <item>#tmp_pack,CLASSIC</item>
+    </string-array>
+    <string-array name="themesNames">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+    <string-array name="sound" translatable="false">
+        <item>fx/explosive.ogg</item>
+        <item>fx/droid_death.ogg</item>
+        <item>fx/drop_bomb.ogg</item>
+        <item>fx/take_egg.ogg</item>
+        <item>fx/take_misc.ogg</item>
+        <item>fx/stone_drop.ogg</item>
+        <item>fx/time_elapsed.ogg</item>
+        <item>fx/volume.ogg</item>
+    </string-array>
+    <string-array name="planetTypes">
+        <item>Empties</item>
+        <item>Earth</item>
+        <item>Beton</item>
+        <item>Stones</item>
+        <item>Eggs</item>
+        <item>Bombs</item>
+    </string-array>
+    <array name="music">
+        <item>@raw/menu</item>
+        <item>@raw/mus_001</item>
+        <item>@raw/mus_002</item>
+        <item>@raw/mus_003</item>
+        <item>@raw/mus_004</item>
+        <item>@raw/mus_005</item>
+        <item>@raw/mus_006</item>
+        <item>@raw/mus_007</item>
+        <item>@raw/mus_008</item>
+        <item>@raw/mus_009</item>
+    </array>
+    <array name="forms">
+        <item>@string/clazz_game</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_game</item>
+        <item>1</item>
+
+        <item>@string/clazz_choice</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_select</item>
+        <item>1</item>
+
+        <item>@string/clazz_options</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_options</item>
+        <item>1</item>
+
+        <item>@string/clazz_records</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_stat</item>
+        <item>1</item>
+
+        <item>@string/clazz_editor</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_editor</item>
+        <item>1</item>
+
+        <item>@string/clazz_help</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_game_help</item>
+        <item>1</item>
+
+        <item>@string/clazz_dlg_exit</item>
+        <item>0</item>
+        <item>@string/tag_dialog_exit</item>
+        <item>0</item>
+
+        <item>@string/clazz_splash</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_splash</item>
+        <item>0</item>
+
+        <item>@string/clazz_menu</item>
+        <item>@id/mainContainer</item>
+        <item>@string/tag_main</item>
+        <item>0</item>
+
+        <item>@string/clazz_dlg_actions</item>
+        <item>0</item>
+        <item>@string/tag_dialog_actions</item>
+        <item>1</item>
+
+        <item>@string/clazz_dlg_save</item>
+        <item>0</item>
+        <item>@string/tag_dialog_save</item>
+        <item>1</item>
+
+        <item>@string/clazz_planet_np</item>
+        <item>@id/editorContainer</item>
+        <item>@string/tag_planet_new</item>
+        <item>1</item>
+
+        <item>@string/clazz_planet_open</item>
+        <item>@id/editorContainer</item>
+        <item>@string/tag_planet_open</item>
+        <item>1</item>
+
+        <item>@string/clazz_planet_np</item>
+        <item>@id/editorContainer</item>
+        <item>@string/tag_planet_prop</item>
+        <item>1</item>
+
+        <item>@string/clazz_help</item>
+        <item>@id/editorContainer</item>
+        <item>@string/tag_editor_help</item>
+        <item>1</item>
+
+        <item>@string/clazz_dlg_delete</item>
+        <item>0</item>
+        <item>@string/tag_dialog_delete</item>
+        <item>1</item>
+
+        <item>@string/clazz_dlg_generate</item>
+        <item>0</item>
+        <item>@string/tag_dialog_generate</item>
+        <item>1</item>
+
+        <item>@string/clazz_send_pack</item>
+        <item>@id/editorContainer</item>
+        <item>@string/tag_send_pack</item>
+        <item>1</item>
+
+        <item>@string/clazz_recv_pack</item>
+        <item>0</item>
+        <item>@string/tag_recv_pack</item>
+        <item>1</item>
+
+        <item>@string/clazz_finish</item>
+        <item>@id/gameContainer</item>
+        <item>@string/tag_finish</item>
+        <item>1</item>
+
+        <item>@string/clazz_dlg_pack</item>
+        <item>0</item>
+        <item>@string/tag_dialog_new_pack</item>
+        <item>1</item>
+    </array>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="themesNames">
+        <item>Темная</item>
+        <item>Светлая</item>
+    </string-array>
+    <string-array name="planetTypes">
+        <item>Пустота</item>
+        <item>Земля</item>
+        <item>Бетон</item>
+        <item>Камни</item>
+        <item>Яйца</item>
+        <item>Бомбы</item>
+    </string-array>
+</resources>

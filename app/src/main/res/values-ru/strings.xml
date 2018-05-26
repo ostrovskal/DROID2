@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lang">ru</string>
+    <string name="copyright">Copyright @ 2018 Шаталов С.В.</string>
+    <string name="rights">Все права защищены.</string>
+    <string name="dialog_generate">Вы действительно хотите сгенерировать классические планеты? (Все изменения будут потеряны)</string>
+    <string name="dialog_delete">Вы действительно хотите удалить планету?</string>
+    <string name="dialog_save">Планета изменена. Сохранить изменения перед выходом?</string>
+    <string name="dialog_exit">Вы действительно хотите выйти?</string>
+    <string name="droid_not_found">У планеты %s не установлена позиция дроида!</string>
+    <string name="pack_already_exist">Пакет %s уже есть!</string>
+    <string name="press_restart">Перезапуск?</string>
+    <string name="new_planet_types">Пустота</string>
+    <string name="new_planet_packs">CLASSIC</string>
+    <string name="panel_text">Pleiades</string>
+    <string name="error_make_or_save">Не удалось создать или сохранить планету %s!</string>
+
+    <string name="options_music">Музыка</string>
+    <string name="options_sound">Звук</string>
+    <string name="options_speed">Скорость</string>
+    <string name="options_scale">Масштаб</string>
+    <string name="options_classic">Классика</string>
+    <string name="options_master">Мастер</string>
+    <string name="options_author">Автор</string>
+
+    <string name="msg_out_of_fuel">ТОПЛИВО КОНЧИЛОСЬ</string>
+    <string name="msg_out_of_time">ВРЕМЯ ЗАКОНЧИЛОСЬ</string>
+    <string name="msg_game_over">ИГРА ОКОНЧЕНА</string>
+    <string name="msg_paused">ПАУЗА</string>
+    <string name="msg_droid_suicyded">ПЕРЕЗАПУСК</string>
+    <string name="msg_droid_destroyed">ДРОИД УНИЧТОЖЕН</string>
+    <string name="msg_planet_cleaned">ПЛАНЕТА СВОБОДНА</string>
+    <string name="msg_test_complete">ТЕСТ ЗАВЕРШЕН</string>
+    <string name="msg_no_planet">НЕТ ПЛАНЕТЫ!</string>
+
+    <string name="save_planet_success">Планета успешно сохранена!</string>
+    <string name="save_planet_failed">Дроид не обнаружен!</string>
+    <string name="planet_name_already_exist">Планета с именем %s уже существует!</string>
+
+    <string name="hint_name">название</string>
+    <string name="hint_width">ширина</string>
+    <string name="hint_fuel">топливо</string>
+    <string name="hint_height">высота</string>
+    <string name="hint_number">номер</string>
+    <string name="hint_time">время</string>
+    <string name="hint_desc">описание</string>
+    <string name="hint_new_pack">имя системы</string>
+    <string name="hint_price">цена</string>
+    <string name="hint_splash_name">Введите Ваше имя</string>
+
+    <string name="splash_adaptation">ДРОИД</string>
+    <string name="splash_desc">описание</string>
+
+    <string name="header_options">Установки</string>
+    <string name="header_choise">Выбор планеты</string>
+    <string name="header_record">Достижения</string>
+    <string name="header_help">Помощь</string>
+    <string name="header_dialog_exit">Выход</string>
+    <string name="header_planet_new">Новая планета</string>
+    <string name="header_planet_open">Открыть планету</string>
+    <string name="header_planet_prop">Свойства планеты</string>
+    <string name="header_finish">Поздравления</string>
+    <string name="header_dialog_save">Сохранение</string>
+    <string name="header_dialog_delete">Удаление планеты</string>
+    <string name="header_dialog_generate">Генерация планет</string>
+    <string name="header_send_pack">Отправка системы планет</string>
+    <string name="header_recv_pack">Получение системы планет</string>
+    <string name="header_dialog_new_pack">Новая система</string>
+    <string name="header_dialog_actions">Выбор операции</string>
+</resources>

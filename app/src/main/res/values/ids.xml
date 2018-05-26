@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="game"/>
+    <item type="id" name="editor"/>
+    <item type="id" name="gameContainer"/>
+    <item type="id" name="editorContainer"/>
+    <item type="id" name="namePlanet"/>
+    <item name="tgMus" type="id"/>
+    <item name="tgSnd" type="id"/>
+    <item name="tgScl" type="id"/>
+    <item name="tgSpd" type="id"/>
+    <item name="ckAth" type="id"/>
+    <item name="ckMst" type="id"/>
+    <item name="ckCls" type="id"/>
+    <item name="skSpd" type="id"/>
+    <item name="skScl" type="id"/>
+    <item name="skSnd" type="id"/>
+    <item name="skMus" type="id"/>
+    <item name="slTheme" type="id"/>
+    <item name="slPack" type="id"/>
+    <item name="slType" type="id"/>
+    <item name="etNumber" type="id"/>
+    <item name="etName" type="id"/>
+    <item name="etFuel" type="id"/>
+    <item name="etWidth" type="id"/>
+    <item name="etHeight" type="id"/>
+    <item name="etTime" type="id"/>
+    <item name="viewScroll" type="id"/>
+    <item name="etPack" type="id"/>
+</resources>

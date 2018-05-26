@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'keyDROID2'
+            keyPassword 'IfnfkjdCthutq'
+            storeFile file('E:/Dev/Android/keys_store/sshDROID2.jks')
+            storePassword 'keyIfnfkjdCthutqDROID2'
+        }
+    }
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "ru.ostrovskal.droid"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+    }
+    flavorDimensions "default"
+    productFlavors {
+        pro {
+            dimension "default"
+            applicationId "ru.ostrovskal.droid.pro"
+            resValue "string", "app_name", "DROID PRO"
+        }
+        trial {
+            dimension "default"
+            applicationId "ru.ostrovskal.droid.trial"
+            resValue "string", "app_name", "DROID TRIAL"
+        }
+    }
+    buildToolsVersion '27.0.3'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'com.github.ostrovskal:ssh:1.3.0'
+}

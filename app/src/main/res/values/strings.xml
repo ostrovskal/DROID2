@@ -1,0 +1,72 @@
+<resources>
+    <string name="press_restart">Restart?</string>
+    <string name="new_planet_types">Emptities</string>
+    <string name="new_planet_packs">CLASSIC</string>
+    <string name="panel_text">Pleiades</string>
+    <string name="null_text" translatable="false">Pleiades</string>
+    <string name="copyright">Copyright @ 2018 S.V. Shataloff</string>
+    <string name="rights">All Rights Reserved.</string>
+    <string name="lang">en</string>
+    <string name="error_make_or_save">It was not succeeded to create or save the planet %s!</string>
+
+    <string name="dialog_exit">Do you really want to leave?</string>
+    <string name="dialog_generate">Do you really want to generate classical planets? (All changes will be lost)</string>
+    <string name="dialog_delete">Do you really want to remove the planet?</string>
+    <string name="dialog_save">The planet is changed. To keep changes before an exit?</string>
+
+    <string name="msg_test_complete">TEST COMPLETE</string>
+    <string name="msg_out_of_fuel">OUT OF FUEL</string>
+    <string name="msg_out_of_time">OUT OF TIME</string>
+    <string name="msg_game_over">GAME OVER</string>
+    <string name="msg_paused">PAUSED</string>
+    <string name="msg_droid_destroyed">DROID DESTROYED</string>
+    <string name="msg_droid_suicyded">RESTART</string>
+    <string name="msg_planet_cleaned">PLANET CLEARED</string>
+    <string name="msg_no_planet">OUT OF PLANET!</string>
+
+    <string name="save_planet_success">The planet is successfully kept!</string>
+    <string name="save_planet_failed">The droid isn\'t found!</string>
+    <string name="droid_not_found">At the planet of %s the position of the droid isn\'t established!</string>
+    <string name="pack_already_exist">The %s package already is!</string>
+    <string name="planet_name_already_exist">The planet with the name %s already exists!</string>
+
+    <string name="hint_number">number</string>
+    <string name="hint_name">name</string>
+    <string name="hint_width">width</string>
+    <string name="hint_fuel">fuel</string>
+    <string name="hint_height">height</string>
+    <string name="hint_time">time</string>
+    <string name="hint_desc">description</string>
+    <string name="hint_new_pack">name of system</string>
+    <string name="hint_price">цена</string>
+    <string name="hint_splash_name">Enter your name</string>
+
+    <string name="options_music">Music</string>
+    <string name="options_sound">Sound</string>
+    <string name="options_speed">Speed</string>
+    <string name="options_scale">Scale</string>
+    <string name="options_classic">Classic</string>
+    <string name="options_master">Master</string>
+    <string name="options_author">Author</string>
+
+    <string name="splash_adaptation">DROID</string>
+    <string name="splash_web" translatable="false">https://www.ostrov.ru</string>
+    <string name="splash_desc">description</string>
+
+    <string name="header_planet_new">Create planet</string>
+    <string name="header_options">Settings</string>
+    <string name="header_choise">Choice of the planet</string>
+    <string name="header_record">Records</string>
+    <string name="header_help">Help</string>
+    <string name="header_dialog_exit">Exit of game</string>
+    <string name="header_planet_open">Open planet</string>
+    <string name="header_planet_prop">Properties of planet</string>
+    <string name="header_finish">Congratulations</string>
+    <string name="header_dialog_save">Save of modification</string>
+    <string name="header_dialog_delete">Delete of planet</string>
+    <string name="header_dialog_generate">Generation of planets</string>
+    <string name="header_dialog_new_pack">New system</string>
+    <string name="header_dialog_actions">Operation choice</string>
+    <string name="header_send_pack">Send of planet system</string>
+    <string name="header_recv_pack">Receive of planet system</string>
+</resources>
