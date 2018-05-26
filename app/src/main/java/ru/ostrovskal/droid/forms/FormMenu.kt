@@ -65,7 +65,7 @@ class FormMenu: Form() {
 		// запускаем музыку в заставке
 		Sound.playMusic(wnd, 0, true)
 	}
-
+	
 	override fun onClick(v: View) {
 		val idx = buttons.indexOf(v)
 		var position = 0L
