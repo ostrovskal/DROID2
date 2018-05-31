@@ -30,7 +30,8 @@
         <item>speed_volume,15</item>
         <item>music_volume,5</item>
         <item>sound_volume,5</item>
-        <item>#theme,0</item>
+        <item>theme,0</item>
+        <item>#tmp_theme,0</item>
         <item>player,PLAYER</item>
         <item>#pack,CLASSIC</item>
         <item>first_start,true</item>
@@ -81,7 +82,7 @@
 
         <item>@string/clazz_choice</item>
         <item>@id/mainContainer</item>
-        <item>@string/tag_select</item>
+        <item>@string/tag_choice</item>
         <item>1</item>
 
         <item>@string/clazz_options</item>

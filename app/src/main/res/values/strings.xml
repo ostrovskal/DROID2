@@ -69,4 +69,6 @@
     <string name="header_dialog_actions">Operation choice</string>
     <string name="header_send_pack">Send of planet system</string>
     <string name="header_recv_pack">Receive of planet system</string>
+    <string name="themeLight">light</string>
+    <string name="themeDark">dark</string>
 </resources>

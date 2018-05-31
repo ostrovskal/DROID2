@@ -1,9 +1,11 @@
 package ru.ostrovskal.droid;
 
+import android.graphics.Color;
 import android.view.Gravity;
 
 import static com.github.ostrovskal.ssh.Constants.DIRU;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_ROTATE;
+import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_SCALE;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.*;
 
 public final class Constants
@@ -74,7 +76,8 @@ public final class Constants
     public final static String KEY_SPEED_VOLUME    = "speed_volume";
     public final static String KEY_MUSIC_VOLUME    = "music_volume";
     public final static String KEY_SOUND_VOLUME    = "sound_volume";
-    public final static String KEY_THEME           = "#theme";
+    public final static String KEY_THEME           = "theme";
+    public final static String KEY_TMP_THEME       = "#tmp_theme";
     public final static String KEY_PLAYER          = "player";
     public final static String KEY_PACK            = "#pack";
     public final static String KEY_FIRST_START     = "first_start";
@@ -289,77 +292,24 @@ public final class Constants
     }
 */
 
-    public static final String[] stringsDroid = {"menu", "icon_tiles", "background_dark", "background_light", "header_dark", "header_light",
-                                                 "select_dark", "select_light", "edit_dark", "edit_light", "panel_port_dark", "panel_port_light", "panel_land_dark",
-                                                 "panel_land_light", "tool_dark", "tool_light", "button_dark", "button_light", "check_dark", "check_light", "radio_dark",
-                                                 "radio_light", "switch_dark", "switch_light", "seek_dark", "seek_light", "classic_sprites", "custom_sprites"};
-
-    public static final float[] dimensDroidDef   = {10000f, 20f, 10f, 44f, 21f, 22f, 140f, 210f, 160f, 170f, 170f, 240f, 310f, 130f, 140f, 130f, 260f};
-    public static final float[] dimensDroid600sw = {600f, 36f, 20f, 88f, 42f, 44f, 280f, 420f, 320f, 340f, 340f, 480f, 620f, 260f, 280f, 260f, 520f};
-    public static final float[] dimensDroid800sw = {800f, 45f, 25f, 110f, 52f, 55f, 350f, 525f, 400f, 425f, 425f, 600f, 775f, 325f, 350f, 325f, 650f};
-
     public static final int ATTR_SSH_COLOR_PANEL_COUNTERS = 1000 | ATTR_INT;
     public static final int ATTR_SSH_COLOR_NAME_PLANET    = 1001 | ATTR_INT;
     public static final int ATTR_SSH_COLOR_STAT_COUNTERS  = 1002 | ATTR_INT;
     public static final int ATTR_SSH_BM_PANEL_PORT        = 1003 | ATTR_DRW;
     public static final int ATTR_SSH_BM_PANEL_LAND        = 1004 | ATTR_DRW;
 
-    public static final int TEXT_BITMAP_MENU             = 20 | TEXT;
-    public static final int TEXT_BITMAP_ICONS            = 21 | TEXT;
-    public static final int TEXT_BITMAP_BACKGROUND_DARK  = 22 | TEXT;
-    public static final int TEXT_BITMAP_BACKGROUND_LIGHT = 23 | TEXT;
-    public static final int TEXT_BITMAP_HEADER_DARK      = 24 | TEXT;
-    public static final int TEXT_BITMAP_HEADER_LIGHT     = 25 | TEXT;
-    public static final int TEXT_BITMAP_SELECT_DARK      = 26 | TEXT;
-    public static final int TEXT_BITMAP_SELECT_LIGHT     = 27 | TEXT;
-    public static final int TEXT_BITMAP_EDIT_DARK        = 28 | TEXT;
-    public static final int TEXT_BITMAP_EDIT_LIGHT       = 29 | TEXT;
-    public static final int TEXT_BITMAP_PANEL_PORT_DARK  = 30 | TEXT;
-    public static final int TEXT_BITMAP_PANEL_PORT_LIGHT = 31 | TEXT;
-    public static final int TEXT_BITMAP_PANEL_LAND_DARK  = 32 | TEXT;
-    public static final int TEXT_BITMAP_PANEL_LAND_LIGHT = 33 | TEXT;
-    public static final int TEXT_BITMAP_TOOL_DARK        = 34 | TEXT;
-    public static final int TEXT_BITMAP_TOOL_LIGHT       = 35 | TEXT;
-    public static final int TEXT_BITMAP_BUTTON_DARK      = 36 | TEXT;
-    public static final int TEXT_BITMAP_BUTTON_LIGHT     = 37 | TEXT;
-    public static final int TEXT_BITMAP_CHECK_DARK       = 38 | TEXT;
-    public static final int TEXT_BITMAP_CHECK_LIGHT      = 39 | TEXT;
-    public static final int TEXT_BITMAP_RADIO_DARK       = 40 | TEXT;
-    public static final int TEXT_BITMAP_RADIO_LIGHT      = 41 | TEXT;
-    public static final int TEXT_BITMAP_SWITCH_DARK      = 42 | TEXT;
-    public static final int TEXT_BITMAP_SWITCH_LIGHT     = 43 | TEXT;
-    public static final int TEXT_BITMAP_SEEK_DARK        = 44 | TEXT;
-    public static final int TEXT_BITMAP_SEEK_LIGHT       = 45 | TEXT;
-    public static final int TEXT_BITMAP_CLASSIC_SPRITES  = 46 | TEXT;
-    public static final int TEXT_BITMAP_CUSTOM_SPRITES   = 47 | TEXT;
-
-    public static final int DIMEN_SIZE_PANEL                = 51 | RES;
-    public static final int DIMEN_SIZE_STAT                 = 52 | RES;
-    public static final int DIMEN_SIZE_MESSAGE              = 53 | RES;
-    public static final int DIMEN_SIZE_PLANET               = 54 | RES;
-    public static final int DIMEN_SIZE_FINISH               = 55 | RES;
-    public static final int DIMEN_HEIGHT_NEW_PACK           = 56 | DIMEN;
-    public static final int DIMEN_HEIGHT_ACTIONS            = 57 | DIMEN;
-    public static final int DIMEN_HEIGHT_DLG_EXIT           = 58 | DIMEN;
-    public static final int DIMEN_HEIGHT_DLG_SAVE           = 59 | DIMEN;
-    public static final int DIMEN_HEIGHT_DLG_DELETE         = 60 | DIMEN;
-    public static final int DIMEN_HEIGHT_DLG_GENERATE       = 61 | DIMEN;
-    public static final int DIMEN_HEIGHT_DLG_SEND_PLANET    = 62 | DIMEN;
-    public static final int DIMEN_HEIGHT_ITEM_OPEN_PLANET   = 63 | DIMEN;
-    public static final int DIMEN_HEIGHT_ITEM_RECORD        = 64 | DIMEN;
-    public static final int DIMEN_HEIGHT_ITEM_CHOISE_PLANET = 65 | DIMEN;
-    public static final int DIMEN_HEIGHT_ITEM_RECV_PLANET   = 66 | DIMEN;
-
-    public static final int[] themeDark = {ATTR_SSH_SPACING, DIMEN_CELL_SPACING,
-                                           ATTR_SSH_BM_MENU, TEXT_BITMAP_MENU,
-                                           ATTR_SSH_BM_ICONS, TEXT_BITMAP_ICONS,
+    public static final int[] themeDark = {ATTR_SSH_SPACING, R.dimen.cellSpacing,
+                                           ATTR_SSH_THEME_NAME, R.string.themeDark,
+                                           ATTR_SSH_BM_MENU, R.drawable.menu,
+                                           ATTR_SSH_BM_ICONS, R.drawable.icon_tiles,
                                            ATTR_SSH_MODE, SEEK_ANIM_ROTATE,
+                                           ATTR_SSH_COLOR_DIVIDER, 0x7a7a7a | COLOR,
                                            ATTR_SSH_COLOR_LAYOUT, 0x2d2929 | COLOR,
                                            ATTR_SSH_COLOR_NORMAL, 0x9599f7 | COLOR,
                                            ATTR_SSH_COLOR_LARGE, 0xbc5a1d | COLOR,
                                            ATTR_SSH_COLOR_SMALL, 0x2ea362 | COLOR,
                                            ATTR_SSH_COLOR_HINT, 0xf77499 | COLOR,
-                                           ATTR_SSH_COLOR_SELECTOR, 0x5af184 | COLOR,
+                                           ATTR_SSH_COLOR_SELECTOR, Color.MAGENTA | COLOR,
                                            ATTR_SSH_COLOR_HEADER, 0xcfba41 | COLOR,
                                            ATTR_SSH_COLOR_HTML_HEADER, 0xf22782 | COLOR,
                                            ATTR_SSH_COLOR_NAME_PLANET, 0xe7e114 | COLOR,
@@ -369,24 +319,26 @@ public final class Constants
                                            ATTR_SSH_COLOR_MESSAGE, 0xd2fa64 | COLOR,
                                            ATTR_SSH_COLOR_WINDOW, 0x030303 | COLOR,
                                            ATTR_SSH_COLOR_WIRED, 0x808080 | COLOR,
-                                           ATTR_SSH_BM_BACKGROUND, TEXT_BITMAP_BACKGROUND_DARK,
-                                           ATTR_SSH_BM_HEADER, TEXT_BITMAP_HEADER_DARK,
-                                           ATTR_SSH_BM_SELECT, TEXT_BITMAP_SELECT_DARK,
-                                           ATTR_SSH_BM_EDIT, TEXT_BITMAP_EDIT_DARK,
-                                           ATTR_SSH_BM_PANEL_PORT, TEXT_BITMAP_PANEL_PORT_DARK,
-                                           ATTR_SSH_BM_PANEL_LAND, TEXT_BITMAP_PANEL_LAND_DARK,
-                                           ATTR_SSH_BM_TOOLS, TEXT_BITMAP_TOOL_DARK,
-                                           ATTR_SSH_BM_BUTTONS, TEXT_BITMAP_BUTTON_DARK,
-                                           ATTR_SSH_BM_RADIO, TEXT_BITMAP_RADIO_DARK,
-                                           ATTR_SSH_BM_CHECK, TEXT_BITMAP_CHECK_DARK,
-                                           ATTR_SSH_BM_SEEK, TEXT_BITMAP_SEEK_DARK,
-                                           ATTR_SSH_BM_SWITCH, TEXT_BITMAP_SWITCH_DARK,
-                                           ATTR_SSH_BM_TILES, TEXT_BITMAP_CLASSIC_SPRITES};
+                                           ATTR_SSH_BM_BACKGROUND, R.drawable.theme_background_dark,
+                                           ATTR_SSH_BM_HEADER, R.drawable.theme_header_dark,
+                                           ATTR_SSH_BM_SELECT, R.drawable.theme_select_dark,
+                                           ATTR_SSH_BM_EDIT, R.drawable.theme_edit_dark,
+                                           ATTR_SSH_BM_PANEL_PORT, R.drawable.theme_panel_port_dark,
+                                           ATTR_SSH_BM_PANEL_LAND, R.drawable.theme_panel_land_dark,
+                                           ATTR_SSH_BM_TOOLS, R.drawable.theme_tool_dark,
+                                           ATTR_SSH_BM_BUTTONS, R.drawable.theme_button_dark,
+                                           ATTR_SSH_BM_RADIO, R.drawable.theme_radio_dark,
+                                           ATTR_SSH_BM_CHECK, R.drawable.theme_check_dark,
+                                           ATTR_SSH_BM_SEEK, R.drawable.theme_seek_dark,
+                                           ATTR_SSH_BM_SWITCH, R.drawable.theme_switch_dark,
+                                           ATTR_SSH_BM_TILES, R.drawable.classic_sprites};
 
-    public static final int[] themeLight = {ATTR_SSH_SPACING, DIMEN_CELL_SPACING,
-                                            ATTR_SSH_BM_MENU, TEXT_BITMAP_MENU,
-                                            ATTR_SSH_BM_ICONS, TEXT_BITMAP_ICONS,
-                                            ATTR_SSH_MODE, SEEK_ANIM_ROTATE,
+    public static final int[] themeLight = {ATTR_SSH_SPACING, R.dimen.cellSpacing,
+                                            ATTR_SSH_THEME_NAME, R.string.themeLight,
+                                            ATTR_SSH_BM_MENU, R.drawable.menu,
+                                            ATTR_SSH_BM_ICONS, R.drawable.icon_tiles,
+                                            ATTR_SSH_MODE, SEEK_ANIM_SCALE,
+                                            ATTR_SSH_COLOR_DIVIDER, 0x7f7f7f | COLOR,
                                             ATTR_SSH_COLOR_LAYOUT, 0x9e5e1e | COLOR,
                                             ATTR_SSH_COLOR_NORMAL, 0xea5191 | COLOR,
                                             ATTR_SSH_COLOR_LARGE, 0x5670f1 | COLOR,
@@ -402,68 +354,58 @@ public final class Constants
                                             ATTR_SSH_COLOR_MESSAGE, 0xd2fa64 | COLOR,
                                             ATTR_SSH_COLOR_WINDOW, 0x020202 | COLOR,
                                             ATTR_SSH_COLOR_WIRED, 0x404040 | COLOR,
-                                            ATTR_SSH_BM_BACKGROUND, TEXT_BITMAP_BACKGROUND_LIGHT,
-                                            ATTR_SSH_BM_HEADER, TEXT_BITMAP_HEADER_LIGHT,
-                                            ATTR_SSH_BM_SELECT, TEXT_BITMAP_SELECT_LIGHT,
-                                            ATTR_SSH_BM_EDIT, TEXT_BITMAP_EDIT_LIGHT,
-                                            ATTR_SSH_BM_PANEL_PORT, TEXT_BITMAP_PANEL_PORT_LIGHT,
-                                            ATTR_SSH_BM_PANEL_LAND, TEXT_BITMAP_PANEL_LAND_LIGHT,
-                                            ATTR_SSH_BM_TOOLS, TEXT_BITMAP_TOOL_LIGHT,
-                                            ATTR_SSH_BM_BUTTONS, TEXT_BITMAP_BUTTON_LIGHT,
-                                            ATTR_SSH_BM_RADIO, TEXT_BITMAP_RADIO_LIGHT,
-                                            ATTR_SSH_BM_CHECK, TEXT_BITMAP_CHECK_LIGHT,
-                                            ATTR_SSH_BM_SEEK, TEXT_BITMAP_SEEK_LIGHT,
-                                            ATTR_SSH_BM_SWITCH, TEXT_BITMAP_SWITCH_LIGHT,
-                                            ATTR_SSH_BM_TILES, TEXT_BITMAP_CLASSIC_SPRITES};
+                                            ATTR_SSH_BM_BACKGROUND, R.drawable.theme_background_light,
+                                            ATTR_SSH_BM_HEADER, R.drawable.theme_header_light,
+                                            ATTR_SSH_BM_SELECT, R.drawable.theme_select_light,
+                                            ATTR_SSH_BM_EDIT, R.drawable.theme_edit_light,
+                                            ATTR_SSH_BM_PANEL_PORT, R.drawable.theme_panel_port_light,
+                                            ATTR_SSH_BM_PANEL_LAND, R.drawable.theme_panel_land_light,
+                                            ATTR_SSH_BM_TOOLS, R.drawable.theme_tool_light,
+                                            ATTR_SSH_BM_BUTTONS, R.drawable.theme_button_light,
+                                            ATTR_SSH_BM_RADIO, R.drawable.theme_radio_light,
+                                            ATTR_SSH_BM_CHECK, R.drawable.theme_check_light,
+                                            ATTR_SSH_BM_SEEK, R.drawable.theme_seek_light,
+                                            ATTR_SSH_BM_SWITCH, R.drawable.theme_switch_light,
+                                            ATTR_SSH_BM_TILES, R.drawable.classic_sprites};
 
-    public static final int[] style_tile_droid = {ATTR_SHADOW_DX, DIMEN_SHADOW_DX,
-                                                  ATTR_SHADOW_DY, DIMEN_SHADOW_DY,
-                                                  ATTR_SHADOW_RADIUS, DIMEN_SHADOW_RADIUS,
-                                                  ATTR_SHADOW_COLOR, 0 | COLOR,
-                                                  ATTR_GRAVITY, Gravity.CENTER,
-                                                  ATTR_SSH_VERT, 10,
-                                                  ATTR_SSH_HORZ, 4,
-                                                  ATTR_SSH_BORDER_WIDTH, DIMEN_BORDER_WIDTH,
-                                                  ATTR_SSH_PRESSED_OFFS, DIMEN_PRESSED_OFFSET,
-                                                  ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_NORMAL | THEME,
-                                                  ATTR_SIZE, DIMEN_SIZE_NORMAL,
-                                                  ATTR_FONT, TEXT_FONT_NORMAL,
+    public static final int[] style_tile_droid = {ATTR_SSH_VERT, 4,
+                                                  ATTR_SSH_HORZ, 10,
                                                   ATTR_CLICKABLE, 0,
                                                   ATTR_FOCUSABLE, 0,
-                                                  ATTR_SSH_BITMAP, ATTR_SSH_BM_TILES | THEME};
+                                                  ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_TILES | THEME};
 
-    public static final int[] style_chart_stat = {ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_STAT_COUNTERS | THEME,
-                                                  ATTR_SSH_DIR, DIRU,
-                                                  ATTR_SSH_SHOW, 1,
-                                                  ATTR_SIZE, DIMEN_SIZE_STAT,
-                                                  ATTR_FONT, TEXT_FONT_SMALL};
+    public static final int[] style_record      = {ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_STAT_COUNTERS | THEME,
+                                                   ATTR_SSH_DIR, DIRU,
+                                                   ATTR_SSH_SHOW, 1,
+                                                   ATTR_SIZE, R.dimen.record,
+                                                   ATTR_FONT, R.string.font_small};
 
-    public static final int[] style_text_finish = {ATTR_SHADOW_DX, DIMEN_SHADOW_DX,
-                                                   ATTR_SHADOW_DY, DIMEN_SHADOW_DY,
-                                                   ATTR_SHADOW_RADIUS, DIMEN_SHADOW_RADIUS,
+    public static final int[] style_text_finish = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
+                                                   ATTR_SHADOW_DY, R.dimen.shadowTextY,
+                                                   ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
                                                    ATTR_SHADOW_COLOR, 0 | COLOR,
                                                    ATTR_GRAVITY, Gravity.CENTER_VERTICAL,
                                                    ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_NORMAL | THEME,
-                                                   ATTR_SIZE, DIMEN_SIZE_FINISH,
-                                                   ATTR_FONT, TEXT_FONT_LARGE};
+                                                   ATTR_SIZE, R.dimen.finish,
+                                                   ATTR_FONT, R.string.font_large};
 
-    public static final int[] style_text_counters = {ATTR_SHADOW_DX, DIMEN_SHADOW_DX,
-                                                     ATTR_SHADOW_DY, DIMEN_SHADOW_DY,
-                                                     ATTR_SHADOW_RADIUS, DIMEN_SHADOW_RADIUS,
+    public static final int[] style_text_counters = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
+                                                     ATTR_SHADOW_DY, R.dimen.shadowTextY,
+                                                     ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
                                                      ATTR_SHADOW_COLOR, 0 | COLOR,
                                                      ATTR_GRAVITY, Gravity.CENTER_VERTICAL,
                                                      ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_PANEL_COUNTERS | THEME,
-                                                     ATTR_SIZE, DIMEN_SIZE_PANEL,
-                                                     ATTR_FONT, TEXT_FONT_NORMAL};
+                                                     ATTR_SIZE, R.dimen.panel,
+                                                     ATTR_FONT, R.string.font_normal};
 
-    public static final int[] style_text_planet = {ATTR_SHADOW_DX, DIMEN_SHADOW_DX,
-                                                   ATTR_SHADOW_DY, DIMEN_SHADOW_DY,
-                                                   ATTR_SHADOW_RADIUS, DIMEN_SHADOW_RADIUS,
+    public static final int[] style_text_planet = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
+                                                   ATTR_SHADOW_DY, R.dimen.shadowTextY,
+                                                   ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
                                                    ATTR_SHADOW_COLOR, 0 | COLOR,
                                                    ATTR_GRAVITY, Gravity.CENTER,
                                                    ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_NAME_PLANET | THEME,
-                                                   ATTR_SIZE, DIMEN_SIZE_PLANET,
-                                                   ATTR_FONT, TEXT_FONT_LARGE};
+                                                   ATTR_SIZE, R.dimen.planet,
+                                                   ATTR_FONT, R.string.font_large};
 }
 /*
     <!-- ************************************************************ -->

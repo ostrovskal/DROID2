@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tag_options" translatable="false">options</string>
-    <string name="tag_game" translatable="false">form_game</string>
-    <string name="tag_editor" translatable="false">form_editor</string>
+    <string name="tag_game" translatable="false">game</string>
+    <string name="tag_editor" translatable="false">editor</string>
     <string name="tag_splash" translatable="false">splash</string>
     <string name="tag_main" translatable="false">main</string>
-    <string name="tag_select" translatable="false">select</string>
+    <string name="tag_choice" translatable="false">choice</string>
     <string name="tag_stat" translatable="false">statistic</string>
     <string name="tag_game_help" translatable="false">game_help</string>
     <string name="tag_dialog_exit" translatable="false">dialog_exit</string>

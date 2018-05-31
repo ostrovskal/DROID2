@@ -4,10 +4,10 @@ apply plugin: 'kotlin-android'
 android {
     signingConfigs {
         config {
-            keyAlias 'keyDROID2'
-            keyPassword 'IfnfkjdCthutq'
-            storeFile file('E:/Dev/Android/keys_store/sshDROID2.jks')
-            storePassword 'keyIfnfkjdCthutqDROID2'
+            keyAlias 'keyDROID'
+            keyPassword 'IfnfkjdCthutqDROID'
+            storeFile file('E:/Dev/Android/keys_store/sshDROID.jks')
+            storePassword 'IfnfkjdCthutq'
         }
     }
     compileSdkVersion 26

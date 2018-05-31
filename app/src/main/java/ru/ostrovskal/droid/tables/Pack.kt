@@ -1,21 +1,21 @@
 package ru.ostrovskal.droid.tables
 
-import com.github.ostrovskal.ssh.optText
-import com.github.ostrovskal.ssh.release
-import com.github.ostrovskal.ssh.releaseRun
 import com.github.ostrovskal.ssh.sql.Table
+import com.github.ostrovskal.ssh.utils.optText
+import com.github.ostrovskal.ssh.utils.release
+import com.github.ostrovskal.ssh.utils.releaseRun
 import ru.ostrovskal.droid.Constants
 import ru.ostrovskal.droid.Constants.SYSTEM_DEFAULT
 
 object Pack : Table() {
-	val id      = integer("_id").notNull().primaryKey()
-	val name    = text("name").notNull().unique()
-	val author  = text("author").notNull()
-	val desc    = text("desc")
-	val price   = real("price")
-	val date    = integer("date").notNull()
-	val planets = integer("planets").notNull()
-	val skull   = integer("skull").notNull()
+	@JvmField val id      = integer("_id").notNull().primaryKey()
+	@JvmField val name    = text("name").notNull().unique()
+	@JvmField val author  = text("author").notNull()
+	@JvmField val desc    = text("desc")
+	@JvmField val price   = real("price")
+	@JvmField val date    = integer("date").notNull()
+	@JvmField val planets = integer("planets").notNull()
+	@JvmField val skull   = integer("skull").notNull()
 
 	// Возвращает количество планет
 	fun countPlanets(nm: String) = select(planets) { where {name eq nm } }.execute()?.releaseRun { integer(planets) } ?: 0

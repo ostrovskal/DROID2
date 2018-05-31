@@ -7,20 +7,24 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.AbsoluteLayout
-import com.github.ostrovskal.ssh.*
 import com.github.ostrovskal.ssh.Constants.APP_GAME
 import com.github.ostrovskal.ssh.Constants.logTag
+import com.github.ostrovskal.ssh.Theme
+import com.github.ostrovskal.ssh.Wnd
 import com.github.ostrovskal.ssh.singleton.Settings
 import com.github.ostrovskal.ssh.singleton.Sound
 import com.github.ostrovskal.ssh.sql.SQL
 import com.github.ostrovskal.ssh.ui.UiComponent
 import com.github.ostrovskal.ssh.ui.UiCtx
+import com.github.ostrovskal.ssh.ui.absoluteLayout
 import com.github.ostrovskal.ssh.ui.setContent
+import com.github.ostrovskal.ssh.utils.*
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.tables.Record
 import ru.ostrovskal.droid.tables.Stat
+import java.util.*
 
 class DroidWnd: Wnd() {
 	lateinit var main: AbsoluteLayout
@@ -59,10 +63,10 @@ class DroidWnd: Wnd() {
 	}
 	
 	// Применение темы
-	private fun applyTheme() {
+	override fun applyTheme() {
 		val theme = if(KEY_THEME.optInt == 0) themeDark else themeLight
-		theme[theme.size - 1] = if(KEY_CLASSIC.optBool) TEXT_BITMAP_CLASSIC_SPRITES else TEXT_BITMAP_CUSTOM_SPRITES
-		Theme.setTheme(theme)
+		theme[theme.size - 1] = if(KEY_CLASSIC.optBool) R.drawable.classic_sprites else R.drawable.custom_sprites
+		Theme.setTheme(this, theme)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +80,7 @@ class DroidWnd: Wnd() {
 		}
 	}
 	
-	override fun initialize() {
+	override fun initialize(restart: Boolean) {
 		if(wndHandler == null) {
 			// Создаем UI хэндлер
 			wndHandler = Handler(Looper.getMainLooper(), this)
@@ -84,8 +88,6 @@ class DroidWnd: Wnd() {
 			Settings.initialize(getSharedPreferences(logTag,  Context.MODE_PRIVATE), arrayStr(R.array.settings))
 			// Применяем тему и устанавливаем массивы
 			applyTheme()
-			Theme.setStrings(stringsDroid)
-			Theme.setDimens(dimensDroidDef, dimensDroid600sw, dimensDroid800sw)
 			// Запускаем звуки
 			Sound.initialize(this, 5, arrayStr(R.array.sound), arrayIDs(R.array.music))
 			// Запускаем БД
@@ -95,6 +97,28 @@ class DroidWnd: Wnd() {
 				if(!res) {
 					Pack.default()
 					Planet.default(this@DroidWnd)
+				}
+				val rnd = Random(System.currentTimeMillis())
+				repeat(10) {num ->
+					Stat.insert {
+						it[Stat.planet] = "Планета $num"
+						it[Stat.auth] = "Шаталов С.В."
+						it[Stat.pack] = SYSTEM_DEFAULT
+						it[Stat.date] = System.currentTimeMillis()
+						it[Stat.time] = rnd.nextLong(100000)
+						it[Stat.fuel] = rnd.nextLong(10000)
+						it[Stat.score] = rnd.nextLong(5000)
+						it[Stat.count] = rnd.nextLong(30)
+						it[Stat.bomb] = rnd.nextLong(100)
+						it[Stat.yellow] = rnd.nextLong(100)
+						it[Stat.red] = rnd.nextLong(100)
+						it[Stat.green] = rnd.nextLong(100)
+						it[Stat.death] = rnd.nextLong(10)
+						it[Stat.egg] = rnd.nextLong(100)
+						it[Stat.cycles] = rnd.nextLong(10000)
+						it[Stat.master] = 0
+						it[Stat.god] = 0
+					}
 				}
 			}
 		}

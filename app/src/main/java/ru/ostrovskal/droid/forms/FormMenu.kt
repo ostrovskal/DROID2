@@ -3,13 +3,19 @@ package ru.ostrovskal.droid.forms
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.ostrovskal.ssh.*
+import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs.style_menu
 import com.github.ostrovskal.ssh.StylesAndAttrs.style_tool
-import com.github.ostrovskal.ssh.singleton.Settings
 import com.github.ostrovskal.ssh.singleton.Sound
+import com.github.ostrovskal.ssh.sql.sql
 import com.github.ostrovskal.ssh.ui.UI
-import com.github.ostrovskal.ssh.ui.UiCtx
+import com.github.ostrovskal.ssh.ui.backgroundSet
+import com.github.ostrovskal.ssh.ui.button
+import com.github.ostrovskal.ssh.ui.cellLayout
+import com.github.ostrovskal.ssh.utils.config
+import com.github.ostrovskal.ssh.utils.optInt
+import com.github.ostrovskal.ssh.utils.optText
+import com.github.ostrovskal.ssh.utils.release
 import com.github.ostrovskal.ssh.widgets.Tile
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.DroidWnd
@@ -24,17 +30,17 @@ class FormMenu: Form() {
 	private val buttons     = mutableListOf<Tile>()
 	
 	override fun inflateContent(container: LayoutInflater) = UI {
-		if(content != null) UiCtx.addView(this, content as View)
-		else {
-			val coord = if(config.isPortrait) coordPort else coordLand
-			cellLayout(if(config.isPortrait) 16 else 28, if(config.isPortrait) 28 else 18) {
-				backgroundSet(style_menu)
-				repeat(7) {
-					buttons.add(button(style_tool) {
-						setOnClickListener(this@FormMenu)
-						iconResource = btnIcons[it]
-					}.lps(coord[it * 2], coord[it * 2 + 1], 4, 4))
-				}
+		//if(content != null) UiCtx.addView(this, content as View)
+		buttons.clear()
+		val vert = config.isVert
+		val coord = if(vert) coordPort else coordLand
+		cellLayout(if(vert) 16 else 28, if(vert) 28 else 18) {
+			backgroundSet(style_menu)
+			repeat(7) {
+				buttons.add(button(style_tool) {
+					setOnClickListener(this@FormMenu)
+					iconResource = btnIcons[it]
+				}.lps(coord[it * 2], coord[it * 2 + 1], 4, 4))
 			}
 		}
 	}
@@ -47,14 +53,14 @@ class FormMenu: Form() {
 			buttons[5].startAnimation(shake)
 		}
 		// кнопка редактора
-		//buttons[4].visibility = if(MainWnd.isAuthor()) View.VISIBLE else View.GONE
+		buttons[4].visibility = if(DroidWnd.isAuthor()) View.VISIBLE else View.GONE
 		// кнопка выбор планеты
-		buttons[1].isEnabled = Planet.exist { Planet.blocked eq 1 }
+		buttons[1].isEnabled = Planet.exist { Planet.blocked eq 0 }
 		// определить кол-во статистики и если необходимо удалить старую
 		val count = Stat.count()
 		if(count > LIMIT_RECORDS) {
-			Stat.select(Planet.create) {
-				orderBy(Planet.create, false)
+			Stat.select(Stat.date) {
+				orderBy(Stat.date, false)
 				limit(1, 50)
 			}.execute()?.release { Stat.delete { where { Stat.date less this@release[Stat.date] } } }
 		}
@@ -67,11 +73,15 @@ class FormMenu: Form() {
 	}
 	
 	override fun onClick(v: View) {
+		// Запомним текущую тему
+		KEY_TMP_THEME.optInt = KEY_THEME.optInt
+		// Запомним текущую систему
+		val pack = KEY_PACK.optText
+		KEY_TMP_PACK.optText = pack
+		
 		val idx = buttons.indexOf(v)
 		var position = 0L
 		if(idx == FORM_GAME) {
-			val pack = KEY_PACK.optText
-			Settings[KEY_TMP_PACK] = pack
 			sql {
 				Planet.select(Planet.position) {
 					where { (Planet.system eq pack) and (Planet.blocked eq 1) }

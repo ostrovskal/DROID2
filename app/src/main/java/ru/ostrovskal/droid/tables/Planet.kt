@@ -7,11 +7,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import com.github.ostrovskal.ssh.*
 import com.github.ostrovskal.ssh.Constants.FOLDER_FILES
+import com.github.ostrovskal.ssh.SqlField
 import com.github.ostrovskal.ssh.sql.Rowset
 import com.github.ostrovskal.ssh.sql.RuleOption
 import com.github.ostrovskal.ssh.sql.Table
+import com.github.ostrovskal.ssh.utils.*
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
 import java.io.FileOutputStream
@@ -20,16 +21,16 @@ import java.util.*
 import kotlin.concurrent.thread
 
 object Planet: Table() {
-	val id              = integer("_id").notNull().primaryKey()
-	val system          = text("system").notNull().references(Pack.name, RuleOption.CASCADE, RuleOption.CASCADE)
-	val title           = text("title").notNull().unique()
-	val creator         = text("creator").notNull().default("OSTROV")
-	val position        = integer("position").notNull().unique().checked { it.between(0, 100) }
-	val cycles          = integer("cycles").notNull()
-	val traffic         = integer("traffic").notNull()
-	val blocked         = integer("blocked").notNull().default(1)
-	val content         = blob("content").notNull()
-	val create          = integer("create").notNull()
+	@JvmField val id              = integer("_id").notNull().primaryKey()
+	@JvmField val system          = text("system").notNull().references(Pack.name, RuleOption.CASCADE, RuleOption.CASCADE)
+	@JvmField val title           = text("title").notNull().unique()
+	@JvmField val creator         = text("creator").notNull().default("OSTROV")
+	@JvmField val position        = integer("position").notNull().unique().checked { it.between(0, 100) }
+	@JvmField val cycles          = integer("cycles").notNull()
+	@JvmField val traffic         = integer("traffic").notNull()
+	@JvmField val blocked         = integer("blocked").notNull().default(1)
+	@JvmField val content         = blob("content").notNull()
+	@JvmField val create          = integer("create").notNull()
 	
 	@JvmField val rnd   = Random(System.currentTimeMillis())
 
@@ -38,7 +39,7 @@ object Planet: Table() {
 		@SqlField("traffic")  @JvmField var fuel      = 0
 		@SqlField("cycles")   @JvmField var time      = 0
 		@SqlField("create")   @JvmField var date      = 0L
-		@SqlField("blocked")  @JvmField var block     = false
+		@SqlField("blocked")  @JvmField var block     = true
 		@SqlField("content")  @JvmField var buffer    = byteArrayOf(0, 0)
 		
 		@SqlField("creator")  @JvmField var auth      = ""
@@ -72,7 +73,7 @@ object Planet: Table() {
 			return null
 		}
 		
-		// Сгенерировать монстра
+		// Генерировать монстра
 		private fun genMonster(x: Int, y: Int): Byte {
 			if(rnd.nextInt(5) == 0) {
 				val tile = if(x flags 1) T_YELLOWD else if(y flags 1) T_REDD else T_GREEND
@@ -124,7 +125,7 @@ object Planet: Table() {
 				sb.append('\n')
 			}
 			// запись
-			makePath("planets/$pack", FOLDER_FILES, "$name.pl").writeText(sb.toString())
+			makeDirectories("planets/$pack", FOLDER_FILES, "$name.pl").writeText(sb.toString())
 		}
 		
 		// Создать превью планеты
@@ -170,9 +171,8 @@ object Planet: Table() {
 		private fun miniature(context: Context)
 		{
 			val bmp = preview(context, BLOCK_MINIATURE) ?: return
-			FileOutputStream(makePath("miniatures/$pack", FOLDER_FILES, "$name.png")).apply {
+			FileOutputStream(makeDirectories("miniatures/$pack", FOLDER_FILES, "$name.png")).release {
 				bmp.compress(Bitmap.CompressFormat.PNG, 100, this)
-				close()
 			}
 			bmp.recycle()
 		}
@@ -294,9 +294,9 @@ object Planet: Table() {
 		fun delete()
 		{
 			// удалить текстовое представление карты
-			makePath("planets/$pack", FOLDER_FILES, "$name.pl").delete()
+			makeDirectories("planets/$pack", FOLDER_FILES, "$name.pl").delete()
 			// удалить миниатюру
-			makePath("miniatures/$pack", FOLDER_FILES, "$name.png").delete()
+			makeDirectories("miniatures/$pack", FOLDER_FILES, "$name.png").delete()
 			// удалить из БД
 			delete { where { system.eq(pack) and position.eq(num) and title.eq(name) } }
 			// Изменить количество планет в системе
