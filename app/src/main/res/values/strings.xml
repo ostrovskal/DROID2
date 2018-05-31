@@ -71,4 +71,6 @@
     <string name="header_recv_pack">Receive of planet system</string>
     <string name="themeLight">light</string>
     <string name="themeDark">dark</string>
+    <string name="_00000">00000</string>
+    <string name="_000">000</string>
 </resources>

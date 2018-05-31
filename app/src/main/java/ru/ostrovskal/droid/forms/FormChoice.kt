@@ -57,7 +57,7 @@ class FormChoice: Form() {
 				}
 				grid {
 					id = android.R.id.list
-					cellSize = Theme.dimen(ctx, R.dimen.heightDlgItemChoisePlanet)
+					cellSize = Theme.dimen(ctx, R.dimen.heightDlgItemChoicePlanet)
 					adapter = PlanetAdapter(wnd).apply {
 						this@FormChoice.adapter = this
 						path = "${Constants.folderFiles}/miniatures/$result"
@@ -81,7 +81,7 @@ class FormChoice: Form() {
 	private class ChoiceItem: UiComponent() {
 		override fun createView(ui: UiCtx) = ui.run {
 			cellLayout(10, 12) {
-				layoutParams = LinearLayout.LayoutParams (Constants.MATCH, Theme.dimen(ctx, R.dimen.heightDlgItemChoisePlanet))
+				layoutParams = LinearLayout.LayoutParams (Constants.MATCH, Theme.dimen(ctx, R.dimen.heightDlgItemChoicePlanet))
 				backgroundSet(StylesAndAttrs.style_item)
 				button(StylesAndAttrs.style_icon) { scale = TILE_SCALE_MIN }.lps(1, 1, 8, 8)
 				text(R.string.panel_text, style_text_planet).lps(0, 9, 10, 3)

@@ -148,6 +148,8 @@ class FormRecord: Form() {
 					direction = Constants.DIRU
 					showText = false
 					colors = colorsItem
+					max = intArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
+					current = intArrayOf(700, 200, 800, 400, 660, 100, 900, 350, 600, 250, 700)
 				}.lps(4, 5, 22, 10)
 				
 				repeat(8) { button(style_icon) { numResource = R.integer.I_STAR2}.lps(1, 15 - it * 2, 2, 2) }
@@ -161,7 +163,6 @@ class FormRecord: Form() {
 	}
 
 	class RecordHorzItem : RecordItem() {
-		
 		override fun createView(ui: UiCtx): View = with(ui) {
 			cellLayout(18, 32) {
 				backgroundSet(StylesAndAttrs.style_item)

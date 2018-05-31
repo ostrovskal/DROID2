@@ -24,7 +24,6 @@ import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.tables.Record
 import ru.ostrovskal.droid.tables.Stat
-import java.util.*
 
 class DroidWnd: Wnd() {
 	lateinit var main: AbsoluteLayout
@@ -98,6 +97,7 @@ class DroidWnd: Wnd() {
 					Pack.default()
 					Planet.default(this@DroidWnd)
 				}
+/*
 				val rnd = Random(System.currentTimeMillis())
 				repeat(10) {num ->
 					Stat.insert {
@@ -120,6 +120,7 @@ class DroidWnd: Wnd() {
 						it[Stat.god] = 0
 					}
 				}
+*/
 			}
 		}
 	}

@@ -238,6 +238,17 @@ public final class Constants
                                                        // T_NULL, T_NULL, T_NULL, T_NULL, T_NULL, T_NULL
                                                        O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG};
 
+    public static final int[] tilesEditorPanel  = {R.integer.TILE_NULL, R.integer.TILE_EARTH, R.integer.TILE_STONE, R.integer.TILE_BOMB, R.integer.TILE_BRICK,
+                                                   R.integer.TILE_BETON, R.integer.TILE_BOMBS, R.integer.TILE_FUEL, R.integer.TILE_EXPL, R.integer.TILE_SCORE,
+                                                   R.integer.TILE_TIME, R.integer.TILE_LIFE, R.integer.TILE_EYEG, R.integer.TILE_DROIDR, R.integer.TILE_EGG,
+                                                   R.integer.TILE_YELLOWD, R.integer.TILE_REDD, R.integer.TILE_GREEND};
+
+    public static final int[] tilesGamePanel    = {R.integer.TILE_SCORE, R.integer.TILE_TIME, R.integer.TILE_FUEL, R.integer.TILE_LIFE, R.integer.TILE_BOMB,
+                                                   R.integer.TILE_EGG, R.integer.TILE_YELLOWD, R.integer.TILE_REDD, R.integer.TILE_GREEND};
+
+    public static final int[] iconsEditorActions= {R.integer.I_NEW_PLANET, R.integer.I_OPEN_PLANET, R.integer.I_PROP_PLANET, R.integer.I_HELP,
+                                                   R.integer.I_DELETE_PLANET, R.integer.I_GEN_PLANET, R.integer.I_SEND_PACK, R.integer.I_ALL_PLANET,
+                                                   R.integer.I_TEST_PLANET, R.integer.I_SAVE_PLANET};
 /*
     public static String getStatus(int arg)
     {
@@ -406,7 +417,11 @@ public final class Constants
                                                    ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_NAME_PLANET | THEME,
                                                    ATTR_SIZE, R.dimen.planet,
                                                    ATTR_FONT, R.string.font_large};
+
+    public static final int[] style_panel_port = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_PORT | THEME};
+    public static final int[] style_panel_land = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_LAND | THEME};
 }
+
 /*
     <!-- ************************************************************ -->
     <!-- все слои панелей -->
