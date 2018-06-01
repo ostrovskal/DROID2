@@ -73,4 +73,5 @@
     <string name="themeDark">dark</string>
     <string name="_00000">00000</string>
     <string name="_000">000</string>
+    <string name="no_planet">Planet not found!</string>
 </resources>

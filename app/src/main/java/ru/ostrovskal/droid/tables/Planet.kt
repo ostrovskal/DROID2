@@ -220,7 +220,7 @@ object Planet: Table() {
 		}
 
 		// Генерировать планету
-		fun generator(context: Context, type: Int)
+		fun generator(context: Context, type: Int): Int
 		{
 			buffer = ByteArray(width * height + 2)
 			buffer[0] = width.toByte(); buffer[1] = height.toByte()
@@ -270,6 +270,7 @@ object Planet: Table() {
 			buffer[1, 1] = T_DROIDR
 			block = true
 			store(context)
+			return 0
 		}
 
 		// Добавить или обновить планету в БД

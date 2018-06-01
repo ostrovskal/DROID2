@@ -6,10 +6,108 @@ import android.view.Gravity;
 import static com.github.ostrovskal.ssh.Constants.DIRU;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_ROTATE;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_SCALE;
-import static com.github.ostrovskal.ssh.StylesAndAttrs.*;
+import static com.github.ostrovskal.ssh.Constants.TILE_SCALE_MIN;
+import static com.github.ostrovskal.ssh.Constants.TILE_STATE_HOVER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_BACKGROUND;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_CLICKABLE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_COLOR_DEFAULT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_DRW;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_FOCUSABLE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_FONT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_GRAVITY;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_INT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_COLOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_DX;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_DY;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_RADIUS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SIZE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_ALIGNED;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BITMAP_NAME;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_BACKGROUND;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_BUTTONS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_CHECK;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_EDIT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_HEADER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_ICONS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_MENU;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_RADIO;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_SEEK;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_SELECT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_SWITCH;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_TILES;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_TOOLS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_DIVIDER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_HEADER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_HINT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_HTML_HEADER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_LARGE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_LAYOUT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_LINK;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_MESSAGE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_NORMAL;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_SELECTOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_SMALL;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_WINDOW;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_WIRED;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_DIR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_GRAVITY;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_HORZ;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_MODE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SCALE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SHOW;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SPACING;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_STATES;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_THEME_NAME;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_VERT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_WIDTH_SELECTOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.COLOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.THEME;
 
 public final class Constants
 {
+    // задержка между сменой статуса
+    public static final long MESSAGE_DELAYED = 2000;
+    // задержка сплэш экрана
+    public static final long SPLASH_DELAYED  = 5000;
+    // установить имя планеты
+    public static final int ACTION_NAME     = 10000;
+    // загрузка
+    public static final int ACTION_LOAD     = 10001;
+    // сохранение
+    public static final int ACTION_SAVE     = 10002;
+    // удаление
+    public static final int ACTION_DELETE   = 10003;
+    // создание
+    public static final int ACTION_NEW      = 10004;
+    // генерация
+    public static final int ACTION_GENERATE = 10005;
+    // новый пакет
+    public static final int ACTION_PACK     = 10006;
+    // последняя планета
+    public static final int ACTION_FINISH   = 10007;
+    // смена темы
+    public static final int ACTION_THEME    = 10008;
+    // обновление вида
+    public static final int ACTION_UPDATE   = 10009;
+    // инициализация
+    public static final int STATUS_INIT     = 1;
+    // игрок мертв
+    public static final int STATUS_DEAD     = 2;
+    // планета зачищена
+    public static final int STATUS_CLEARED  = 3;
+    // установка значений
+    public static final int STATUS_WORK     = 4;
+    // игровой цикл
+    public static final int STATUS_LOOP     = 5;
+    // сообщение
+    public static final int STATUS_MESSAGE  = 6;
+    // выход
+    public static final int STATUS_EXIT     = 7;
+    // неопределено
+    public static final int STATUS_UNK      = 8;
+    // самоубийство
+    public static final int STATUS_SUICIDED = 9;
+
     // константы для генерации планеты
     public static final int    PLANET_GEN_NULL     = 0;
     public static final int    PLANET_GEN_EARTH    = 1;
@@ -238,6 +336,13 @@ public final class Constants
                                                        // T_NULL, T_NULL, T_NULL, T_NULL, T_NULL, T_NULL
                                                        O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG};
 
+    // Таблица перекодировок тайлов для отображения
+    public static final int[] paramsEditElems =   {T_YELLOWD, T_YELLOWR, T_YELLOWU, T_YELLOWL, T_REDD, T_REDR, T_REDU, T_REDL,
+                                                   T_GREEND, T_GREENR, T_GREENU, T_GREENL, T_EGG0, T_EGG1, T_EGG2, T_EGG3,
+                                                   T_DROIDD, T_DROIDR, T_DROIDU, T_DROIDL, T_STONE0, T_STONE1, T_STONE2,
+                                                   T_STONE3, T_EYEG, T_EYEB, T_EYEG, T_EYEB, T_EXPL0, T_EXPL1, T_EXPL2, T_EXPL3};
+
+    // Массив перекодировки при сохранении в текстовом виде
     public static final int[] tilesEditorPanel  = {R.integer.TILE_NULL, R.integer.TILE_EARTH, R.integer.TILE_STONE, R.integer.TILE_BOMB, R.integer.TILE_BRICK,
                                                    R.integer.TILE_BETON, R.integer.TILE_BOMBS, R.integer.TILE_FUEL, R.integer.TILE_EXPL, R.integer.TILE_SCORE,
                                                    R.integer.TILE_TIME, R.integer.TILE_LIFE, R.integer.TILE_EYEG, R.integer.TILE_DROIDR, R.integer.TILE_EGG,
@@ -249,59 +354,6 @@ public final class Constants
     public static final int[] iconsEditorActions= {R.integer.I_NEW_PLANET, R.integer.I_OPEN_PLANET, R.integer.I_PROP_PLANET, R.integer.I_HELP,
                                                    R.integer.I_DELETE_PLANET, R.integer.I_GEN_PLANET, R.integer.I_SEND_PACK, R.integer.I_ALL_PLANET,
                                                    R.integer.I_TEST_PLANET, R.integer.I_SAVE_PLANET};
-/*
-    public static String getStatus(int arg)
-    {
-        switch(arg)
-        {
-            case ACTION_FINISH:
-                return "ACTION_FINISH";
-            case ACTION_PACK:
-                return "ACTION_PACK";
-            case ACTION_NAME:
-                return "ACTION_NAME";
-            case ACTION_LOAD:
-                return "ACTION_LOAD";
-            case ACTION_SAVE:
-                return "ACTION_SAVE";
-            case ACTION_DELETE:
-                return "ACTION_DELETE";
-            case ACTION_NEW:
-                return "ACTION_NEW";
-            case ACTION_GENERATE:
-                return "ACTION_GENERATE";
-            case ACTION_EXIT:
-                return "ACTION_EXIT";
-            case ACTION_THEME:
-                return "ACTION_THEME";
-            case ACTION_UPDATE:
-                return "ACTION_UPDATE";
-            case STATUS_INIT:
-                return "STATUS_INIT";
-            case STATUS_DEAD:
-                return "STATUS_DEAD";
-            case STATUS_CLEARED:
-                return "STATUS_CLEARED";
-            case STATUS_WORK:
-                return "STATUS_WORK";
-            case STATUS_LOOP:
-                return "STATUS_LOOP";
-            case STATUS_MESSAGE:
-                return "STATUS_MESSAGE";
-            case STATUS_EXIT:
-                return "STATUS_EXIT";
-            case STATUS_SUICIDED:
-                return "STATUS_SUICIDED";
-            case STATUS_UNK:
-                return "STATUS_UNK";
-            case MSG_SERVICE:
-                return "MSG_SERVICE";
-            case MSG_FORM:
-                return "MSG_FORM";
-        }
-        return String.valueOf(arg);
-    }
-*/
 
     public static final int ATTR_SSH_COLOR_PANEL_COUNTERS = 1000 | ATTR_INT;
     public static final int ATTR_SSH_COLOR_NAME_PLANET    = 1001 | ATTR_INT;
@@ -381,8 +433,9 @@ public final class Constants
 
     public static final int[] style_tile_droid = {ATTR_SSH_VERT, 4,
                                                   ATTR_SSH_HORZ, 10,
-                                                  ATTR_CLICKABLE, 0,
                                                   ATTR_FOCUSABLE, 0,
+                                                  ATTR_SSH_WIDTH_SELECTOR, R.dimen.widthSelector,
+                                                  ATTR_BACKGROUND, ATTR_SSH_COLOR_SELECTOR | THEME,
                                                   ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_TILES | THEME};
 
     public static final int[] style_record      = {ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_STAT_COUNTERS | THEME,
@@ -418,24 +471,20 @@ public final class Constants
                                                    ATTR_SIZE, R.dimen.planet,
                                                    ATTR_FONT, R.string.font_large};
 
+    public static final int[] style_panel_tile =  {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_TILES | THEME,
+                                                   ATTR_SSH_HORZ, 10,
+                                                   ATTR_SSH_VERT, 4,
+                                                   ATTR_CLICKABLE, 0,
+                                                   ATTR_FOCUSABLE, 0,
+                                                   ATTR_SSH_ALIGNED, 1,
+                                                   ATTR_SSH_SCALE, TILE_SCALE_MIN,
+                                                   ATTR_SSH_GRAVITY, Gravity.CENTER};
+
     public static final int[] style_panel_port = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_PORT | THEME};
+
     public static final int[] style_panel_land = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_LAND | THEME};
 }
-
 /*
-    <!-- ************************************************************ -->
-    <!-- все слои панелей -->
-    <style name="wnd.panelPort">
-        <item name="sshCols">28</item>
-        <item name="sshRows">18</item>
-        <item name="sshBackground">?bmPanelPort</item>
-    </style>
-    <style name="wnd.panelLand">
-        <item name="sshCols">14</item>
-        <item name="sshRows">32</item>
-        <item name="sshBackground">?bmPanelLand</item>
-    </style>
-
     <!-- ************************************************************ -->
     <!-- все поверхности -->
 

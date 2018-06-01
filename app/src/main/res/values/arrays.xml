@@ -33,10 +33,10 @@
         <item>theme,0</item>
         <item>#tmp_theme,0</item>
         <item>player,PLAYER</item>
-        <item>#pack,CLASSIC</item>
+        <item>#pack,classic</item>
         <item>first_start,true</item>
         <item>#type_planet,0</item>
-        <item>#edit_planet,0#CLASSIC</item>
+        <item>#edit_planet,0#classic</item>
         <item>#edit_tile,0</item>
         <item>#tmp_pack,CLASSIC</item>
     </string-array>

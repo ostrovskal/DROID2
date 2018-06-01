@@ -67,4 +67,5 @@
     <string name="header_recv_pack">Получение системы планет</string>
     <string name="header_dialog_new_pack">Новая система</string>
     <string name="header_dialog_actions">Выбор операции</string>
+    <string name="no_planet">Planet not found!</string>
 </resources>

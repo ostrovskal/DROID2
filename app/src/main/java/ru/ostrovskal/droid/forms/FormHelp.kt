@@ -143,7 +143,7 @@ class FormHelp: Form() {
 			cellLayout(28, 18) {
 				backgroundSet(style_panel_port)
 				repeat(3) {row ->
-					repeat(6) { button { numResource = tilesEditorPanel[row * 6 + it] }.lps(2 + it * 4, 5 + row * 4, 4, 4) }
+					repeat(6) { button(style_panel_tile) { numResource = tilesEditorPanel[row * 6 + it] }.lps(2 + it * 4, 5 + row * 4, 4, 4) }
 				}
 				text(R.string.panel_text, style_text_planet).lps(1, 1, 26, 3)
 			}
@@ -155,12 +155,12 @@ class FormHelp: Form() {
 			cellLayout(28, 19) {
 				backgroundSet(style_panel_port)
 				repeat(3) {
-					button { numResource = tilesGamePanel[it] }.lps(2, 6 + it * 4, 4, 4)
+					button(style_panel_tile) { numResource = tilesGamePanel[it] }.lps(2, 6 + it * 4, 4, 4)
 					text(R.string._00000, style_text_counters).lps(6, 6 + it * 4, 5, 4)
 				}
 				repeat(2) { col ->
 					repeat(3) {
-						button { numResource = tilesGamePanel[3 + col * 3 + it] }.lps(11 + col * 8, 6 + it * 4, 4, 4)
+						button(style_panel_tile) { numResource = tilesGamePanel[3 + col * 3 + it] }.lps(11 + col * 8, 6 + it * 4, 4, 4)
 						text(R.string._000, style_text_counters).lps(15 + col * 8, 6 + it * 4, 4, 4)
 					}
 				}

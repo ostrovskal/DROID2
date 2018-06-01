@@ -53,7 +53,7 @@ class FormMenu: Form() {
 			buttons[5].startAnimation(shake)
 		}
 		// кнопка редактора
-		buttons[4].visibility = if(DroidWnd.isAuthor()) View.VISIBLE else View.GONE
+		//buttons[4].visibility = if(DroidWnd.isAuthor()) View.VISIBLE else View.GONE
 		// кнопка выбор планеты
 		buttons[1].isEnabled = Planet.exist { Planet.blocked eq 0 }
 		// определить кол-во статистики и если необходимо удалить старую

@@ -23,4 +23,8 @@ object Stat: Table() {
 	@JvmField val cycles = integer("cycles").notNull()
 	@JvmField val master = integer("master").notNull()
 	@JvmField val god = integer("god").notNull()
+	
+	fun load(position: Int): Boolean {
+		return false
+	}
 }
