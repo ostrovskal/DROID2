@@ -29,8 +29,7 @@ class FormGame : Form() {
 			if(tm > System.currentTimeMillis()) {
 				footer(BTN_NO, 0)//, ACTION_BACKPRESSED)
 			} else {
-//				wnd.showToast(getString(R.string.press_restart), parent = content, offsX = -1, offsY = -1)
-				wnd.showToast(getString(R.string.press_restart))
+				wnd.showToast(getString(R.string.press_restart), parent = content)
 			}
 		}
 		tmBACK = System.currentTimeMillis()
@@ -59,7 +58,7 @@ class FormGame : Form() {
 			linearLayout(port) {
 				containerLayout(if(port) 100 else 70, if(port) 70 else 100, true) {
 					id = R.id.gameContainer
-					game = custom {  }
+					game = custom { id = R.id.game }
 				}.lps(WRAP, WRAP)
 				cellLayout(if(port) 28 else 17, if(port) 19 else 32) {
 					backgroundSet(if(port) style_panel_port else style_panel_land)
@@ -75,7 +74,7 @@ class FormGame : Form() {
 							text(R.string._000, style_text_counters).lps(x + 4 + col * 8, y + it * 4, 4, 4)
 						}
 					}
-					text(R.string.panel_text, style_text_planet) {
+					namePlanet = text(R.string.null_text, style_text_planet) {
 						if(port) lps(1, 1, 26, 3) else lps(0, 0, 17, 6)
 					}
 				}

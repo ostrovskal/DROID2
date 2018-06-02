@@ -52,7 +52,7 @@
     <string name="splash_desc">описание</string>
 
     <string name="header_options">Установки</string>
-    <string name="header_choise">Выбор планеты</string>
+    <string name="header_choice">Выбор планеты</string>
     <string name="header_record">Достижения</string>
     <string name="header_help">Помощь</string>
     <string name="header_dialog_exit">Выход</string>
@@ -63,9 +63,9 @@
     <string name="header_dialog_save">Сохранение</string>
     <string name="header_dialog_delete">Удаление планеты</string>
     <string name="header_dialog_generate">Генерация планет</string>
-    <string name="header_send_pack">Отправка системы планет</string>
-    <string name="header_recv_pack">Получение системы планет</string>
-    <string name="header_dialog_new_pack">Новая система</string>
+    <string name="header_send_system">Отправка системы планет</string>
+    <string name="header_recv_system">Получение системы планет</string>
+    <string name="header_dialog_new_system">Новая система</string>
     <string name="header_dialog_actions">Выбор операции</string>
     <string name="no_planet">Planet not found!</string>
 </resources>

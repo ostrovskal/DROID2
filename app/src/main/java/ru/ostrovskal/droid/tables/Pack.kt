@@ -24,14 +24,14 @@ object Pack : Table() {
 	fun changeCountPlanets(nm: String, isAdd: Boolean) {
 		val countPlanets = countPlanets(nm) + if(isAdd) 1 else -1
 		if(countPlanets > 0) {
-			update { it[planets] = countPlanets }
+			update { it[planets] = countPlanets; where { name eq nm } }
 		} else {
 			delete { where { name eq nm } }
 		}
 	}
 
 	// Удалить пустые пакеты, если есть
-	// Проверить, что количество планет в классической системе >= 30
+	// Проверить, что количество планет в классической системе > 30
 	fun check(): Boolean {
 		select(name).execute()?.release {
 			forEach {
@@ -42,7 +42,7 @@ object Pack : Table() {
 				}
 			}
 		}
-		return countPlanets(SYSTEM_DEFAULT) >= 30L
+		return countPlanets(SYSTEM_DEFAULT) > 0L
 	}
 	
 	// Создание пустой классической системы

@@ -5,6 +5,7 @@
     public static *** checkParameterIsNotNull(...);
     public static *** checkExpressionValueIsNotNull(...);
     public static *** throwNpe(...);
+    public static *** throwUninitializedPropertyAccessException(...);
 }
 -repackageclasses ''
 -allowaccessmodification

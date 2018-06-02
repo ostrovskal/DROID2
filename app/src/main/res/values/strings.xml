@@ -55,7 +55,7 @@
 
     <string name="header_planet_new">Create planet</string>
     <string name="header_options">Settings</string>
-    <string name="header_choise">Choice of the planet</string>
+    <string name="header_choice">Choice of the planet</string>
     <string name="header_record">Records</string>
     <string name="header_help">Help</string>
     <string name="header_dialog_exit">Exit of game</string>
@@ -65,13 +65,14 @@
     <string name="header_dialog_save">Save of modification</string>
     <string name="header_dialog_delete">Delete of planet</string>
     <string name="header_dialog_generate">Generation of planets</string>
-    <string name="header_dialog_new_pack">New system</string>
+    <string name="header_dialog_new_system">New system</string>
     <string name="header_dialog_actions">Operation choice</string>
-    <string name="header_send_pack">Send of planet system</string>
-    <string name="header_recv_pack">Receive of planet system</string>
+    <string name="header_send_system">Send of planet system</string>
+    <string name="header_recv_system">Receive of planet system</string>
     <string name="themeLight">light</string>
     <string name="themeDark">dark</string>
     <string name="_00000">00000</string>
     <string name="_000">000</string>
     <string name="no_planet">Planet not found!</string>
+    <string name="panel_text2">Raticus Major</string>
 </resources>

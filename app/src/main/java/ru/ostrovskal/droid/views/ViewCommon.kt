@@ -17,16 +17,13 @@ import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.DroidWnd
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.msg
+import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.tables.Stat
 import java.util.*
 
 open class ViewCommon(context: Context) : Surface(context, style_wnd)
 {
-	// превью режим
-	@STORAGE var preview				= false
-		set(v)                          { field = v; updatePreview(v, true) }
-	
 	@JvmField protected var previewMap	= Size()
 	
 	@JvmField protected var previewBlk	= Size()
@@ -37,6 +34,9 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 	
 	// признак планеты
 	val isPlanet                        get() = Planet.MAP.buffer.size > 2
+	
+	// превью режим
+	@STORAGE @JvmField var preview		= false
 	
 	// признак воспроизведения записи
 	@STORAGE @JvmField var record		= 0L
@@ -195,8 +195,13 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 								canvasSize.empty()
 								val success = if(record != 0L) Stat.load(position) else Planet.MAP.load(position)
 								if(success) {
-									sysMsg = Planet.MAP.name
-									h.send(MSG_FORM, a1 = ACTION_UPDATE, a2 = position)
+									initMap(true)
+									if(this@ViewCommon !is ViewEditor) {
+										sysMsg = Planet.MAP.name
+									} else {
+										(this@ViewCommon as? ViewEditor)?.modify = false
+										h.send(MSG_FORM, a1 = ACTION_NAME, a2 = position, o = Planet.MAP.name)
+									}
 									s.send(STATUS_WORK, MESSAGE_DELAYED)
 								}
 								// НЕ УДАЛОСЬ ЗАГРУЗИТЬ ПЛАНЕТУ - ВОЗМОЖНО ОНА БЫЛА ПОСЛЕДНЕЙ
@@ -209,14 +214,29 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 								val success = Planet.MAP.store(context)
 								if(arg2 == 1) h.send(MSG_FORM, a1 = ACTION_EXIT)
 								else {
+									(this@ViewCommon as? ViewEditor)?.modify = false
 									s.send(STATUS_MESSAGE, a1 = STATUS_WORK, o = if(success) R.string.save_planet_success else R.string.save_planet_failed)
 									// для случая свойства планеты сменили имя
-									h.send(MSG_FORM, a1 = ACTION_NAME, o = Planet.MAP.name)
+									h.send(MSG_FORM, a1 = ACTION_NAME, a2 = position, o = Planet.MAP.name)
 								}
 							}
-							ACTION_DELETE   -> { Planet.MAP.delete(); initMap(true) }
-							ACTION_NEW      -> { position = Planet.MAP.generator(context, arg2); h.send(MSG_FORM, a1 = ACTION_UPDATE, a2 = position); initMap(true) }
-							ACTION_GENERATE -> { Planet.default(context); h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = 0) }
+							ACTION_DELETE   -> {
+								Planet.MAP.delete()
+								val count = Pack.countPlanets(KEY_TMP_PACK.optText)
+								h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = if(position >= count) position - 1 else position             )
+								(this@ViewCommon as? ViewEditor)?.modify = false
+							}
+							ACTION_NEW      -> {
+								position = Planet.MAP.generator(context, arg2)
+								h.send(MSG_FORM, a1 = ACTION_NAME, a2 = position, o = Planet.MAP.name)
+								(this@ViewCommon as? ViewEditor)?.modify = true
+								initMap(true)
+							}
+							ACTION_GENERATE -> {
+								Planet.default(context)
+								h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = 0)
+								(this@ViewCommon as? ViewEditor)?.modify = false
+							}
 						}
 						STATUS_EXIT	        -> h.send(MSG_FORM, a1 = ACTION_EXIT)
 					}
@@ -230,10 +250,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 	{
 		super.draw(canvas)
 		if(isPlanet) {
-			if(canvasSize.isEmpty()) {
-				"initMap $canvasSize $isPlanet".info()
-				initMap(true)
-			}
+			if(canvasSize.isEmpty()) initMap(true)
 			for(y in 0 until previewMap.h) {
 				canvasRect.top = previewCO.y + y * previewBlk.h
 				canvasRect.bottom = canvasRect.top + previewBlk.h
@@ -269,5 +286,6 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 			previewCO.x = if(v) ((width - (w * previewBlk.w)) / 2f).toInt() else canvasOffset.x
 			previewCO.y = if(v) ((height - (h * previewBlk.h)) / 2f).toInt() else canvasOffset.y
 		}
+		KEY_EDIT_PREVIEW.optBool = v
 	}
 }

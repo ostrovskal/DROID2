@@ -8,11 +8,11 @@ import com.github.ostrovskal.ssh.Constants.MATCH
 import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs
 import com.github.ostrovskal.ssh.StylesAndAttrs.style_text_html
-import com.github.ostrovskal.ssh.Theme
 import com.github.ostrovskal.ssh.adapters.SelectAdapter
 import com.github.ostrovskal.ssh.ui.*
 import com.github.ostrovskal.ssh.utils.*
 import com.github.ostrovskal.ssh.widgets.Html
+import com.github.ostrovskal.ssh.widgets.Text
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.tables.Pack
@@ -75,27 +75,23 @@ class FormHelp: Form() {
 						key = "controller_tiles"
 						aliases["cursor"] = Html.Alias(key, wnd.bitmapGetCache(key), 6, 1, 0, 0, 25f)
 						
-						val sw = Theme.dimen(context, R.dimen.koeffImg) * Constants.dMetrics.density
-						val width = (220 * sw).toInt()
+						val width = 220.dp
 						
 						key = "game_panel$theme$classic"
-						aliases["game_panel"] = Html.Alias(key, GamePanel().makeBitmap(wnd, key, width, (110 * sw).toInt()))
+						aliases["game_panel"] = Html.Alias(key, GamePanel().makeBitmap(wnd, key, width, 110.dp))
 						key = "game_record$theme$classic"
-						//aliases["game_record"] = Html.Alias(key, Actions().makeBitmap(wnd, key, width, height))
-						aliases["game_record"] = Html.Alias(key, FormRecord.RecordVertItem().makeBitmap(wnd, key, width, (110 * sw).toInt()))
+						aliases["game_record"] = Html.Alias(key, FormRecord.RecordVertItem().makeBitmap(wnd, key, width, 110.dp))
 						if(index == FORM_EDITOR_HELP) {
 							key = "help_editor_panel$theme$classic"
-							aliases["editor_panel"] = Html.Alias(key, EditorPanel().makeBitmap(wnd, key, width, (110 * sw).toInt()))
-							/*
-															key = "help_editor_new$theme"
-															aliases["editor_new"] = Html.Alias(key, FormPlanetNP.PlanetNP(true).makeBitmap(wnd, key, width, (180 * sw).toInt()))
-															key = "help_editor_prop$theme"
-															aliases["editor_prop"] = Html.Alias(key, FormPlanetNP.PlanetNP(false).makeBitmap(wnd, key, width, (180 * sw).toInt()))
-							*/
+							aliases["editor_panel"] = Html.Alias(key, EditorPanel().makeBitmap(wnd, key, width, 110.dp))
+							key = "help_editor_new$theme"
+							aliases["editor_new"] = Html.Alias(key, FormPlanetNP.PlanetNP(true).makeBitmap(wnd, key, width, 180.dp))
+							key = "help_editor_prop$theme"
+							aliases["editor_prop"] = Html.Alias(key, FormPlanetNP.PlanetNP(false).makeBitmap(wnd, key, width, 180.dp))
 							key = "help_editor_open$theme"
-							aliases["editor_open"] = Html.Alias(key, PlanetOpen().makeBitmap(wnd, key, width, (180 * sw).toInt()))
+							aliases["editor_open"] = Html.Alias(key, PlanetOpen().makeBitmap(wnd, key, width, 180.dp))
 							key = "help_editor_actions$theme"
-							aliases["editor_actions"] = Html.Alias(key, Actions().makeBitmap(wnd, key, width, (180 * sw).toInt()))
+							aliases["editor_actions"] = Html.Alias(key, EditorActions().makeBitmap(wnd, key, width, 125.dp))
 						}
 					}
 				}.lps(MATCH, MATCH)
@@ -109,27 +105,27 @@ class FormHelp: Form() {
 				formHeader(R.string.header_planet_open)
 				backgroundSet(StylesAndAttrs.style_form)
 				select { adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name)) }
-//				include(FormPlanetOpen.OpenItem()) {}
-//				include(FormPlanetOpen.OpenItem()) { (byIdx(1) as? Text)?.setText(R.string.panel_text2) }
+				include(FormOpen.OpenItem()) {}
+				include(FormOpen.OpenItem()) {
+					it.byIdx<Text>(1).setText(R.string.panel_text2)
+				}
 			}
 		}
 	}
 	
-	private class Actions : UiComponent() {
-		private val nums = intArrayOf(R.integer.I_OPEN_PLANET, R.integer.I_NEW_PLANET, R.integer.I_PROP_PLANET, R.integer.I_SAVE_PLANET,
-		                              R.integer.I_ALL_PLANET, R.integer.I_GEN_PLANET, R.integer.I_DELETE_PLANET, R.integer.I_HELP,
-		                              R.integer.I_TEST_PLANET, R.integer.I_SEND_PACK)
-		
+	private class EditorActions : UiComponent() {
 		override fun createView(ui: UiCtx): View = with(ui) {
 			cellLayout(10, 10) {
 				formHeader(R.string.header_dialog_actions)
-				backgroundSet(StylesAndAttrs.style_dlg)
+				backgroundSet(style_dlg_actions)
 				padding = 2.dp
 				var idx = 0
+				var dx = 0
 				repeat(3) {row ->
 					repeat(4) {
-						if(idx < nums.size) {
-							button(StylesAndAttrs.style_icon) { numResource = nums[idx++] }.lps(it * 2 + 1, row * 2, 2, 2) }
+						if(idx < iconsEditorActions.size) {
+							if(idx == iconsEditorActions.size - 2) dx = 2
+							button(StylesAndAttrs.style_icon) { numResource = iconsEditorActions[idx++] }.lps(it * 2 + 1 + dx, row * 2, 2, 2) }
 					}
 				}
 				formFooter(Constants.BTN_OK, R.integer.I_NO)

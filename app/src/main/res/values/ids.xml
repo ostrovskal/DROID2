@@ -27,4 +27,6 @@
     <item name="etTime" type="id"/>
     <item name="viewScroll" type="id"/>
     <item name="etPack" type="id"/>
+    <item name="etDesc" type="id"/>
+    <item name="etPrice" type="id"/>
 </resources>

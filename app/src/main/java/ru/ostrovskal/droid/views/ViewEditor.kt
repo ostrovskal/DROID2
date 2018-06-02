@@ -52,7 +52,7 @@ class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 	}
 	
 	override fun doFrame(view: View, frame: Int, direction: Int, began: Boolean): Boolean {
-		if(status == STATUS_LOOP) {
+		if(status == STATUS_LOOP && wnd.formTag == "editor") {
 			// обработка сдвига
 			if(modeShift == SHIFT_UNDEF && !preview) {
 				Touch.findTouch(0)?.apply {
@@ -148,6 +148,7 @@ class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 	override fun restoreState(state: Bundle, vararg params: Any?) {
 		super.restoreState(state)
 		wnd.findForm<FormEditor>("editor")?.setTile(KEY_EDIT_TILE.optInt)
+		updatePreview(preview, true)
 	}
 	
 	override fun handleMessage(msg: Message): Boolean {

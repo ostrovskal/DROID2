@@ -50,5 +50,5 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'com.github.ostrovskal:ssh:1.3.0'
+    implementation 'com.github.ostrovskal:ssh:1.2.5'
 }

@@ -48,7 +48,7 @@ class FormChoice: Form() {
 			result = KEY_PACK.optText
 			linearLayout {
 				backgroundSet(StylesAndAttrs.style_form)
-				formHeader(R.string.header_choise)
+				formHeader(R.string.header_choice)
 				select {
 					id = R.id.slPack
 					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name))

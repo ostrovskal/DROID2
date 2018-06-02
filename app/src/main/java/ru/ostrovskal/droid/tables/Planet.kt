@@ -25,7 +25,7 @@ object Planet: Table() {
 	@JvmField val system          = text("system").notNull().references(Pack.name, RuleOption.CASCADE, RuleOption.CASCADE)
 	@JvmField val title           = text("title").notNull().unique()
 	@JvmField val creator         = text("creator").notNull().default("OSTROV")
-	@JvmField val position        = integer("position").notNull().unique().checked { it.between(0, 100) }
+	@JvmField val position        = integer("position").notNull().unique().checked { it.between(0, 101) }
 	@JvmField val cycles          = integer("cycles").notNull()
 	@JvmField val traffic         = integer("traffic").notNull()
 	@JvmField val blocked         = integer("blocked").notNull().default(1)
@@ -222,17 +222,21 @@ object Planet: Table() {
 		// Генерировать планету
 		fun generator(context: Context, type: Int): Int
 		{
-			buffer = ByteArray(width * height + 2)
-			buffer[0] = width.toByte(); buffer[1] = height.toByte()
+			val w = width
+			val h = height
+			buffer = ByteArray(w * h + 2)
+			buffer[0] = w.toByte(); buffer[1] = h.toByte()
 			
-			for(y in 0 until height) {
-				for(x in 0 until width) {
-					buffer[x, y] = if(x == 0 || y == 0 || x == width - 1 || y == height - 1) T_BETON
+			for(y in 0 until h) {
+				for(x in 0 until w) {
+					buffer[x, y] = if(x == 0 || y == 0 || x == w - 1 || y == h - 1) T_BETON
 					else when(type) {
-						PLANET_GEN_EARTH -> when(rnd.nextInt(4)) {
-							0, 1 -> T_EARTH
-							2    -> T_BOMB
-							else -> (T_STONE0 + rnd.nextInt(4)).toByte()
+						PLANET_GEN_EARTH -> when(rnd.nextInt(7)) {
+							0, 1, 2  -> T_EARTH
+							3        -> T_BOMB
+							4        -> genMonster(x, y)
+							5        -> T_NULL
+							else     -> (T_STONE0 + rnd.nextInt(4)).toByte()
 						}
 						PLANET_GEN_BETON -> when(rnd.nextInt(6)) {
 							0    -> T_NULL
@@ -243,15 +247,15 @@ object Planet: Table() {
 							else -> T_BETON
 						}
 						PLANET_GEN_STONE -> when(rnd.nextInt(7)) {
-							0, 1, 2 -> T_EARTH
-							3       -> (T_STONE0 + rnd.nextInt(4)).toByte()
+							0, 1    -> T_EARTH
+							2, 3    -> (T_STONE0 + rnd.nextInt(4)).toByte()
 							4       -> genMonster(x, y)
 							5       -> T_BOMB
 							else    -> T_NULL
 						}
 						PLANET_GEN_EGG   -> when(rnd.nextInt(7)) {
-							0, 1, 2 -> T_EARTH
-							3       -> (T_EGG0 + rnd.nextInt(4)).toByte()
+							0, 1    -> T_EARTH
+							2, 3    -> (T_EGG0 + rnd.nextInt(4)).toByte()
 							4       -> genMonster(x, y)
 							5       -> T_BOMB
 							else    -> T_NULL
@@ -280,15 +284,22 @@ object Planet: Table() {
 				context.resources.getString(R.string.droid_not_found, name).debug()
 				return false
 			}
+			date = System.currentTimeMillis()
 			miniature(context)
 			save()
+			val result: Boolean
 			if(exist( { system.eq(pack) and position.eq(num) } )) {
-				update { autoValues(this@MAP) }
+				result = update {
+					autoValues(this@MAP)
+					where { position.eq(num) and system.eq(pack) }
+				} == 1L
 			} else {
-				insert { it.autoValues(this@MAP) }
-				Pack.changeCountPlanets(SYSTEM_DEFAULT, true)
+				result = insert { it.autoValues(this@MAP) } != 0L
+				if(result) {
+					Pack.changeCountPlanets(pack, true)
+				}
 			}
-			return true
+			return result
 		}
 
 		// Удалить планету

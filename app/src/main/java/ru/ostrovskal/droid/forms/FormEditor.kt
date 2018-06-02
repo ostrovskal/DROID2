@@ -21,7 +21,6 @@ import ru.ostrovskal.droid.views.ViewEditor
 
 class FormEditor : Form() {
 	private var namePlanet: Text?   = null
-	private var rootButtons: ViewGroup? = null
 	// текущий тайл
 	var curTile: Tile? 				= null
 	
@@ -39,13 +38,12 @@ class FormEditor : Form() {
 			msg.apply {
 				"onMessageFormEditor(what: ${what.msg} arg1: ${arg1.msg} arg2: $arg2 obj: $obj)".debug()
 				when(arg1) {
-					ACTION_LOAD     -> { s.send(a1 = ACTION_LOAD, a2 = arg2); editor.modify = false }
-					ACTION_GENERATE -> { s.send(a1 = ACTION_GENERATE); editor.modify = false }
-					ACTION_DELETE   -> { s.send(a1 = ACTION_DELETE); editor.modify = false }
-					ACTION_NEW      -> { s.send(a1 = ACTION_NEW, a2 = arg2); editor.modify = true }
-					ACTION_SAVE     -> { s.send(a1 = ACTION_SAVE, a2 = arg2); editor.modify = false }
-					ACTION_UPDATE   -> KEY_EDIT_PLANET.optText = "$arg2#${Planet.MAP.pack}"
-					ACTION_NAME     -> namePlanet?.text = obj.toString()
+					ACTION_LOAD     -> s.send(a1 = ACTION_LOAD, a2 = arg2)
+					ACTION_GENERATE -> s.send(a1 = ACTION_GENERATE)
+					ACTION_DELETE   -> s.send(a1 = ACTION_DELETE)
+					ACTION_NEW      -> s.send(a1 = ACTION_NEW, a2 = arg2)
+					ACTION_SAVE     -> s.send(a1 = ACTION_SAVE, a2 = arg2)
+					ACTION_NAME     -> { namePlanet?.text = obj.toString(); KEY_EDIT_PLANET.optText = "$arg2#${Planet.MAP.pack}" }
 					ACTION_EXIT     -> footer(BTN_NO, 0)
 				}
 			}
@@ -57,9 +55,9 @@ class FormEditor : Form() {
 		linearLayout(port) {
 			containerLayout(if(port) 100 else 70, if(port) 70 else 100, true) {
 				id = R.id.editorContainer
-				editor = custom {  }
+				editor = custom { id = R.id.editor }
 			}.lps(WRAP, WRAP)
-			rootButtons = cellLayout(if(port) 28 else 14, if(port) 18 else 32) {
+			root = cellLayout(if(port) 28 else 14, if(port) 18 else 32) {
 				backgroundSet(style = if(port) style_panel_port else style_panel_land)
 				var x = if(port) 2 else 1
 				var y = if(port) 5 else 6
@@ -76,9 +74,9 @@ class FormEditor : Form() {
 					x += dx
 					y += dy
 				}
-				text(R.string.panel_text, style_text_planet) {
+				namePlanet = text(R.string.null_text, style_text_planet) {
 					setOnClickListener {
-						if(fragmentManager.backStackEntryCount == 1) wnd.instanceForm(FORM_DLG_ACTION)
+						if(fragmentManager.backStackEntryCount == 1) wnd.instanceForm(FORM_DLG_E_ACTIONS)
 					}
 					if(port) lps(1, 1, 26, 3) else lps(0, 0, 14, 6)
 				}
@@ -88,9 +86,10 @@ class FormEditor : Form() {
 	
 	override fun initContent(content: ViewGroup) {
 		setTile(KEY_EDIT_TILE.optInt)
+		editor.preview = KEY_EDIT_PREVIEW.optBool
 		val lst = KEY_EDIT_PLANET.optText.split('#')
 		if(lst.size == 2) {
-			editor.position = lst[0].toInt()
+			editor.position = lst[0].ival(0, 10)
 			KEY_TMP_PACK.optText = lst[1]
 		}
 		else {
@@ -101,7 +100,8 @@ class FormEditor : Form() {
 	}
 	
 	override fun onClick(v: View) {
-		setTile(rootButtons?.indexOfChild(v) ?: 0)
+		"onClick $v".info()
+		setTile(root?.indexOfChild(v) ?: 0)
 	}
 	
 	override fun footer(btnId: Int, param: Int) {
@@ -114,7 +114,7 @@ class FormEditor : Form() {
 	}
 	
 	override fun saveState(state: Bundle) {
-		content?.findViewById<ViewEditor>(R.id.editor)?.saveState(state)
+		editor.saveState(state)
 		super.saveState(state)
 	}
 	
@@ -132,7 +132,7 @@ class FormEditor : Form() {
 	
 	fun setTile(idx: Int) {
 		curTile?.isChecked = false
-		curTile = rootButtons?.byIdx(idx)
+		curTile = root?.byIdx(idx)
 		curTile?.isChecked = true
 		KEY_EDIT_TILE.optInt = idx
 	}

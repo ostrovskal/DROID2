@@ -17,10 +17,11 @@
     <string name="tag_dialog_generate" translatable="false">dialog_generate</string>
     <string name="tag_dialog_delete" translatable="false">dialog_delete</string>
     <string name="tag_editor_help" translatable="false">help_editor</string>
-    <string name="tag_dialog_new_pack" translatable="false">new_pack</string>
-    <string name="tag_dialog_actions" translatable="false">dialog_actions</string>
-    <string name="tag_recv_pack" translatable="false">recv_pack</string>
-    <string name="tag_send_pack" translatable="false">send_pack</string>
+    <string name="tag_dialog_new_system" translatable="false">new_system</string>
+    <string name="tag_dialog_e_actions" translatable="false">dialog_e_actions</string>
+    <string name="tag_dialog_g_actions" translatable="false">dialog_g_actions</string>
+    <string name="tag_recv_system" translatable="false">recv_system</string>
+    <string name="tag_send_system" translatable="false">send_system</string>
 
     <string name="clazz_game" translatable="false">ru.ostrovskal.droid.forms.FormGame</string>
     <string name="clazz_choice" translatable="false">ru.ostrovskal.droid.forms.FormChoice</string>
@@ -31,14 +32,15 @@
     <string name="clazz_dlg_exit" translatable="false">ru.ostrovskal.droid.forms.FormDialog</string>
     <string name="clazz_splash" translatable="false">ru.ostrovskal.droid.forms.FormSplash</string>
     <string name="clazz_menu" translatable="false">ru.ostrovskal.droid.forms.FormMenu</string>
-    <string name="clazz_dlg_actions" translatable="false">ru.ostrovskal.droid.forms.FormEditorActions</string>
+    <string name="clazz_dlg_e_actions" translatable="false">ru.ostrovskal.droid.forms.FormEditorActions</string>
+    <string name="clazz_dlg_g_actions" translatable="false">ru.ostrovskal.droid.forms.FormGameActions</string>
     <string name="clazz_dlg_save" translatable="false">ru.ostrovskal.droid.forms.FormDialog</string>
     <string name="clazz_planet_np" translatable="false">ru.ostrovskal.droid.forms.FormPlanetNP</string>
-    <string name="clazz_planet_open" translatable="false">ru.ostrovskal.droid.forms.FormPlanetOpen</string>
+    <string name="clazz_planet_open" translatable="false">ru.ostrovskal.droid.forms.FormOpen</string>
     <string name="clazz_dlg_delete" translatable="false">ru.ostrovskal.droid.forms.FormDialog</string>
     <string name="clazz_dlg_generate" translatable="false">ru.ostrovskal.droid.forms.FormDialog</string>
-    <string name="clazz_send_pack" translatable="false">ru.ostrovskal.droid.forms.FormSend</string>
-    <string name="clazz_recv_pack" translatable="false">ru.ostrovskal.droid.forms.FormRecv</string>
+    <string name="clazz_send_system" translatable="false">ru.ostrovskal.droid.forms.FormSend</string>
+    <string name="clazz_recv_system" translatable="false">ru.ostrovskal.droid.forms.FormRecv</string>
     <string name="clazz_finish" translatable="false">ru.ostrovskal.droid.forms.FormHelp</string>
-    <string name="clazz_dlg_pack" translatable="false">ru.ostrovskal.droid.forms.FormPack</string>
+    <string name="clazz_dlg_new_system" translatable="false">ru.ostrovskal.droid.forms.FormNewSystem</string>
 </resources>

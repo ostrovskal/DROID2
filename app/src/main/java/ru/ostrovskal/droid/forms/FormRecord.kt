@@ -138,7 +138,7 @@ class FormRecord: Form() {
 				layoutParams = LinearLayout.LayoutParams(Constants.MATCH, Theme.dimen(ctx, R.dimen.heightDlgItemRecord))
 				text(R.string.panel_text) {gravity = Gravity.CENTER}.lps(4, 0, 16, 4)
 				text(R.string.null_text, style_text_small) {
-					text = System.currentTimeMillis().time("%d.%m.%Y %H:%M:%S")
+					text = System.currentTimeMillis().datetime
 				}.lps(21, 0, 11, 4)
 				button(style_icon) {
 					numResource = R.integer.I_PLAY_RECORD
@@ -170,7 +170,7 @@ class FormRecord: Form() {
 				layoutParams = LinearLayout.LayoutParams(Theme.dimen(ctx, R.dimen.heightDlgItemRecord), Constants.MATCH)
 				text(R.string.panel_text) {gravity = Gravity.CENTER}.lps(0, 0, 18, 3)
 				text(R.string.null_text, style_text_small) {
-					text = System.currentTimeMillis().time("%d.%m.%Y %H:%M:%S")
+					text = System.currentTimeMillis().datetime
 				}.lps(0, 3, 13, 3)
 				button(style_icon) {
 					numResource = R.integer.I_PLAY_RECORD
