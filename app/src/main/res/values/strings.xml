@@ -3,7 +3,7 @@
     <string name="new_planet_types">Emptities</string>
     <string name="new_planet_packs">CLASSIC</string>
     <string name="panel_text">Pleiades</string>
-    <string name="null_text" translatable="false">Pleiades</string>
+    <string name="null_text" translatable="false"> </string>
     <string name="copyright">Copyright @ 2018 S.V. Shataloff</string>
     <string name="rights">All Rights Reserved.</string>
     <string name="lang">en</string>

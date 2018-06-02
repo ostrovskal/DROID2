@@ -18,16 +18,12 @@ object Pack : Table() {
 	@JvmField val skull   = integer("skull").notNull()
 
 	// Возвращает количество планет
-	fun countPlanets(nm: String) = select(planets) { where {name eq nm } }.execute()?.releaseRun { integer(planets) } ?: 0
+	fun countPlanets(nm: String) = select(planets) { where {name eq nm } }.execute()?.releaseRun { integer(0) } ?: 0
 	
 	// Изменить количество планет
 	fun changeCountPlanets(nm: String, isAdd: Boolean) {
 		val countPlanets = countPlanets(nm) + if(isAdd) 1 else -1
-		if(countPlanets > 0) {
-			update { it[planets] = countPlanets; where { name eq nm } }
-		} else {
-			delete { where { name eq nm } }
-		}
+		update { it[planets] = countPlanets; where { name eq nm } }
 	}
 
 	// Удалить пустые пакеты, если есть
@@ -36,7 +32,8 @@ object Pack : Table() {
 		select(name).execute()?.release {
 			forEach {
 				val nm = it.text(name)
-				if(countPlanets(nm) == 0L) {
+				val count = countPlanets(nm)
+				if(count <= 0L) {
 					delete { where { name eq nm } }
 					if(nm == Constants.KEY_PACK.optText) Constants.KEY_PACK.optText = SYSTEM_DEFAULT
 				}

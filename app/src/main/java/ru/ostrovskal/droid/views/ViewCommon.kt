@@ -19,6 +19,9 @@ import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
+import ru.ostrovskal.droid.tables.Planet.MAP.buffer
+import ru.ostrovskal.droid.tables.Planet.MAP.height
+import ru.ostrovskal.droid.tables.Planet.MAP.width
 import ru.ostrovskal.droid.tables.Stat
 import java.util.*
 
@@ -135,7 +138,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 					canvasSize.set(if(canvasMaxSize.w > width) width else canvasMaxSize.w, if(canvasMaxSize.h > height) height else canvasMaxSize.h)
 					countMapCells = width * height
 					Touch.reset()
-					wnd.wndHandler?.send(MSG_FORM, a1 = ACTION_NAME, o = name)
+					wnd.wndHandler?.send(MSG_FORM, 0, ACTION_NAME)
 					updatePreview(preview, true)
 				}
 				val droidOffs = Point(x - canvasMaxSize.w / 2 , y - canvasMaxSize.h / 2)
@@ -170,6 +173,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 		"onMessageCommonView(what: ${msg.what.msg} arg1: ${msg.arg1.msg} arg2: ${msg.arg2} obj: ${msg.obj})".debug()
 		val h = wnd.wndHandler
 		val s = surHandler
+		val editor = (this@ViewCommon as? ViewEditor)
 		if(h != null && s != null) {
 			if(wnd.restart) {
 				wnd.restart = false
@@ -196,16 +200,11 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 								val success = if(record != 0L) Stat.load(position) else Planet.MAP.load(position)
 								if(success) {
 									initMap(true)
-									if(this@ViewCommon !is ViewEditor) {
-										sysMsg = Planet.MAP.name
-									} else {
-										(this@ViewCommon as? ViewEditor)?.modify = false
-										h.send(MSG_FORM, a1 = ACTION_NAME, a2 = position, o = Planet.MAP.name)
-									}
+									if(editor != null) editor.modify = false else sysMsg = Planet.MAP.name
 									s.send(STATUS_WORK, MESSAGE_DELAYED)
 								}
-								// НЕ УДАЛОСЬ ЗАГРУЗИТЬ ПЛАНЕТУ - ВОЗМОЖНО ОНА БЫЛА ПОСЛЕДНЕЙ
-								else if(this@ViewCommon !is ViewEditor){
+								else if(editor == null) {
+									// НЕ УДАЛОСЬ ЗАГРУЗИТЬ ПЛАНЕТУ - ВОЗМОЖНО ОНА БЫЛА ПОСЛЕДНЕЙ
 									sysMsg = ""
 									h.send(MSG_FORM, a1 = ACTION_FINISH)
 								}
@@ -214,22 +213,22 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 								val success = Planet.MAP.store(context)
 								if(arg2 == 1) h.send(MSG_FORM, a1 = ACTION_EXIT)
 								else {
-									(this@ViewCommon as? ViewEditor)?.modify = false
+									editor?.modify = false
 									s.send(STATUS_MESSAGE, a1 = STATUS_WORK, o = if(success) R.string.save_planet_success else R.string.save_planet_failed)
 									// для случая свойства планеты сменили имя
-									h.send(MSG_FORM, a1 = ACTION_NAME, a2 = position, o = Planet.MAP.name)
+									h.send(MSG_FORM, a1 = ACTION_NAME)
 								}
 							}
 							ACTION_DELETE   -> {
+								val count = Pack.countPlanets(Planet.MAP.pack)
 								Planet.MAP.delete()
-								val count = Pack.countPlanets(KEY_TMP_PACK.optText)
-								h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = if(position >= count) position - 1 else position             )
-								(this@ViewCommon as? ViewEditor)?.modify = false
+								h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = if(position >= count) position - 1 else position)
+								editor?.modify = false
 							}
 							ACTION_NEW      -> {
-								position = Planet.MAP.generator(context, arg2)
-								h.send(MSG_FORM, a1 = ACTION_NAME, a2 = position, o = Planet.MAP.name)
-								(this@ViewCommon as? ViewEditor)?.modify = true
+								canvasSize.empty()
+								Planet.MAP.generator(context, arg2)
+								editor?.modify = true
 								initMap(true)
 							}
 							ACTION_GENERATE -> {
@@ -246,8 +245,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 		return super.handleMessage(msg)
 	}
 	
-	override fun draw(canvas: Canvas)
-	{
+	override fun draw(canvas: Canvas) {
 		super.draw(canvas)
 		if(isPlanet) {
 			if(canvasSize.isEmpty()) initMap(true)

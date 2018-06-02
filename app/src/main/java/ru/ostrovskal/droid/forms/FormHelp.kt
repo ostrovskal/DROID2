@@ -67,31 +67,31 @@ class FormHelp: Form() {
 						val classic = KEY_CLASSIC.optBool
 						
 						var key = "theme_tool"
-						aliases["tool"] = Html.Alias(key, wnd.bitmapGetCache(key), 3, 1, 0, 0, 20f)
+						aliases["tool"] = Html.Alias(key, wnd.bitmapGetCache(key), 3, 1, 0, 0, 40f)
 						key = if(classic) "classic_sprites" else "custom_sprites"
-						aliases["main"] = Html.Alias(key, wnd.bitmapGetCache(key), 10, 4, 0, 0, 15f)
+						aliases["main"] = Html.Alias(key, wnd.bitmapGetCache(key), 10, 4, 0, 0, 30f)
 						key = "icon_tiles"
-						aliases["icons"] = Html.Alias(key, wnd.bitmapGetCache(key), 10, 3, 0, 0, 20f)
+						aliases["icons"] = Html.Alias(key, wnd.bitmapGetCache(key), 10, 3, 0, 0, 40f)
 						key = "controller_tiles"
-						aliases["cursor"] = Html.Alias(key, wnd.bitmapGetCache(key), 6, 1, 0, 0, 25f)
+						aliases["cursor"] = Html.Alias(key, wnd.bitmapGetCache(key), 6, 1, 0, 0, 45f)
 						
-						val width = 220.dp
+						val width = 330.dp
 						
 						key = "game_panel$theme$classic"
-						aliases["game_panel"] = Html.Alias(key, GamePanel().makeBitmap(wnd, key, width, 110.dp))
+						aliases["game_panel"] = Html.Alias(key, GamePanel().makeBitmap(wnd, key, width, 165.dp))
 						key = "game_record$theme$classic"
-						aliases["game_record"] = Html.Alias(key, FormRecord.RecordVertItem().makeBitmap(wnd, key, width, 110.dp))
+						aliases["game_record"] = Html.Alias(key, FormRecord.RecordVertItem().makeBitmap(wnd, key, width, 165.dp))
 						if(index == FORM_EDITOR_HELP) {
 							key = "help_editor_panel$theme$classic"
-							aliases["editor_panel"] = Html.Alias(key, EditorPanel().makeBitmap(wnd, key, width, 110.dp))
+							aliases["editor_panel"] = Html.Alias(key, EditorPanel().makeBitmap(wnd, key, width, 165.dp))
 							key = "help_editor_new$theme"
-							aliases["editor_new"] = Html.Alias(key, FormPlanetNP.PlanetNP(true).makeBitmap(wnd, key, width, 180.dp))
+							aliases["editor_new"] = Html.Alias(key, FormPlanetNP.PlanetNP(true, SYSTEM_DEFAULT).makeBitmap(wnd, key, width, 270.dp))
 							key = "help_editor_prop$theme"
-							aliases["editor_prop"] = Html.Alias(key, FormPlanetNP.PlanetNP(false).makeBitmap(wnd, key, width, 180.dp))
+							aliases["editor_prop"] = Html.Alias(key, FormPlanetNP.PlanetNP(false, SYSTEM_DEFAULT).makeBitmap(wnd, key, width, 270.dp))
 							key = "help_editor_open$theme"
-							aliases["editor_open"] = Html.Alias(key, PlanetOpen().makeBitmap(wnd, key, width, 180.dp))
+							aliases["editor_open"] = Html.Alias(key, PlanetOpen().makeBitmap(wnd, key, width, 270.dp))
 							key = "help_editor_actions$theme"
-							aliases["editor_actions"] = Html.Alias(key, EditorActions().makeBitmap(wnd, key, width, 125.dp))
+							aliases["editor_actions"] = Html.Alias(key, EditorActions().makeBitmap(wnd, key, width, 187.dp))
 						}
 					}
 				}.lps(MATCH, MATCH)

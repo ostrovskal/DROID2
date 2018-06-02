@@ -23,6 +23,9 @@ import ru.ostrovskal.droid.tables.Planet
 class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 	private var isNew               = false
 	private var pack                = ""
+	private var oldPack             = ""
+	private var oldName             = ""
+	private var oldNum              = -1L
 	
 	override fun onItemClick(select: Select, view: View, position: Int, id: Long) {
 		val nPack = select.selectionString
@@ -31,7 +34,7 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 		} else pack = nPack
 	}
 	
-	class PlanetNP(val isNew: Boolean) : UiComponent() {
+	class PlanetNP(val isNew: Boolean, val sys: String) : UiComponent() {
 		override fun createView(ui: UiCtx): View = with(ui) {
 			val port = config.isVert
 			cellLayout(30, if(port) 17 else 15) {
@@ -47,7 +50,7 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 				select {
 					id = R.id.slPack
 					adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name) + "...")
-					selectionString = KEY_TMP_PACK.optText
+					selectionString = sys
 				}.lps(if(port) 0 else 15, dy)
 				editLayout {
 					edit(R.string.hint_number) {
@@ -97,22 +100,26 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 	
 	override fun inflateContent(container: LayoutInflater): UiCtx {
 		isNew = index == FORM_PLANET_NEW
+		pack = Planet.MAP.pack
+		pack = if(pack.isEmpty()) KEY_PACK.optText else pack
 		return UI {
-			include(PlanetNP(index == FORM_PLANET_NEW)) {}
+			include(PlanetNP(index == FORM_PLANET_NEW, pack)) {}
 		}
 	}
 	
 	override fun initContent(content: ViewGroup) {
 		if(!isNew) {
-			content.byId<Edit>(R.id.etName).string = Planet.MAP.name
-			content.byId<Edit>(R.id.etNumber).int = Planet.MAP.num.toInt()
+			oldNum = Planet.MAP.num
+			oldPack = pack
+			oldName = Planet.MAP.name
+			content.byId<Edit>(R.id.etName).string = oldName
+			content.byId<Edit>(R.id.etNumber).int = oldNum.toInt()
 			content.byId<Edit>(R.id.etTime).int = Planet.MAP.time
 			content.byId<Edit>(R.id.etFuel).int = Planet.MAP.fuel
 			content.byId<Edit>(R.id.etWidth).int = Planet.MAP.width
 			content.byId<Edit>(R.id.etHeight).int = Planet.MAP.height
 		}
 		content.byId<Select>(R.id.slPack).itemClickListener = this@FormPlanetNP
-		pack = KEY_TMP_PACK.optText
 	}
 	
 	private fun updateSystems(sel: String) {
@@ -147,12 +154,13 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 	
 	override fun footer(btnId: Int, param: Int) {
 		val mBuffer = Planet.MAP.buffer
-		var change  = false
-		var isNum = false
+		val editor = wnd.findForm<FormEditor>("editor")?.editor
+		var change: Boolean
+		var isNum: Boolean
 		if(btnId == BTN_OK) {
 			try {
 				// номер
-				val num = content.byId<Edit>(R.id.etNumber).valid.toLong()
+				var num = content.byId<Edit>(R.id.etNumber).valid.toLong()
 				// имя
 				val etName = content.byId<Edit>(R.id.etName)
 				val name = etName.valid
@@ -167,28 +175,58 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 				// Проверить на существование уже такой планеты с именем
 				val isName = Planet.exist { Planet.system.eq(pack) and Planet.title.eq(name) }
 				// изменился номер?
-				isNum = num != Planet.MAP.num && Planet.MAP.num != -1L
+				isNum = num != oldNum && oldNum != -1L
 				// изменилось имя или система?
-				change = name != Planet.MAP.name || pack != Planet.MAP.pack
+				val isPack = pack != oldPack && oldPack != ""
+				change = (name != oldName && oldName != "") || isPack
 				if(!isNew) {
 					if(isName && change) throw EditInvalidException(getString(R.string.planet_name_already_exist, name), etName)
-					if(change || isNum) Planet.MAP.delete()
 				}
 				else {
 					if(isName) throw EditInvalidException(getString(R.string.planet_name_already_exist, name), etName)
 					isNum = true
 				}
-				if(isNum && Planet.exist { Planet.system.eq(pack) and Planet.position.eq(num) }) {
-					Planet.select(Planet.position) {
-						where { Planet.system.eq(pack) and Planet.position.greaterEq(num) }
-						orderBy(Planet.position, false)
-					}.execute()?.release {
-						forEach {
-							val n = integer(0)
-							Planet.update {
-								it[Planet.position] = n + 1
-								where { Planet.system.eq(pack) and Planet.position.eq(n) }
+				editor?.sleepThread(true)
+				if(change || isNum) {
+					if(Planet.MAP.delete()) {
+						// Сжать номера
+						Planet.select(Planet.position) {
+							where { Planet.system.eq(oldPack) and Planet.position.greater(oldNum) }
+							orderBy(Planet.position, true)
+						}.execute()?.release {
+							forEach {
+								val n = integer(0)
+								Planet.update {
+									it[Planet.position] = n - 1
+									where { Planet.system.eq(oldPack) and Planet.position.eq(n) }
+								}
 							}
+						}
+					}
+				}
+				// Для устранения "разрывов" между планетами, определить реальную позицию планеты
+				// И, если номер находится между другими - обеспечить раздвигание
+				if(isNum || isPack) {
+					if(Planet.exist { Planet.system.eq(pack) and Planet.position.eq(num) }) {
+						Planet.select(Planet.position) {
+							where { Planet.system.eq(pack) and Planet.position.greaterEq(num) }
+							orderBy(Planet.position, false)
+						}.execute()?.release {
+							forEach {
+								val n = integer(0)
+								Planet.update {
+									it[Planet.position] = n + 1
+									where { Planet.system.eq(pack) and Planet.position.eq(n) }
+								}
+							}
+						}
+					}
+					else {
+						// Вставляем в конец
+						val n = Planet.count({ Planet.system eq pack })
+						if(n != num) {
+							isNum = true
+							num = n
 						}
 					}
 				}
@@ -204,17 +242,19 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 					if(isNew) Planet.MAP.auth = KEY_PLAYER.optText
 					change = true
 				}
-			} catch(e: EditInvalidException) {
+			}
+			catch(e: EditInvalidException) {
 				val et = e.et ?: return
 				et.startAnimation(shake)
 				if(e.msg.isNotEmpty()) wnd.showToast(e.msg, parent = e.et)
 				et.requestFocus()
 				return
 			}
+			val sel = content.byId<Select>(R.id.slType).selection
+			KEY_TYPE_PLANET.optInt = sel
+			if(change || isNum) sendResult(MSG_FORM, if(!isNew) ACTION_SAVE else ACTION_NEW, if(!isNew) 0 else sel)
+			editor?.sleepThread(false)
 		}
-		val sel = content.byId<Select>(R.id.slType).selection
-		KEY_TYPE_PLANET.optInt = sel
-		if(change || isNum) sendResult(MSG_FORM, if(!isNew) ACTION_SAVE else ACTION_NEW, if(!isNew) 0 else sel)
 		super.footer(btnId, 0)
 	}
 }

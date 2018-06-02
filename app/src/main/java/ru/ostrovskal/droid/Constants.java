@@ -33,8 +33,8 @@ public final class Constants
     public static final int ACTION_PACK     = 10006;
     // последняя планета
     public static final int ACTION_FINISH   = 10007;
-    // смена темы
-    public static final int ACTION_THEME    = 10008;
+    // New/Prop Planet
+    public static final int ACTION_NP       = 10008;
     // инициализация
     public static final int STATUS_INIT     = 1;
     // игрок мертв

@@ -15,6 +15,7 @@ import com.github.ostrovskal.ssh.widgets.Text
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.msg
+import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.views.ViewEditor
 
 class FormGame : Form() {
@@ -44,7 +45,7 @@ class FormGame : Form() {
 				"onMessageFormGame(what: ${what.msg} arg1: ${arg1.msg} arg2: $arg2 obj: $obj)".debug()
 				when(arg1) {
 					ACTION_LOAD     -> s.send(a1 = ACTION_LOAD, a2 = arg2)
-					ACTION_NAME     -> namePlanet?.text = obj.toString()
+					ACTION_NAME     -> namePlanet?.text = Planet.MAP.name
 					ACTION_EXIT     -> footer(BTN_NO, 0)
 					ACTION_FINISH   -> wnd.instanceForm(FORM_FINISH)
 				}

@@ -50,7 +50,7 @@ class FormOpen: Form() {
 				backgroundSet(StylesAndAttrs.style_form)
 				select {
 					id = R.id.slPack
-					val tmp = KEY_TMP_PACK.optText
+					val tmp = Planet.MAP.pack
 					result = if(tmp.isEmpty()) KEY_PACK.optText else tmp
 					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name))
 					selectionString = result
@@ -98,7 +98,7 @@ class FormOpen: Form() {
 		
 		override fun bindField(view: View?, rs: Rowset, idx: Int) {
 			if(view is Text && idx == 2) {
-				view.text = rs.integer(idx).datetime
+				view.text = "${rs.text(Planet.position)} ${rs.text(Planet.id)} ${rs.integer(idx).datetime}"
 			} else {
 				super.bindField(view, rs, idx)
 			}
@@ -107,7 +107,6 @@ class FormOpen: Form() {
 		override fun onClick(v: View)
 		{
 			val numFrom = (v.tag as? Long) ?: return
-			"onClick $numFrom".info()
 			Planet.select(Planet.position, Planet.title) {
 				where { Planet.system eq result}
 				orderBy(Planet.position)
@@ -116,7 +115,6 @@ class FormOpen: Form() {
 				while(numFrom != integer(Planet.position)) { moveToNext() }
 				if(v.rotation >= 90f) moveToNext() else moveToPrevious()
 				val numTo = integer(Planet.position)
-				val nameTo = text(Planet.title)
 				// обменять номер у планет
 				transaction {
 					Planet.update {

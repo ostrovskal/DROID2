@@ -1,11 +1,11 @@
 package ru.ostrovskal.droid.forms
 
-import android.text.InputFilter
 import android.text.InputType.*
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.github.ostrovskal.ssh.Constants
+import com.github.ostrovskal.ssh.Constants.BTN_OK
 import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs.*
 import com.github.ostrovskal.ssh.ui.*
@@ -30,20 +30,22 @@ class FormSend: Form() {
 	override fun footer(btnId: Int, param: Int) {
 		val p: Int
 		val d: String
-		
-		try {
-			// цена
-			p = content.byId<Edit>(R.id.etPrice).valid.toInt()
-			// описание
-			d = content.byId<Edit>(R.id.etDesc).string
-		} catch(e: EditInvalidException) {
-			val et = e.et ?: return
-			et.startAnimation(shake)
-			et.requestFocus()
-			return
+		if(btnId == BTN_OK) {
+			try {
+				// цена
+				p = content.byId<Edit>(R.id.etPrice).valid.toInt()
+				// описание
+				d = content.byId<Edit>(R.id.etDesc).string
+			}
+			catch(e: EditInvalidException) {
+				val et = e.et ?: return
+				et.startAnimation(shake)
+				et.requestFocus()
+				return
+			}
+			// формируем бинарный пакет
+			makePacketForSend(p, d)
 		}
-		// формируем бинарный пакет
-		makePacketForSend(p, d)
 		super.footer(btnId, param)
 	}
 	
@@ -77,7 +79,7 @@ class FormSend: Form() {
 						}
 					}.lps(it, ySkull, 1, 2)
 				}
-				text(R.string.null_text, style_text_planet) { text = Planet.MAP.pack; gravity = Gravity.CENTER }.lps(0, 0, wText, 2)
+				text(R.string.null_text, style_text_planet) { id = R.id.etName; gravity = Gravity.CENTER }.lps(0, 0, wText, 2)
 				text(R.string.panel_text, style_text_small) { id = R.id.etNumber; gravity = Gravity.CENTER }.lps(0, 2, wText, 1)
 				editLayout {
 					edit(R.string.hint_price) { id = R.id.etPrice; inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL; range = 0..500 }
@@ -97,9 +99,12 @@ class FormSend: Form() {
 	}
 	
 	override fun initContent(content: ViewGroup) {
-		Pack.select(Pack.date, Pack.price, Pack.desc, Pack.skull, Pack.author, Pack.planets).execute()?.release {
+		Pack.select(Pack.name, Pack.date, Pack.price, Pack.desc, Pack.skull, Pack.author, Pack.planets) {
+			where { Pack.name eq Planet.MAP.pack }
+		}.execute()?.release {
+			root.byId<Text>(R.id.etName).text = "${text("name")}: ${text("planets")}"
 			root.byId<Text>(R.id.etNumber).text = datetime(Pack.date)
-			root.byId<Edit>(R.id.etPrice).string = text(Pack.price)
+			root.byId<Edit>(R.id.etPrice).string = text("price")
 			root.byId<Edit>(R.id.etDesc).string = text("desc")
 			setSkulls(integer(Pack.skull).toInt())
 		}

@@ -43,7 +43,11 @@ class FormEditor : Form() {
 					ACTION_DELETE   -> s.send(a1 = ACTION_DELETE)
 					ACTION_NEW      -> s.send(a1 = ACTION_NEW, a2 = arg2)
 					ACTION_SAVE     -> s.send(a1 = ACTION_SAVE, a2 = arg2)
-					ACTION_NAME     -> { namePlanet?.text = obj.toString(); KEY_EDIT_PLANET.optText = "$arg2#${Planet.MAP.pack}" }
+					ACTION_NAME     -> {
+						namePlanet?.text = Planet.MAP.name
+						KEY_EDIT_PLANET.optText = "${Planet.MAP.num}#${Planet.MAP.pack}"
+						"action_name ${KEY_EDIT_PLANET.optText} ${Planet.MAP.pack} ${Planet.MAP.num}".info()
+					}
 					ACTION_EXIT     -> footer(BTN_NO, 0)
 				}
 			}
@@ -96,11 +100,11 @@ class FormEditor : Form() {
 			editor.position = 0
 			KEY_TMP_PACK.optText = SYSTEM_DEFAULT
 		}
+		"${KEY_EDIT_PLANET.optText} ${editor.position} ${KEY_TMP_PACK.optText}".info()
 		Sound.playMusic(wnd, 0, true)
 	}
 	
 	override fun onClick(v: View) {
-		"onClick $v".info()
 		setTile(root?.indexOfChild(v) ?: 0)
 	}
 	

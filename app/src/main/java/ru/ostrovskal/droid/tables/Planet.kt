@@ -11,21 +11,31 @@ import com.github.ostrovskal.ssh.Constants.FOLDER_FILES
 import com.github.ostrovskal.ssh.SqlField
 import com.github.ostrovskal.ssh.sql.Rowset
 import com.github.ostrovskal.ssh.sql.RuleOption
+import com.github.ostrovskal.ssh.sql.SqlBuilder.and
 import com.github.ostrovskal.ssh.sql.Table
 import com.github.ostrovskal.ssh.utils.*
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
+import ru.ostrovskal.droid.tables.Planet.MAP.block
+import ru.ostrovskal.droid.tables.Planet.MAP.buffer
+import ru.ostrovskal.droid.tables.Planet.MAP.height
+import ru.ostrovskal.droid.tables.Planet.MAP.num
+import ru.ostrovskal.droid.tables.Planet.MAP.width
+import ru.ostrovskal.droid.tables.Planet.MAP.x
+import ru.ostrovskal.droid.tables.Planet.MAP.y
+import ru.ostrovskal.droid.tables.Planet.system
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.file.Files.move
 import java.util.*
 import kotlin.concurrent.thread
 
 object Planet: Table() {
 	@JvmField val id              = integer("_id").notNull().primaryKey()
 	@JvmField val system          = text("system").notNull().references(Pack.name, RuleOption.CASCADE, RuleOption.CASCADE)
-	@JvmField val title           = text("title").notNull().unique()
+	@JvmField val title           = text("title").notNull()
 	@JvmField val creator         = text("creator").notNull().default("OSTROV")
-	@JvmField val position        = integer("position").notNull().unique().checked { it.between(0, 101) }
+	@JvmField val position        = integer("position").notNull().checked { it.between(0, 101) }
 	@JvmField val cycles          = integer("cycles").notNull()
 	@JvmField val traffic         = integer("traffic").notNull()
 	@JvmField val blocked         = integer("blocked").notNull().default(1)
@@ -56,22 +66,6 @@ object Planet: Table() {
 
 		val width               get() = buffer[0].toInt()
 		val height              get() = buffer[1].toInt()
-		
-		// Получить планету по позиции
-		private fun ofPosition(pos: Int, pack: String): Rowset? {
-			select(position) {
-				where { system eq pack }
-				orderBy(position)
-			}.execute()?.apply {
-				// берем уровень по позиции
-				if(move(pos)) {
-					val num = integer(Planet.position)
-					close()
-					return select { where { system.eq(pack) and Planet.position.eq(num) } }.execute()
-				}
-			}
-			return null
-		}
 		
 		// Генерировать монстра
 		private fun genMonster(x: Int, y: Int): Byte {
@@ -220,8 +214,7 @@ object Planet: Table() {
 		}
 
 		// Генерировать планету
-		fun generator(context: Context, type: Int): Int
-		{
+		fun generator(context: Context, type: Int) {
 			val w = width
 			val h = height
 			buffer = ByteArray(w * h + 2)
@@ -274,7 +267,6 @@ object Planet: Table() {
 			buffer[1, 1] = T_DROIDR
 			block = true
 			store(context)
-			return 0
 		}
 
 		// Добавить или обновить планету в БД
@@ -284,44 +276,43 @@ object Planet: Table() {
 				context.resources.getString(R.string.droid_not_found, name).debug()
 				return false
 			}
-			date = System.currentTimeMillis()
+			//date = System.currentTimeMillis()
 			miniature(context)
 			save()
 			val result: Boolean
-			if(exist( { system.eq(pack) and position.eq(num) } )) {
+			if(exist( { system.eq(pack) and title.eq(name) } )) {
 				result = update {
 					autoValues(this@MAP)
-					where { position.eq(num) and system.eq(pack) }
-				} == 1L
+					where { title.eq(this@MAP.name) and system.eq(pack) }
+				} > 0L
 			} else {
-				result = insert { it.autoValues(this@MAP) } != 0L
-				if(result) {
-					Pack.changeCountPlanets(pack, true)
-				}
+				result = insert { it.autoValues(this@MAP) } > 0L
+				if(result) Pack.changeCountPlanets(pack, true)
 			}
 			return result
 		}
 
 		// Удалить планету
-		fun delete()
+		fun delete(): Boolean
 		{
-			// удалить текстовое представление карты
-			makeDirectories("planets/$pack", FOLDER_FILES, "$name.pl").delete()
-			// удалить миниатюру
-			makeDirectories("miniatures/$pack", FOLDER_FILES, "$name.png").delete()
 			// удалить из БД
-			delete { where { system.eq(pack) and position.eq(num) and title.eq(name) } }
-			// Изменить количество планет в системе
-			Pack.changeCountPlanets(pack, false)
-			// сброс
-			reset()
+			if(delete { where { system.eq(pack) and position.eq(num) and title.eq(name) } } > 0L) {
+				// удалить текстовое представление карты
+				makeDirectories("planets/$pack", FOLDER_FILES, "$name.pl").delete()
+				// удалить миниатюру
+				makeDirectories("miniatures/$pack", FOLDER_FILES, "$name.png").delete()
+				// Изменить количество планет в системе
+				Pack.changeCountPlanets(pack, false)
+				// сброс
+				reset()
+				return true
+			}
+			return false
 		}
 		
 		// Загрузить из БД
-		fun load(pos: Int): Boolean
-		{
-			val pck = KEY_TMP_PACK.optText
-			ofPosition(pos, pck)?.release {
+		fun load(pos: Int): Boolean {
+			select { where { Planet.position.eq(pos.toLong()) and Planet.system.eq(KEY_TMP_PACK.optText) } }.execute()?.release {
 				autoValues(this@MAP)
 				searchEntities()
 				return true
