@@ -122,7 +122,7 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 		}
 		pack = sel
 	}
-
+	
 	override fun handleMessage(msg: Message) {
 		msg.apply {
 			if(arg1 != ACTION_PACK) return@apply
