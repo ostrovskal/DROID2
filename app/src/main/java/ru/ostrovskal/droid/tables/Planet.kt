@@ -3,30 +3,16 @@
 package ru.ostrovskal.droid.tables
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import com.github.ostrovskal.ssh.Constants.FOLDER_FILES
 import com.github.ostrovskal.ssh.SqlField
-import com.github.ostrovskal.ssh.sql.Rowset
 import com.github.ostrovskal.ssh.sql.RuleOption
-import com.github.ostrovskal.ssh.sql.SqlBuilder.and
 import com.github.ostrovskal.ssh.sql.Table
 import com.github.ostrovskal.ssh.utils.*
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
-import ru.ostrovskal.droid.tables.Planet.MAP.block
-import ru.ostrovskal.droid.tables.Planet.MAP.buffer
-import ru.ostrovskal.droid.tables.Planet.MAP.height
-import ru.ostrovskal.droid.tables.Planet.MAP.num
-import ru.ostrovskal.droid.tables.Planet.MAP.width
-import ru.ostrovskal.droid.tables.Planet.MAP.x
-import ru.ostrovskal.droid.tables.Planet.MAP.y
-import ru.ostrovskal.droid.tables.Planet.system
 import java.io.FileOutputStream
 import java.io.IOException
-import java.nio.file.Files.move
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -61,8 +47,7 @@ object Planet: Table() {
 		@JvmField var red       = 0
 		@JvmField var green     = 0
 		
-		@JvmField var x         = 0
-		@JvmField var y         = 0
+		@JvmField val pointDroid = Point(-1, -1)
 
 		val width               get() = buffer[0].toInt()
 		val height              get() = buffer[1].toInt()
@@ -80,22 +65,22 @@ object Planet: Table() {
 		private fun reset()
 		{
 			name = ""; auth = ""; pack = ""
-			num = -1; time = 0; fuel = 0; date = -1
+			num = -1; time = 0; fuel = 0
 			block = true
-			x = -1; y = -1
+			droidNull()
 			egg = 0; yellow = 0; red = 0; green = 0
 			buffer = byteArrayOf(0, 0)
 		}
 		
 		// Найти объекты на карте
-		private fun searchEntities(): Boolean
+		fun searchEntities(): Boolean
 		{
-			x = -1; y = -1
+			droidNull()
 			yellow 	= 0; red 	= 0; green 	= 0; egg 	= 0
 			for(idx in buffer.indices) {
 				if(idx > 1) {
 					when(remapProp[buffer[idx].toInt() and MSKT] and MSKO) {
-						O_DROID		-> { x = (idx - 2) % width; y = (idx - 2) / width }
+						O_DROID		-> { pointDroid.set((idx - 2) % width, (idx - 2) / width) }
 						O_YELLOW	-> yellow++
 						O_RED		-> red++
 						O_GREEN		-> green++
@@ -103,7 +88,7 @@ object Planet: Table() {
 					}
 				}
 			}
-			return (x != -1 && y != -1)
+			return (pointDroid.x != - 1 && pointDroid.y != -1)
 		}
 		
 		// Сохранить в папку программы
@@ -171,10 +156,14 @@ object Planet: Table() {
 			bmp.recycle()
 		}
 		
-		inline fun droidNull() { x = -1; y = -1 }
+		inline fun droidNull() { pointDroid.set(-1, -1) }
 		
-		inline fun droidIsNull() = ( x == -1 || y == -1 )
+		inline fun droidIsNull() = ( pointDroid.x == -1 || pointDroid.y == -1 )
 		
+		inline fun droidPos() = pointDroid
+
+		inline fun droidPos(x: Int, y: Int) { pointDroid.set(x, y) }
+
 		// Создать классическую планету из папки активов
 		fun make(context: Context, pck: String, nm: String) = try {
 			var width = 0
@@ -196,7 +185,7 @@ object Planet: Table() {
 								var tile = charsOfPlanetMap.search(it[col], T_NULL.toInt())
 								val obj = remapProp[tile] and MSKO
 								when(obj) {
-									O_DROID -> { x = col; y = row }
+									O_DROID -> { pointDroid.set(col, row) }
 									O_STONE -> tile = T_STONE0 + rnd.nextInt(4)
 								}
 								buffer[col, row] = tile
@@ -207,6 +196,7 @@ object Planet: Table() {
 			}
 			name = nm
 			pack = pck
+			date = System.currentTimeMillis()
 			true
 		} catch(e: IOException) {
 			reset()

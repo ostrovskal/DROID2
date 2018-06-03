@@ -51,7 +51,7 @@ class FormChoice: Form() {
 				formHeader(R.string.header_choice)
 				select {
 					id = R.id.slPack
-					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name))
+					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name))
 					selectionString = result
 					itemClickListener = this@FormChoice
 				}

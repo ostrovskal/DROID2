@@ -44,12 +44,12 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 				select {
 					id = R.id.slType
 					isEnabled = isNew
-					adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), ctx.arrayStr(R.array.planetTypes))
+					adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), ctx.arrayStr(R.array.planetTypes).toList())
 					selection = KEY_TYPE_PLANET.optInt
 				}.lps(0, 0, if(port) 30 else 15, 2)
 				select {
 					id = R.id.slPack
-					adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name) + "...")
+					adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name) + "...")
 					selectionString = sys
 				}.lps(if(port) 0 else 15, dy)
 				editLayout {
@@ -122,31 +122,16 @@ class FormPlanetNP: FormDialog(), Select.OnSelectItemClickListener {
 		content.byId<Select>(R.id.slPack).itemClickListener = this@FormPlanetNP
 	}
 	
-	private fun updateSystems(sel: String) {
-		content.byId<Select>(R.id.slPack).apply {
-			adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name) + "...")
-			selectionString = sel
-		}
-		pack = sel
-	}
-	
 	override fun handleMessage(msg: Message) {
 		msg.apply {
 			if(arg1 != ACTION_PACK) return@apply
 			if(arg2 == BTN_OK) {
 				val name = obj.toString()
-				// Добавляем новый пакет
-				Pack.insert {
-					it[Pack.name] = name
-					it[Pack.date] = System.currentTimeMillis()
-					it[Pack.author] = KEY_PLAYER.optText
-					it[Pack.skull] = 5
-					it[Pack.planets] = 0
-					it[Pack.desc] = "Новая система"
-					it[Pack.price] = 0f
+				content.byId<Select>(R.id.slPack).apply {
+					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name) + "...")
+					selectionString = name
 				}
-				
-				updateSystems(name)
+				pack = name
 			}
 			else content.byId<Select>(R.id.slPack).selectionString = pack
 		}

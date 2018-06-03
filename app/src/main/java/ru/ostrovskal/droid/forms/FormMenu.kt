@@ -59,10 +59,10 @@ class FormMenu: Form() {
 		// определить кол-во статистики и если необходимо удалить старую
 		val count = Stat.count()
 		if(count > LIMIT_RECORDS) {
-			Stat.select(Stat.date) {
-				orderBy(Stat.date, false)
+			Stat.select(Stat.fRandom) {
+				orderBy(Stat.fRandom, false)
 				limit(1, 50)
-			}.execute()?.release { Stat.delete { where { Stat.date less this@release[Stat.date] } } }
+			}.execute()?.release { Stat.delete { where { Stat.fRandom less this@release[Stat.fRandom] } } }
 		}
 		// разблокировать статистику
 		buttons[3].isEnabled = count > 0

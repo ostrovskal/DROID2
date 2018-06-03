@@ -22,10 +22,6 @@ import ru.ostrovskal.droid.forms.FormEditor
 import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Planet
 
-const val SHIFT_UNDEF   = 0
-const val SHIFT_MAP     = 1
-const val SHIFT_TILE    = 2
-
 class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 	
 	// Анимация, в качестве следящей за режимом сдвига
@@ -135,10 +131,11 @@ class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 			// если ставим поверх дроида - стираем его координаты
 			else if(objMap == O_DROID) droidNull()
 			else if(objTile == O_DROID) {
+				val pt = droidPos()
 				// восстанавливаем содержимое под дроидом
-				if(!droidIsNull()) buffer[x, y] = contentDroid
+				if(!droidIsNull()) buffer[pt.x, pt.y] = contentDroid
 				contentDroid = oo.toByte()
-				x = xx; y = yy
+				droidPos(xx, yy)
 			}
 			buffer[xx, yy] = o
 			modify = true

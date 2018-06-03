@@ -3,7 +3,6 @@ package ru.ostrovskal.droid.forms
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import com.github.ostrovskal.ssh.Constants
 import com.github.ostrovskal.ssh.Constants.TILE_STATE_HOVER
 import com.github.ostrovskal.ssh.Theme
@@ -11,6 +10,7 @@ import com.github.ostrovskal.ssh.ui.*
 import com.github.ostrovskal.ssh.utils.byIdx
 import com.github.ostrovskal.ssh.utils.dp
 import com.github.ostrovskal.ssh.utils.padding
+import com.github.ostrovskal.ssh.utils.send
 import com.github.ostrovskal.ssh.widgets.Tile
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
@@ -23,8 +23,8 @@ class FormEditorActions : FormDialog() {
 				backgroundSet(style_dlg_actions)
 				padding = 2.dp
 				root = cellLayout(14, 14, 0) {
-					layoutParams = LinearLayout.LayoutParams(Theme.dimen(ctx, R.dimen.widthEditorDlgActions),
-					                                         Theme.dimen(ctx, R.dimen.heightEditorDlgActions))
+					layoutParams = ViewGroup.LayoutParams(Theme.dimen(ctx, R.dimen.widthEditorDlgActions),
+					                                      Theme.dimen(ctx, R.dimen.heightEditorDlgActions))
 					formHeader(R.string.header_dialog_actions)
 					var idx = 0
 					var dx = 0
@@ -67,13 +67,13 @@ class FormEditorActions : FormDialog() {
 		val editor = form.editor
 		when(idx) {
 			-1                  -> {}
-			FORM_CHOICE_SAVE    -> sendResult(Constants.MSG_SERVICE, action = ACTION_SAVE, handler = editor.surHandler)
+			FORM_CHOICE_SAVE    -> editor.surHandler?.send(Constants.MSG_SERVICE, 0, ACTION_SAVE)
 			FORM_CHOICE_PREV    -> editor.apply { preview = !preview; updatePreview(preview, true) }
 			FORM_CHOICE_TEST    -> wnd.apply {
 				super.footer(Constants.BTN_NO, 0)
 				// проверить на модификацию
 				if(editor.modify && !Planet.MAP.store(this)) {
-					sendResult(STATUS_MESSAGE, STATUS_WORK, R.string.save_planet_failed, handler = editor.surHandler)
+					editor.surHandler?.send(STATUS_MESSAGE, 0, STATUS_WORK, R.string.save_planet_failed)
 				}
 				else {
 					instanceForm(FORM_GAME, "position", editor.position, "test", 1)

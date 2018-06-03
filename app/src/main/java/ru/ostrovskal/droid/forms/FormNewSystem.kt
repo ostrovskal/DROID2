@@ -4,12 +4,15 @@ import android.view.LayoutInflater
 import com.github.ostrovskal.ssh.Constants
 import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.Theme
+import com.github.ostrovskal.ssh.sql.transaction
 import com.github.ostrovskal.ssh.ui.*
 import com.github.ostrovskal.ssh.utils.byId
+import com.github.ostrovskal.ssh.utils.optText
 import com.github.ostrovskal.ssh.utils.send
 import com.github.ostrovskal.ssh.widgets.Edit
 import com.github.ostrovskal.ssh.widgets.EditInvalidException
 import ru.ostrovskal.droid.Constants.ACTION_PACK
+import ru.ostrovskal.droid.Constants.KEY_PLAYER
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.tables.Pack
 
@@ -30,17 +33,31 @@ class FormNewSystem: Form() {
 	}
 	
 	override fun footer(btnId: Int, param: Int) {
-		if(btnId == Constants.BTN_OK) try {
-			val edit = content.byId<Edit>(R.id.etPack)
-			result = edit.valid
-			if(Pack.exist({Pack.name eq result }) ) throw EditInvalidException(getString(R.string.pack_already_exist, result), edit)
-		} catch(e: EditInvalidException) {
-			e.et?.apply {
-				startAnimation(shake)
-				if(e.msg.isNotEmpty()) wnd.showToast(e.msg, parent = this)
-				requestFocus()
+		if(btnId == Constants.BTN_OK) {
+			try {
+				val edit = content.byId<Edit>(R.id.etPack)
+				result = edit.valid
+				if(Pack.exist({Pack.name eq result }) ) throw EditInvalidException(getString(R.string.pack_already_exist, result), edit)
+			} catch(e: EditInvalidException) {
+				e.et?.apply {
+					startAnimation(shake)
+					if(e.msg.isNotEmpty()) wnd.showToast(e.msg, parent = this)
+					requestFocus()
+				}
+				return
 			}
-			return
+			transaction {
+				// Добавляем новый пакет
+				Pack.insert {
+					it[Pack.name] = result
+					it[Pack.date] = System.currentTimeMillis()
+					it[Pack.author] = KEY_PLAYER.optText
+					it[Pack.skull] = 5
+					it[Pack.planets] = 0
+					it[Pack.desc] = "Новая система"
+					it[Pack.price] = 0f
+				}
+			}
 		}
 		wnd.wndHandler?.send(Constants.MSG_FORM, 0, ACTION_PACK, btnId, result)
 		super.footer(btnId, param)

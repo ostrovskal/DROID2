@@ -19,9 +19,6 @@ import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
-import ru.ostrovskal.droid.tables.Planet.MAP.buffer
-import ru.ostrovskal.droid.tables.Planet.MAP.height
-import ru.ostrovskal.droid.tables.Planet.MAP.width
 import ru.ostrovskal.droid.tables.Stat
 import java.util.*
 
@@ -141,7 +138,8 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 					wnd.wndHandler?.send(MSG_FORM, 0, ACTION_NAME)
 					updatePreview(preview, true)
 				}
-				val droidOffs = Point(x - canvasMaxSize.w / 2 , y - canvasMaxSize.h / 2)
+				val pt = droidPos()
+				val droidOffs = Point(pt.x - canvasMaxSize.w / 2 , pt.y - canvasMaxSize.h / 2)
 				mapOffset.set(if(droidOffs.x < 0) 0 else droidOffs.x, if(droidOffs.y < 0) 0 else droidOffs.y)
 				if(mapOffset.x + canvasSize.w > width) mapOffset.x = width - canvasSize.w
 				if(mapOffset.y + canvasSize.h > height) mapOffset.y = height - canvasSize.h
@@ -228,7 +226,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 							ACTION_NEW      -> {
 								canvasSize.empty()
 								Planet.MAP.generator(context, arg2)
-								editor?.modify = true
+								editor?.modify = false
 								initMap(true)
 							}
 							ACTION_GENERATE -> {

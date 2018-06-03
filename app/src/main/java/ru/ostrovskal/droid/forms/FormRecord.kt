@@ -57,8 +57,8 @@ class FormRecord: Form() {
 		Sound.playMusic(wnd, 0, true)
 		// получить максимум по всем записям:
 		valMax = Float.MIN_VALUE
-		Stat.select(Stat.time.max(), Stat.fuel.max(), Stat.score.max(), Stat.count.max(), Stat.bomb.max(), Stat.yellow.max(),
-		            Stat.red.max(), Stat.green.max(), Stat.death.max(), Stat.egg.max(), Stat.cycles.max()) {}.execute()?.release {
+		Stat.select(Stat.fTime.max(), Stat.fFuel.max(), Stat.fScore.max(), Stat.fCount.max(), Stat.fBomb.max(), Stat.fYellow.max(),
+		            Stat.fRed.max(), Stat.fGreen.max(), Stat.fDeath.max(), Stat.fEgg.max(), Stat.fCycles.max()) {}.execute()?.release {
 			// запомнить их
 			maxValues = IntArray(columnCount)
 			for(i in maxValues.indices) {
@@ -69,7 +69,7 @@ class FormRecord: Form() {
 		}
 		valMin = Float.MIN_VALUE
 		// получить минимум по всем записям:
-		Stat.select(Stat.time.min(), Stat.fuel.min(), Stat.bomb.min(), Stat.cycles.min()) {}.execute()?.release {
+		Stat.select(Stat.fTime.min(), Stat.fFuel.min(), Stat.fBomb.min(), Stat.fCycles.min()) {}.execute()?.release {
 			// запомнить их
 			val count = columnCount
 			for(i in 0 until count) valMin += getInt(i)
@@ -77,14 +77,14 @@ class FormRecord: Form() {
 		loaderManager.initLoader(Constants.LOADER_CONNECTOR, null, this).forceLoad()
 	}
 	
-	override fun queryConnector() = Stat.select(Stat.planet, Stat.date, Stat.time, Stat.fuel, Stat.score,
-	                                            Stat.count, Stat.bomb, Stat.yellow, Stat.red, Stat.green,
-	                                            Stat.death, Stat.egg, Stat.cycles, Stat.id) { orderBy(Stat.date, false) }
+	override fun queryConnector() = Stat.select(Stat.fPlanet, Stat.fRandom, Stat.fTime, Stat.fFuel, Stat.fScore,
+	                                            Stat.fCount, Stat.fBomb, Stat.fYellow, Stat.fRed, Stat.fGreen,
+	                                            Stat.fDeath, Stat.fEgg, Stat.fCycles, Stat.id) { orderBy(Stat.fRandom, false) }
 	
 	private inner class StatAdapter(context: Context) : ListAdapter(context, if(config.isVert) RecordVertItem() else RecordHorzItem(), 4) {
 		override fun bindField(view: View?, rs: Rowset, idx: Int) {
 			if(view is Text && idx == 1) {
-				view.text = rs.datetime(Stat.date)
+				view.text = rs.datetime(Stat.fRandom)
 			} else {
 				super.bindField(view, rs, idx)
 			}

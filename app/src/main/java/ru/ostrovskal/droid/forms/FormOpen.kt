@@ -52,7 +52,7 @@ class FormOpen: Form() {
 					id = R.id.slPack
 					val tmp = Planet.MAP.pack
 					result = if(tmp.isEmpty()) KEY_PACK.optText else tmp
-					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.arrayStr(Pack.name, Pack.name))
+					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name))
 					selectionString = result
 					itemClickListener = this@FormOpen
 				}
@@ -98,7 +98,7 @@ class FormOpen: Form() {
 		
 		override fun bindField(view: View?, rs: Rowset, idx: Int) {
 			if(view is Text && idx == 2) {
-				view.text = "${rs.text(Planet.position)} ${rs.text(Planet.id)} ${rs.integer(idx).datetime}"
+				view.text = rs.integer(idx).datetime
 			} else {
 				super.bindField(view, rs, idx)
 			}

@@ -16,13 +16,13 @@ import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Planet
-import ru.ostrovskal.droid.views.ViewEditor
+import ru.ostrovskal.droid.views.ViewGame
 
 class FormGame : Form() {
 	// поверхность
-	lateinit var game: ViewEditor
+	lateinit var game: ViewGame
 
-	private var namePlanet: Text? = null
+	@JvmField var namePlanet: Text? = null
 	
 	override fun backPressed() {
 		val tm = if(twicePressed()) tmBACK + 2000 else System.currentTimeMillis() + 10000
@@ -85,10 +85,8 @@ class FormGame : Form() {
 
 	override fun initContent(content: ViewGroup) {
 		game.position = arguments.getInt("position")
-/*
 		game.record = arguments.getLong("record")
 		game.test = arguments.containsKey("test")
-*/
 	}
 	
 	override fun footer(btnId: Int, param: Int) {

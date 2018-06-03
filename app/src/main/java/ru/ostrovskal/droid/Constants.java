@@ -13,6 +13,19 @@ import static com.github.ostrovskal.ssh.StylesAndAttrs.*;
 
 public final class Constants
 {
+    // режимы сдвига
+    public static final int SHIFT_UNDEF            = 0;
+    public static final int SHIFT_MAP              = 1;
+    public static final int SHIFT_TILE             = 2;
+    // действие - 2 бита = 0й(0 - ничего, 1-двигаемся) 1й(0-ничего, 1-бомба)
+    public final static int REC_DROID_NONE         = 0x00;
+    public final static int REC_DROID_MOVE         = 0x01;
+    public final static int REC_DROID_DROP         = 0x02;
+    // направление движения 2 бит = 0й(0-вниз,1-вправо,2-вверх,3-влево)
+    public final static int REC_DROID_MOVE_DOWN    = 0x00;
+    public final static int REC_DROID_MOVE_RIGHT   = 0x04;
+    public final static int REC_DROID_MOVE_UP      = 0x08;
+    public final static int REC_DROID_MOVE_LEFT    = 0x0c;
     // задержка между сменой статуса
     public static final long MESSAGE_DELAYED = 2000;
     // задержка сплэш экрана
@@ -131,6 +144,32 @@ public final class Constants
     public final static String KEY_EDIT_TILE       = "#edit_tile";
     public final static String KEY_TMP_PACK        = "#tmp_pack";
     public final static String KEY_EDIT_PREVIEW    = "#edit_preview";
+    // индексы параметров планеты
+    public static final int PARAM_TIME     = 0;
+    public static final int PARAM_FUEL     = 1;
+    public static final int PARAM_SCORE    = 2;
+    public static final int PARAM_LIFE     = 3;
+    public static final int PARAM_BOMB     = 4;
+    public static final int PARAM_EGG      = 5;
+    public static final int PARAM_YELLOW   = 6;
+    public static final int PARAM_RED      = 7;
+    public static final int PARAM_GREEN    = 8;
+
+    public static final int PARAM_EYE      = 9;
+    public static final int PARAM_EGG1     = 10;
+    public static final int PARAM_YELLOW1  = 11;
+    public static final int PARAM_RED1     = 12;
+    public static final int PARAM_GREEN1   = 13;
+    public static final int PARAM_LIMIT    = 14;
+    public static final int PARAMS_COUNT   = 15;
+
+    // константы
+    public final static int DROID_LIFE          = 5;
+    public final static int DROID_ADD_TIME      = 500;
+    public final static int DROID_ADD_FUEL      = 250;
+    public final static int DROID_ADD_BOMB      = 8;
+    public final static int DROID_ADD_SCORE     = 1000;
+    public final static int DROID_ADD_LIMIT     = 2500;
 
     // индексы всех тайлов
     public static final byte   T_NULL              = 0;
@@ -214,6 +253,38 @@ public final class Constants
     public static final int    FM                  = 0x0800; // гибель человека
     public static final int    FT                  = 0x1000; // человек берет
     public static final int    FE                  = 0x2000; // взрывается от другого взрыва
+
+    // смещение бомб дроида
+    public final static int[] offsBombPos   = {0, 1, 1, 0, 0, -1, -1, 0};
+
+    // смещение координат дроида
+    public final static byte[] offsDroid    = {// DIRN
+                                               0, 0, 0,
+                                               // DIR0
+                                               0, 0, 0,
+                                               // DIRD
+                                               0, 1, T_DROIDD,
+                                               0, 0, 0,
+                                               // DIRR
+                                               1, 0, T_DROIDR,
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               // DIRU
+                                               0, -1, T_DROIDU,
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               // DIRL
+                                               -1, 0, T_DROIDL};
+
+    // смещение координат красных/зеленых тварей
+    public final static byte[] offsRG       = {1, 0, T_REDR, 0, 1, T_REDU, -1, 0, T_REDL, 0, -1, T_REDD,
+                                               1, 0, T_GREENL, 0, 1, T_GREEND, -1, 0, T_GREENR, 0, -1, T_GREENU};
+
+    // смещение координат желтых тварей
+    public final static byte[] offsYellow   = {0, -1, T_YELLOWL, 1, 0, T_YELLOWR, 1, 0, T_YELLOWD, 0, 1, T_YELLOWU,
+                                               0, 1, T_YELLOWR, -1, 0, T_YELLOWL, -1, 0, T_YELLOWU, 0, -1, T_YELLOWD};
+
+    // смещение координат при формировании взрыва
+    public final static int[] offsExplo     = {-1, -1, -1, 0, -1, 1, 0, -1, 0, 0, 0, 1, 1, -1, 1, 0, 1, 1};
+
     // массив смещений для глаза
     public static final int[]  offsEye             = {0, -1, 1};
     // длины счетчиков

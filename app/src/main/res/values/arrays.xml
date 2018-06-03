@@ -167,7 +167,7 @@
         <item>1</item>
 
         <item>@string/clazz_recv_system</item>
-        <item>0</item>
+        <item>@id/mainContainer</item>
         <item>@string/tag_recv_system</item>
         <item>1</item>
 

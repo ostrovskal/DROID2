@@ -6,10 +6,10 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.AbsoluteLayout
 import com.github.ostrovskal.ssh.Constants.*
 import com.github.ostrovskal.ssh.Theme
 import com.github.ostrovskal.ssh.Wnd
+import com.github.ostrovskal.ssh.layouts.AbsLayout
 import com.github.ostrovskal.ssh.singleton.Settings
 import com.github.ostrovskal.ssh.singleton.Sound
 import com.github.ostrovskal.ssh.sql.SQL
@@ -21,7 +21,7 @@ import com.github.ostrovskal.ssh.utils.*
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
-import ru.ostrovskal.droid.tables.Record
+import ru.ostrovskal.droid.tables.RecvSystem
 import ru.ostrovskal.droid.tables.Stat
 
 val Int.msg get() = when(this) {
@@ -49,7 +49,7 @@ val Int.msg get() = when(this) {
 }
 
 class DroidWnd: Wnd() {
-	lateinit var main: AbsoluteLayout
+	lateinit var main: AbsLayout
 
 	companion object {
 		/**
@@ -96,10 +96,7 @@ class DroidWnd: Wnd() {
 		super.onCreate(savedInstanceState)
 		Main().setContent(this, APP_GAME)
 		// загружаем фрагмент
-		if(savedInstanceState == null) {
-			val idx = if(intent.getIntExtra("changeTheme", 0) == 0) FORM_SPLASH else FORM_MENU
-			instanceForm(FORM_MENU)
-		}
+		if(savedInstanceState == null) instanceForm(FORM_SPLASH)
 	}
 	
 	override fun initialize(restart: Boolean) {
@@ -113,7 +110,7 @@ class DroidWnd: Wnd() {
 			// Запускаем звуки
 			Sound.initialize(this, 5, arrayStr(R.array.sound), arrayIDs(R.array.music))
 			// Запускаем БД
-			SQL.connection(this, false, Record, Pack, Stat, Planet) {
+			SQL.connection(this, false, RecvSystem, Pack, Stat, Planet) {
 				var res = it
 				if(res) res = Pack.check()
 				if(!res) {
