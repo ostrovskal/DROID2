@@ -3,13 +3,69 @@ package ru.ostrovskal.droid;
 import android.graphics.Color;
 import android.view.Gravity;
 
-import static com.github.ostrovskal.ssh.Constants.DIRU;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_ROTATE;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_SCALE;
+import static com.github.ostrovskal.ssh.Constants.TILE_GRAVITY_CENTER;
 import static com.github.ostrovskal.ssh.Constants.TILE_SCALE_HEIGHT;
 import static com.github.ostrovskal.ssh.Constants.TILE_SCALE_MIN;
 import static com.github.ostrovskal.ssh.Constants.TILE_SHAPE_ROUND;
-import static com.github.ostrovskal.ssh.StylesAndAttrs.*;
+import static com.github.ostrovskal.ssh.Constants.TILE_STATE_HOVER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_BACKGROUND;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_CLICKABLE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_COLOR_DEFAULT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_DRW;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_FOCUSABLE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_FONT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_GRAVITY;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_INT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_PADDING;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_COLOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_DX;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_DY;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_RADIUS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SIZE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_ALIGNED;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BITMAP_NAME;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_BACKGROUND;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_BUTTONS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_CHECK;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_EDIT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_HEADER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_ICONS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_MENU;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_RADIO;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_SEEK;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_SELECT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_SWITCH;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_TILES;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_TOOLS;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_DIVIDER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_HEADER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_HINT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_HTML_HEADER;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_LARGE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_LAYOUT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_LINK;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_MESSAGE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_NORMAL;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_SELECTOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_SMALL;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_WINDOW;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_WIRED;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_GRAVITY;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_HORZ;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_MODE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_RADII;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SCALE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SHAPE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SPACING;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_STATES;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_THEME_NAME;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_VERT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_WIDTH_SELECTOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.COLOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.THEME;
+import static com.github.ostrovskal.ssh.utils.UtilsGraphics.getDp;
 
 public final class Constants
 {
@@ -46,8 +102,6 @@ public final class Constants
     public static final int ACTION_PACK     = 10006;
     // последняя планета
     public static final int ACTION_FINISH   = 10007;
-    // New/Prop Planet
-    public static final int ACTION_NP       = 10008;
     // инициализация
     public static final int STATUS_INIT     = 1;
     // игрок мертв
@@ -55,7 +109,7 @@ public final class Constants
     // планета зачищена
     public static final int STATUS_CLEARED  = 3;
     // установка значений
-    public static final int STATUS_WORK     = 4;
+    public static final int STATUS_PREPARED = 4;
     // игровой цикл
     public static final int STATUS_LOOP     = 5;
     // сообщение
@@ -98,29 +152,29 @@ public final class Constants
     public final static int    FORM_SPLASH         = 7;
     public final static int    FORM_MENU           = 8;
     public static final int    FORM_DLG_E_ACTIONS  = 9;
-    public static final int    FORM_DLG_SAVE       = 10;
+    public static final int    FORM_PLANET_OPEN    = 10;
     public static final int    FORM_PLANET_NEW     = 11;
-    public static final int    FORM_PLANET_OPEN    = 12;
-    public static final int    FORM_PLANET_PROP    = 13;
-    public static final int    FORM_EDITOR_HELP    = 14;
-    public static final int    FORM_DLG_DELETE     = 15;
-    public static final int    FORM_DLG_GENERATE   = 16;
-    public static final int    FORM_SEND           = 17;
-    public static final int    FORM_RECV           = 18;
-    public static final int    FORM_FINISH         = 19;
+    public static final int    FORM_PLANET_PROP    = 12;
+    public static final int    FORM_DLG_DELETE     = 13;
+    public static final int    FORM_DLG_GENERATE   = 14;
+    public static final int    FORM_DLG_SAVE       = 15;
+    public static final int    FORM_SEND           = 16;
+    public static final int    FORM_RECV           = 17;
+    public static final int    FORM_FINISH         = 18;
+    public static final int    FORM_EDITOR_HELP    = 19;
     public static final int    FORM_DLG_NEW_SYSTEM = 20;
     public static final int    FORM_DLG_G_ACTIONS  = 21;
     // дествия формы операций в редакторе планет
-    public static final int    FORM_CHOICE_NEW     = 1;
-    public static final int    FORM_CHOICE_OPEN    = 2;
+    public static final int    FORM_CHOICE_OPEN    = 1;
+    public static final int    FORM_CHOICE_NEW     = 2;
     public static final int    FORM_CHOICE_PROP    = 3;
-    public static final int    FORM_CHOICE_HELP    = 4;
-    public static final int    FORM_CHOICE_DEL     = 5;
-    public static final int    FORM_CHOICE_GEN     = 6;
+    public static final int    FORM_CHOICE_DEL     = 4;
+    public static final int    FORM_CHOICE_GEN     = 5;
+    public static final int    FORM_CHOICE_SAVE    = 6;
     public static final int    FORM_CHOICE_SEND    = 7;
     public static final int    FORM_CHOICE_PREV    = 8;
     public static final int    FORM_CHOICE_TEST    = 9;
-    public static final int    FORM_CHOICE_SAVE    = 10;
+    public static final int    FORM_CHOICE_HELP    = 10;
     // ключи установок
     public final static String KEY_SCALE           = "scale";
     public final static String KEY_SPEED           = "speed";
@@ -145,9 +199,9 @@ public final class Constants
     public final static String KEY_TMP_PACK        = "#tmp_pack";
     public final static String KEY_EDIT_PREVIEW    = "#edit_preview";
     // индексы параметров планеты
-    public static final int PARAM_TIME     = 0;
-    public static final int PARAM_FUEL     = 1;
-    public static final int PARAM_SCORE    = 2;
+    public static final int PARAM_SCORE    = 0;
+    public static final int PARAM_TIME     = 1;
+    public static final int PARAM_FUEL     = 2;
     public static final int PARAM_LIFE     = 3;
     public static final int PARAM_BOMB     = 4;
     public static final int PARAM_EGG      = 5;
@@ -257,23 +311,6 @@ public final class Constants
     // смещение бомб дроида
     public final static int[] offsBombPos   = {0, 1, 1, 0, 0, -1, -1, 0};
 
-    // смещение координат дроида
-    public final static byte[] offsDroid    = {// DIRN
-                                               0, 0, 0,
-                                               // DIR0
-                                               0, 0, 0,
-                                               // DIRD
-                                               0, 1, T_DROIDD,
-                                               0, 0, 0,
-                                               // DIRR
-                                               1, 0, T_DROIDR,
-                                               0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                               // DIRU
-                                               0, -1, T_DROIDU,
-                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                               // DIRL
-                                               -1, 0, T_DROIDL};
-
     // смещение координат красных/зеленых тварей
     public final static byte[] offsRG       = {1, 0, T_REDR, 0, 1, T_REDU, -1, 0, T_REDL, 0, -1, T_REDD,
                                                1, 0, T_GREENL, 0, 1, T_GREEND, -1, 0, T_GREENR, 0, -1, T_GREENU};
@@ -371,9 +408,10 @@ public final class Constants
     public static final int[] tilesGamePanel    = {R.integer.TILE_SCORE, R.integer.TILE_TIME, R.integer.TILE_FUEL, R.integer.TILE_LIFE, R.integer.TILE_BOMB,
                                                    R.integer.TILE_EGG, R.integer.TILE_YELLOWD, R.integer.TILE_REDD, R.integer.TILE_GREEND};
 
-    public static final int[] iconsEditorActions= {R.integer.I_NEW_PLANET, R.integer.I_OPEN_PLANET, R.integer.I_PROP_PLANET, R.integer.I_HELP,
-                                                   R.integer.I_DELETE_PLANET, R.integer.I_GEN_PLANET, R.integer.I_SEND_PACK, R.integer.I_ALL_PLANET,
-                                                   R.integer.I_TEST_PLANET, R.integer.I_SAVE_PLANET};
+    public static final int[] iconsEditorActions= {R.integer.I_OPEN_PLANET, R.integer.I_NEW_PLANET, R.integer.I_PROP_PLANET,
+                                                   R.integer.I_DELETE_PLANET, R.integer.I_GEN_PLANET, R.integer.I_SAVE_PLANET,
+                                                   R.integer.I_SEND_PACK, R.integer.I_PREVIEW_PLANET, R.integer.I_TEST_PLANET,
+                                                   R.integer.I_HELP};
 
     public static final int ATTR_SSH_COLOR_PANEL_COUNTERS = 1000 | ATTR_INT;
     public static final int ATTR_SSH_COLOR_NAME_PLANET    = 1001 | ATTR_INT;
@@ -458,11 +496,21 @@ public final class Constants
                                                   ATTR_BACKGROUND, ATTR_SSH_COLOR_SELECTOR | THEME,
                                                   ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_TILES | THEME};
 
-    public static final int[] style_record      = {ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_STAT_COUNTERS | THEME,
-                                                   ATTR_SSH_DIR, DIRU,
-                                                   ATTR_SSH_SHOW, 1,
-                                                   ATTR_SIZE, R.dimen.record,
-                                                   ATTR_FONT, R.string.font_small};
+    public static final int[] style_button_actions = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
+                                                       ATTR_SHADOW_DY, R.dimen.shadowTextY,
+                                                       ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
+                                                       ATTR_SHADOW_COLOR, 0 | COLOR,
+                                                       ATTR_SIZE, R.dimen.large,
+                                                       ATTR_FONT, R.string.font_large,
+                                                       ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_MESSAGE | THEME,
+                                                       ATTR_CLICKABLE, 1,
+                                                       ATTR_PADDING, getDp(2),
+                                                       ATTR_SSH_ALIGNED, 1,
+                                                       ATTR_SSH_HORZ, 2,
+                                                       ATTR_SSH_STATES, TILE_STATE_HOVER,
+                                                       ATTR_GRAVITY, Gravity.CENTER,
+                                                       ATTR_SSH_GRAVITY, TILE_GRAVITY_CENTER,
+                                                       ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_BUTTONS | THEME };
 
     public static final int[] style_text_finish = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
                                                    ATTR_SHADOW_DY, R.dimen.shadowTextY,

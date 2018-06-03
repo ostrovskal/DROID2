@@ -164,6 +164,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 			               Theme.dimen(context, R.dimen.shadowTextY) * 2f,
 			               0x0.color)
 		}
+		initMap(true)
 	}
 	
 	override fun handleMessage(msg: Message): Boolean
@@ -199,7 +200,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 								if(success) {
 									initMap(true)
 									if(editor != null) editor.modify = false else sysMsg = Planet.MAP.name
-									s.send(STATUS_WORK, MESSAGE_DELAYED)
+									s.send(STATUS_PREPARED, MESSAGE_DELAYED)
 								}
 								else if(editor == null) {
 									// НЕ УДАЛОСЬ ЗАГРУЗИТЬ ПЛАНЕТУ - ВОЗМОЖНО ОНА БЫЛА ПОСЛЕДНЕЙ
@@ -212,7 +213,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 								if(arg2 == 1) h.send(MSG_FORM, a1 = ACTION_EXIT)
 								else {
 									editor?.modify = false
-									s.send(STATUS_MESSAGE, a1 = STATUS_WORK, o = if(success) R.string.save_planet_success else R.string.save_planet_failed)
+									s.send(STATUS_MESSAGE, a1 = STATUS_PREPARED, o = if(success) R.string.save_planet_success else R.string.save_planet_failed)
 									// для случая свойства планеты сменили имя
 									h.send(MSG_FORM, a1 = ACTION_NAME)
 								}
@@ -246,7 +247,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 	override fun draw(canvas: Canvas) {
 		super.draw(canvas)
 		if(isPlanet) {
-			if(canvasSize.isEmpty()) initMap(true)
+			//if(canvasSize.isEmpty()) initMap(true)
 			for(y in 0 until previewMap.h) {
 				canvasRect.top = previewCO.y + y * previewBlk.h
 				canvasRect.bottom = canvasRect.top + previewBlk.h

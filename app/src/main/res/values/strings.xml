@@ -75,4 +75,7 @@
     <string name="_000">000</string>
     <string name="no_planet">Planet not found!</string>
     <string name="panel_text2">Raticus Major</string>
+    <string name="game_actions_exit">Exit from game</string>
+    <string name="game_actions_restart">Restart</string>
+    <string name="game_actions_continue">Continue</string>
 </resources>

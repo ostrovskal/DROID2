@@ -10,6 +10,7 @@ import com.github.ostrovskal.ssh.Constants.MATCH
 import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs
 import com.github.ostrovskal.ssh.StylesAndAttrs.style_text_html
+import com.github.ostrovskal.ssh.Theme
 import com.github.ostrovskal.ssh.adapters.SelectAdapter
 import com.github.ostrovskal.ssh.ui.*
 import com.github.ostrovskal.ssh.utils.*
@@ -79,12 +80,14 @@ class FormHelp: Form() {
 						
 						val width = 330.dp
 						
-						key = "game_panel$theme$classic"
+						key = "game_panel$theme"
 						aliases["game_panel"] = Html.Alias(key, GamePanel().makeBitmap(wnd, key, width, 165.dp))
-						key = "game_record$theme$classic"
+						key = "game_record$theme"
 						aliases["game_record"] = Html.Alias(key, FormRecord.RecordVertItem().makeBitmap(wnd, key, width, 165.dp))
-						key = "game_recv$theme$classic"
+						key = "game_recv$theme"
 						aliases["game_recv"] = Html.Alias(key, FormRecv.RecvItem().makeBitmap(wnd, key, width, 165.dp))
+						key = "game_recv$theme"
+						aliases["game_actions"] = Html.Alias(key, GameActions().makeBitmap(wnd, key, width, 165.dp))
 						if(index == FORM_EDITOR_HELP) {
 							key = "help_editor_panel$theme$classic"
 							aliases["editor_panel"] = Html.Alias(key, EditorPanel().makeBitmap(wnd, key, width, 165.dp))
@@ -95,7 +98,7 @@ class FormHelp: Form() {
 							key = "help_editor_open$theme"
 							aliases["editor_open"] = Html.Alias(key, PlanetOpen().makeBitmap(wnd, key, width, 270.dp))
 							key = "help_editor_actions$theme"
-							aliases["editor_actions"] = Html.Alias(key, EditorActions().makeBitmap(wnd, key, width, 187.dp))
+							aliases["editor_actions"] = Html.Alias(key, EditorActions().makeBitmap(wnd, key, width, 240.dp))
 							key = "help_editor_send$theme"
 							aliases["editor_send"] = Html.Alias(key, EditorSend().makeBitmap(wnd, key, width, 187.dp))
 						}
@@ -121,20 +124,24 @@ class FormHelp: Form() {
 	
 	private class EditorActions : UiComponent() {
 		override fun createView(ui: UiCtx): View = with(ui) {
-			cellLayout(10, 10) {
-				formHeader(R.string.header_dialog_actions)
+			linearLayout {
 				backgroundSet(style_dlg_actions)
-				padding = 2.dp
-				var idx = 0
-				var dx = 0
-				repeat(3) {row ->
-					repeat(4) {
-						if(idx < iconsEditorActions.size) {
-							if(idx == iconsEditorActions.size - 2) dx = 2
-							button(StylesAndAttrs.style_icon) { numResource = iconsEditorActions[idx++] }.lps(it * 2 + 1 + dx, row * 2, 2, 2) }
+				cellLayout(14, 20) {
+					formHeader(R.string.header_dialog_actions)
+					var idx = 0
+					var dx = 0
+					repeat(4) { row ->
+						repeat(3) {
+							if(idx < iconsEditorActions.size) {
+								if(idx == iconsEditorActions.size - 1) dx = 4
+								button(style_button_actions) {
+									iconResource = iconsEditorActions[idx++]
+								}.lps(it * 4 + 1 + dx, row * 4, 4, 4)
+							}
+						}
 					}
-				}
-				formFooter(Constants.BTN_OK, R.integer.I_NO)
+					formFooter(Constants.BTN_NO, R.integer.I_NO)
+				}.lps(Theme.dimen(ctx, R.dimen.widthEditorDlgActions), Theme.dimen(ctx, R.dimen.heightEditorDlgActions))
 			}
 		}
 	}
@@ -192,6 +199,26 @@ class FormHelp: Form() {
 					}
 				}.lps(0, 6, 10, 7)
 				formFooter(Constants.BTN_OK, R.integer.I_YES, Constants.BTN_NO, R.integer.I_NO)
+			}
+		}
+	}
+	
+	private class GameActions: UiComponent() {
+		override fun createView(ui: UiCtx): View = with(ui) {
+			linearLayout {
+				backgroundSet(style_dlg_actions)
+				cellLayout(14, 11, 1.dp) {
+					formHeader(R.string.header_dialog_actions)
+					button(style_button_actions) {
+						text = ctx.resources.getString(R.string.game_actions_exit)
+					}.lps(0, 0, 14, 3)
+					button(style_button_actions) {
+						text = ctx.resources.getString(R.string.game_actions_restart)
+					}.lps(0, 3, 14, 3)
+					button(style_button_actions) {
+						text = ctx.resources.getString(R.string.game_actions_continue)
+					}.lps(0, 6, 14, 3)
+				}.lps(Theme.dimen(ctx, R.dimen.widthGameDlgActions), Theme.dimen(ctx, R.dimen.heightGameDlgActions))
 			}
 		}
 	}

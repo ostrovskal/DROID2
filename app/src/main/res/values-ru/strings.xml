@@ -68,4 +68,7 @@
     <string name="header_dialog_new_system">Новая система</string>
     <string name="header_dialog_actions">Выбор операции</string>
     <string name="no_planet">Planet not found!</string>
+    <string name="game_actions_exit">Выйти из игры</string>
+    <string name="game_actions_restart">Перезапустить</string>
+    <string name="game_actions_continue">Продолжить</string>
 </resources>

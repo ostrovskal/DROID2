@@ -152,8 +152,8 @@ class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 		"onMessageViewEditor(what: ${msg.what.msg} arg1: ${msg.arg1.msg} arg2: ${msg.arg2} obj: ${msg.obj})".debug()
 		if(super.handleMessage(msg)) {
 			when(msg.what) {
-				STATUS_INIT -> surHandler?.send(MSG_SERVICE, 0, ACTION_LOAD, position)
-				STATUS_WORK -> {
+				STATUS_INIT     -> surHandler?.send(MSG_SERVICE, 0, ACTION_LOAD, position)
+				STATUS_PREPARED -> {
 					sysMsg = ""; status = STATUS_LOOP
 				}
 			}

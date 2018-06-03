@@ -28,9 +28,14 @@ class FormGame : Form() {
 		val tm = if(twicePressed()) tmBACK + 2000 else System.currentTimeMillis() + 10000
 		if(game.status == STATUS_LOOP) {
 			if(tm > System.currentTimeMillis()) {
-				footer(BTN_NO, 0)//, ACTION_BACKPRESSED)
+				// Если тест, воспроизведение записи - просто выход
+				if(game.isTest || game.record != 0L) {
+					sendResult(MSG_FORM, ACTION_EXIT)
+				} else {
+					wnd.instanceForm(FORM_DLG_G_ACTIONS)
+				}
 			} else {
-				wnd.showToast(getString(R.string.press_restart), parent = content)
+				wnd.showToast(getString(R.string.press_restart), true, null, ToastLayout())
 			}
 		}
 		tmBACK = System.currentTimeMillis()
@@ -61,7 +66,7 @@ class FormGame : Form() {
 					id = R.id.gameContainer
 					game = custom { id = R.id.game }
 				}.lps(WRAP, WRAP)
-				cellLayout(if(port) 28 else 17, if(port) 19 else 32) {
+				root = cellLayout(if(port) 28 else 17, if(port) 19 else 32) {
 					backgroundSet(if(port) style_panel_port else style_panel_land)
 					repeat(3) {
 						button(style_tile_droid) { numResource = tilesGamePanel[it] }.lps(2, 6 + it * 4, 4, 4)
@@ -86,13 +91,11 @@ class FormGame : Form() {
 	override fun initContent(content: ViewGroup) {
 		game.position = arguments.getInt("position")
 		game.record = arguments.getLong("record")
-		game.test = arguments.containsKey("test")
+		game.isTest = arguments.containsKey("isTest")
 	}
 	
 	override fun footer(btnId: Int, param: Int) {
 		if(param == ACTION_BACKPRESSED) {
-			game.surHandler?.removeMessages(STATUS_SUICIDED)
-			game.surHandler?.send(STATUS_SUICIDED, a1 = 1)
 		}
 		else super.footer(id, 0)
 	}

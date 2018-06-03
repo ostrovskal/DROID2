@@ -126,16 +126,6 @@
         <item>@string/tag_dialog_e_actions</item>
         <item>1</item>
 
-        <item>@string/clazz_dlg_save</item>
-        <item>0</item>
-        <item>@string/tag_dialog_save</item>
-        <item>1</item>
-
-        <item>@string/clazz_planet_np</item>
-        <item>@id/editorContainer</item>
-        <item>@string/tag_planet_new</item>
-        <item>1</item>
-
         <item>@string/clazz_planet_open</item>
         <item>@id/editorContainer</item>
         <item>@string/tag_planet_open</item>
@@ -143,12 +133,12 @@
 
         <item>@string/clazz_planet_np</item>
         <item>@id/editorContainer</item>
-        <item>@string/tag_planet_prop</item>
+        <item>@string/tag_planet_new</item>
         <item>1</item>
 
-        <item>@string/clazz_help</item>
+        <item>@string/clazz_planet_np</item>
         <item>@id/editorContainer</item>
-        <item>@string/tag_editor_help</item>
+        <item>@string/tag_planet_prop</item>
         <item>1</item>
 
         <item>@string/clazz_dlg_delete</item>
@@ -159,6 +149,11 @@
         <item>@string/clazz_dlg_generate</item>
         <item>0</item>
         <item>@string/tag_dialog_generate</item>
+        <item>1</item>
+
+        <item>@string/clazz_dlg_save</item>
+        <item>0</item>
+        <item>@string/tag_dialog_save</item>
         <item>1</item>
 
         <item>@string/clazz_send_system</item>
@@ -176,13 +171,18 @@
         <item>@string/tag_finish</item>
         <item>1</item>
 
+        <item>@string/clazz_help</item>
+        <item>@id/editorContainer</item>
+        <item>@string/tag_editor_help</item>
+        <item>1</item>
+
         <item>@string/clazz_dlg_new_system</item>
         <item>0</item>
         <item>@string/tag_dialog_new_system</item>
         <item>1</item>
 
         <item>@string/clazz_dlg_g_actions</item>
-        <item>@id/gameContainer</item>
+        <item>0</item>
         <item>@string/tag_dialog_g_actions</item>
         <item>1</item>
     </array>

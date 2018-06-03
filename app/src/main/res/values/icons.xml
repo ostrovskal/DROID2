@@ -15,7 +15,7 @@
     <integer name="I_DEFAULT_OPTIONS">12</integer>
     <integer name="I_OPEN_PLANET">13</integer>
     <integer name="I_PLAY_RECORD">14</integer>
-    <integer name="I_ALL_PLANET">15</integer>
+    <integer name="I_PREVIEW_PLANET">15</integer>
     <integer name="I_SAVE_PLANET">16</integer>
     <integer name="I_SKULL1">17</integer>
     <integer name="I_SKULL2">18</integer>

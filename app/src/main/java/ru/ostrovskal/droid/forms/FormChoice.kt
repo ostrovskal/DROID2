@@ -68,7 +68,7 @@ class FormChoice: Form() {
 								wnd.apply {
 									KEY_TMP_PACK.optText = result
 									footer(BTN_NO, 0)
-									//instanceForm(FORM_GAME, "position", Planet.position)
+									instanceForm(FORM_GAME, "position", position)
 								}
 							}
 						}
@@ -91,11 +91,10 @@ class FormChoice: Form() {
 	
 	private class PlanetAdapter(context: Context) : ListAdapter(context, ChoiceItem(), 2) {
 		private val iCancel = context.resources.getInteger(R.integer.I_CANCEL)
-		private val icons = Theme.string(context, Theme.themeAttrValue(StylesAndAttrs.ATTR_SSH_BM_ICONS, -1))
 		
 		override fun bindField(view: View?, rs: Rowset, idx: Int) {
 			if(view is Tile && rs.boolean("blocked")) {
-				view.setBitmap(icons, 10, 3, iCancel)
+				view.setBitmap("icon_tiles", 10, 3, iCancel)
 			}
 			else {
 				super.bindField(view, rs, idx)

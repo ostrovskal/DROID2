@@ -4,12 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.ostrovskal.ssh.Constants
-import com.github.ostrovskal.ssh.Constants.TILE_STATE_HOVER
 import com.github.ostrovskal.ssh.Theme
 import com.github.ostrovskal.ssh.ui.*
 import com.github.ostrovskal.ssh.utils.byIdx
-import com.github.ostrovskal.ssh.utils.dp
-import com.github.ostrovskal.ssh.utils.padding
 import com.github.ostrovskal.ssh.utils.send
 import com.github.ostrovskal.ssh.widgets.Tile
 import ru.ostrovskal.droid.Constants.*
@@ -21,28 +18,23 @@ class FormEditorActions : FormDialog() {
 		return UI {
 			linearLayout {
 				backgroundSet(style_dlg_actions)
-				padding = 2.dp
-				root = cellLayout(14, 14, 0) {
-					layoutParams = ViewGroup.LayoutParams(Theme.dimen(ctx, R.dimen.widthEditorDlgActions),
-					                                      Theme.dimen(ctx, R.dimen.heightEditorDlgActions))
+				root = cellLayout(14, 20) {
 					formHeader(R.string.header_dialog_actions)
 					var idx = 0
 					var dx = 0
-					repeat(3) { row ->
-						repeat(4) {
+					repeat(4) { row ->
+						repeat(3) {
 							if(idx < iconsEditorActions.size) {
-								if(idx == iconsEditorActions.size - 2) dx = 3
-								button(style_icon_actions) {
-									isClickable = true
-									states = TILE_STATE_HOVER
-									numResource = iconsEditorActions[idx++]
+								if(idx == iconsEditorActions.size - 1) dx = 4
+								button(style_button_actions) {
+									iconResource = iconsEditorActions[idx++]
 									setOnClickListener(this@FormEditorActions)
-								}.lps(it * 3 + 1 + dx, row * 3 + 1, 3, 3)
+								}.lps(it * 4 + 1 + dx, row * 4, 4, 4)
 							}
 						}
 					}
 					formFooter(Constants.BTN_NO, R.integer.I_NO)
-				}
+				}.lps(Theme.dimen(ctx, R.dimen.widthEditorDlgActions), Theme.dimen(ctx, R.dimen.heightEditorDlgActions))
 			}
 		}
 	}
@@ -73,17 +65,17 @@ class FormEditorActions : FormDialog() {
 				super.footer(Constants.BTN_NO, 0)
 				// проверить на модификацию
 				if(editor.modify && !Planet.MAP.store(this)) {
-					editor.surHandler?.send(STATUS_MESSAGE, 0, STATUS_WORK, R.string.save_planet_failed)
+					editor.surHandler?.send(STATUS_MESSAGE, 0, STATUS_PREPARED, R.string.save_planet_failed)
 				}
 				else {
-					instanceForm(FORM_GAME, "position", editor.position, "test", 1)
+					instanceForm(FORM_GAME, "position", editor.position, "isTest", 1)
 				}
 				return
 			}
 			else                -> {
 				wnd.apply {
 					super.footer(Constants.BTN_NO, 0)
-					instanceForm(idx + FORM_PLANET_NEW - 1)
+					instanceForm(idx + FORM_PLANET_OPEN - 1)
 					return
 				}
 			}

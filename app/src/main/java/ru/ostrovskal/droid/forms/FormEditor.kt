@@ -20,16 +20,22 @@ import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.views.ViewEditor
 
 class FormEditor : Form() {
+	
 	private var namePlanet: Text?   = null
+	
 	// текущий тайл
 	var curTile: Tile? 				= null
-	
 	
 	// поверхность
 	lateinit var editor: ViewEditor
 	
 	override fun backPressed() {
 		if(wnd.fragmentManager.backStackEntryCount != 0) footer(BTN_NO, 0)
+	}
+	
+	override fun onResume() {
+		"onResume".info()
+		super.onResume()
 	}
 	
 	override fun handleMessage(msg: Message) {
@@ -46,7 +52,6 @@ class FormEditor : Form() {
 					ACTION_NAME     -> {
 						namePlanet?.text = Planet.MAP.name
 						KEY_EDIT_PLANET.optText = "${Planet.MAP.num}#${Planet.MAP.pack}"
-						"action_name ${KEY_EDIT_PLANET.optText} ${Planet.MAP.pack} ${Planet.MAP.num}".info()
 					}
 					ACTION_EXIT     -> footer(BTN_NO, 0)
 				}

@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Point
 import android.graphics.PointF
+import android.os.Bundle
 import android.os.Message
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -20,25 +21,26 @@ import com.github.ostrovskal.ssh.utils.*
 import com.github.ostrovskal.ssh.widgets.Controller
 import com.github.ostrovskal.ssh.widgets.Seek
 import com.github.ostrovskal.ssh.widgets.Text
-import com.github.ostrovskal.ssh.widgets.Tile
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.DroidWnd
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.forms.FormGame
+import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.tables.Stat
 import ru.ostrovskal.droid.tables.Stat.god
 import java.util.*
 
 class ViewGame(context: Context) : ViewCommon(context) {
+	
 	// признак запуска в режиме теста
-	@STORAGE @JvmField var test		= false
+	@STORAGE @JvmField var isTest	= false
 
 	// Главная разметка
 	private val main                = wnd.main
 	
 	// курсор
-	private val cursor				= Controller(context, wnd.main)
+	private val cursor				= Controller(context, wnd.main, 1)
 	
 	// слайдер скорости
 	private val speed				= Seek(context, style_seek)
@@ -89,20 +91,31 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			} else false
 		}
 	}
-
+	
+	override fun restoreState(state: Bundle, vararg params: Any?) {
+		super.restoreState(state, *params)
+		cursor.restoreState(state)
+	}
+	
+	override fun saveState(state: Bundle, vararg params: Any?) {
+		super.saveState(state, *params)
+		cursor.saveState(state)
+	}
+	
 	// обновление счетчиков в основном потоке
 	private val updatePanel = Runnable {
 		var idx = 0
 		wnd.findForm<FormGame>("game")?.root?.loopChildren {
-			if(it !is Tile) {
-				val value = params[idx]
-				if(value != paramsCache[idx]) {
-					paramsCache[idx] = value
-					strBuffer.zero(value, formatLengths[idx])
+			if(idx flags 1) {
+				val index = idx / 2
+				val value = params[index]
+				if(value != paramsCache[index]) {
+					paramsCache[index] = value
+					strBuffer.zero(value, formatLengths[index])
 					(it as? Text)?.text = strBuffer
 				}
-				idx++
 			}
+			idx++
 		}
 	}
 	
@@ -110,6 +123,11 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	{
 		super.surfaceChanged(holder, format, width, height)
 		if(record == 0L) {
+			// Удалить - при тесте
+			main.removeView(cursor)
+			// Добавить контроллер
+			main.addView(cursor)
+			cursor.restoreCoord()
 		} else {
 			// добавить слайдер скорости
 			speed.apply {
@@ -144,22 +162,60 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	
 	override fun handleMessage(msg: Message): Boolean
 	{
+		"onMessageViewGame(what: ${msg.what.msg} arg1: ${msg.arg1.msg} arg2: ${msg.arg2} obj: ${msg.obj})".debug()
 		if(super.handleMessage(msg)) {
 			val s = surHandler
 			if(s != null) {
 				msg.apply {
 					when(what) {
+						MSG_SERVICE      -> {
+							if(arg1 == ACTION_LOAD) {
+								params[PARAM_FUEL]	+= Planet.MAP.fuel
+								params[PARAM_TIME]	+= Planet.MAP.time
+								params[PARAM_EGG] = Planet.MAP.egg
+								params[PARAM_YELLOW] = Planet.MAP.yellow
+								params[PARAM_RED] = Planet.MAP.red
+								params[PARAM_GREEN] = Planet.MAP.green
+								"${Planet.MAP.yellow} ${Planet.MAP.red}".info()
+								post(updatePanel)
+							}
+						}
 						STATUS_INIT 	-> {
 							Stat.init(true, isMaster, isGod, record)
-							params[PARAM_LIFE]	= if(test) 1 else DROID_LIFE
+							params[PARAM_LIFE]	= if(isTest) 1 else DROID_LIFE
 							params[PARAM_SCORE]	= 0
 							params[PARAM_LIMIT]	= if(isMaster) DROID_ADD_LIMIT * 2 else DROID_ADD_LIMIT
 							status = STATUS_DEAD
 							s.send(STATUS_DEAD, a2 = 1)
 						}
-						STATUS_SUICIDED	-> {
+						STATUS_DEAD     -> {
+							params[PARAM_BOMB]	= if(isMaster) DROID_ADD_BOMB / 2 else DROID_ADD_BOMB
+							params[PARAM_FUEL]	= 0
+							params[PARAM_TIME]	= 0
+							status = STATUS_CLEARED
+							s.send(STATUS_CLEARED, a1 = position, a2 = arg2)
+						}
+						STATUS_CLEARED  -> {
+							status = STATUS_PREPARED
+							s.send(MSG_SERVICE, 0, ACTION_LOAD, arg1)
+							if(params[PARAM_TIME] != 0 || arg2 == 1) Sound.playRandomMusic(wnd, true)
+						}
+						STATUS_PREPARED -> {
+							if(record != 0L) {
+								isMaster= Stat.master
+								isGod 	= Stat.god
+							}
+							newStatus = 0
+							idMsg = 0
+							sysMsg = ""
+							Stat.init(false, isMaster, isGod, record)
+							rnd = Random(Stat.random)
+							status = STATUS_LOOP
+							cursor.reset()
+						}
+						STATUS_SUICIDED -> {
 							if(status == STATUS_LOOP) {
-								if(test) {
+								if(isTest) {
 									idMsg = R.string.msg_test_complete
 									newStatus = STATUS_EXIT
 								}
@@ -182,33 +238,6 @@ class ViewGame(context: Context) : ViewCommon(context) {
 								surHandler?.send(STATUS_MESSAGE, 0, newStatus, nArg, idMsg)
 							}
 						}
-						STATUS_DEAD		-> {
-							params[PARAM_BOMB]	= if(isMaster) DROID_ADD_BOMB / 2 else DROID_ADD_BOMB
-							params[PARAM_FUEL]	= 0
-							params[PARAM_TIME]	= 0
-							status = STATUS_CLEARED
-							s.send(STATUS_CLEARED, a1 = position, a2 = arg2)
-						}
-						STATUS_CLEARED	-> {
-							status = STATUS_WORK
-							s.send(MSG_SERVICE, 0, ACTION_LOAD, arg1)
-							if(params[PARAM_TIME] != 0 || arg2 == 1) Sound.playRandomMusic(wnd, true)
-						}
-						STATUS_WORK		-> {
-							params[PARAM_FUEL]	+= Planet.MAP.fuel
-							params[PARAM_TIME]	+= Planet.MAP.time
-							if(record != 0L) {
-								isMaster= Stat.master
-								isGod 	= Stat.god
-							}
-							newStatus = 0
-							idMsg = 0
-							sysMsg = ""
-							Stat.init(false, isMaster, isGod, record)
-							rnd = Random(Stat.random)
-							status = STATUS_LOOP
-							cursor.reset()
-						}
 					}
 				}
 			}
@@ -230,12 +259,11 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			else if(params[PARAM_TIME] == 0) { idMsg = R.string.msg_out_of_time; dead = true }
 			else if(params[PARAM_RED1] == 0 && params[PARAM_EGG1] == 0 && params[PARAM_YELLOW1] == 0 && params[PARAM_GREEN1] == 0) {
 				idMsg = R.string.msg_planet_cleaned
-				"fuel:${Planet.MAP.fuel - params[PARAM_FUEL]} time: ${Planet.MAP.time - params[PARAM_TIME]}".info()
 				nArg = ++position
 				newStatus = STATUS_CLEARED
 				// подсчитываем сколько уровней прошел
 				Stat.count++
-				if(record == 0L && !test) {
+				if(record == 0L && !isTest) {
 					// разблокировать планету
 					Planet.update {
 						it[Planet.blocked] = 0L
@@ -250,7 +278,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 				if(params[PARAM_TIME] < 200 && params[PARAM_TIME] % 10 == 0) Sound.playSound(SND_TIME_ELAPSED)
 			}
 			if(idMsg != 0) {
-				if(test) {
+				if(isTest) {
 					idMsg = R.string.msg_test_complete
 					newStatus = STATUS_EXIT
 				} else {
@@ -395,9 +423,17 @@ class ViewGame(context: Context) : ViewCommon(context) {
 				}
 			}
 			else if(dir != DIRN) {
-				val xx = x + offsDroid[dir * 3]
-				val yy = y + offsDroid[dir * 3 + 1]
-				val tt = offsDroid[dir * 3 + 2]
+				var xx = x
+				var yy = y
+				val tt = when {
+					dir flags DIRR -> {xx++; T_DROIDR }
+					dir flags DIRL -> {xx--; T_DROIDL }
+					else           -> when {
+						dir flags DIRU -> { yy--; T_DROIDU }
+						dir flags DIRD -> { yy++; T_DROIDD }
+						else           -> return
+					}
+				}
 				// движемся
 				val pe = remapProp[buffer[xx, yy] and MSKT]
 				o = pe and MSKO
