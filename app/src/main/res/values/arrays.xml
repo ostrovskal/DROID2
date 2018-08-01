@@ -39,7 +39,6 @@
         <item>#edit_planet,0#classic</item>
         <item>#edit_preview,0</item>
         <item>#edit_tile,0</item>
-        <item>#tmp_pack,CLASSIC</item>
     </string-array>
     <string-array name="themesNames">
         <item>Dark</item>

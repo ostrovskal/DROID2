@@ -22,10 +22,7 @@ import ru.ostrovskal.droid.tables.Planet
 class FormSend: Form() {
 	private var skull1          = 0
 	private var skull2          = 0
-
-	private var author          = ""
 	private var skull           = 0
-	private var planets         = 0
 	
 	override fun footer(btnId: Int, param: Int) {
 		val p: Int
@@ -82,12 +79,11 @@ class FormSend: Form() {
 				text(R.string.null_text, style_text_planet) { id = R.id.etName; gravity = Gravity.CENTER }.lps(0, 0, wText, 2)
 				text(R.string.panel_text, style_text_small) { id = R.id.etNumber; gravity = Gravity.CENTER }.lps(0, 2, wText, 1)
 				editLayout {
-					edit(R.string.hint_price) { id = R.id.etPrice; inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL; range = 0..500 }
+					edit(R.id.etPrice, R.string.hint_price) { inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL; range = 0..500 }
 					if(port) lps(0, 3, 10, 3) else lps(6, 0, 4, 3)
 				}
 				editLayout {
-					edit(R.string.hint_desc) {
-						id = R.id.etDesc
+					edit(R.id.etDesc, R.string.hint_desc) {
 						maxLength = 100
 						inputType = TYPE_TEXT_FLAG_MULTI_LINE or TYPE_CLASS_TEXT
 					}

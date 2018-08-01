@@ -1,9 +1,8 @@
 package ru.ostrovskal.droid.tables
 
+import com.github.ostrovskal.ssh.Rand
 import com.github.ostrovskal.ssh.sql.Table
-import com.github.ostrovskal.ssh.utils.nextLong
 import com.github.ostrovskal.ssh.utils.release
-import java.util.*
 
 object RecvSystem : Table() {
 	@JvmField val id    = integer("_id").notNull().primaryKey()
@@ -20,7 +19,7 @@ object RecvSystem : Table() {
 	fun load() {
 		deleteAll()
 		Planet.select { }.execute()?.release {
-			val rnd = Random(System.currentTimeMillis())
+			val rnd = Rand(System.currentTimeMillis())
 			forEach { rs ->
 				insert {
 					it[pos] = rs.integer("position")

@@ -10,6 +10,7 @@
 -repackageclasses ''
 -allowaccessmodification
 -keep class ru.ostrovskal.droid.forms.Form*
+-keep class ru.ostrovskal.droid.tables.***
 -dontobfuscate
 #-dontshrink
 #-keepattributes *Annotation*,SourceFile,LineNumberTable

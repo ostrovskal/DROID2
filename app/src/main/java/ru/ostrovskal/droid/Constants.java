@@ -6,7 +6,6 @@ import android.view.Gravity;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_ROTATE;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_SCALE;
 import static com.github.ostrovskal.ssh.Constants.TILE_GRAVITY_CENTER;
-import static com.github.ostrovskal.ssh.Constants.TILE_SCALE_HEIGHT;
 import static com.github.ostrovskal.ssh.Constants.TILE_SCALE_MIN;
 import static com.github.ostrovskal.ssh.Constants.TILE_SHAPE_ROUND;
 import static com.github.ostrovskal.ssh.Constants.TILE_STATE_HOVER;
@@ -65,10 +64,19 @@ import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_VERT;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_WIDTH_SELECTOR;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.COLOR;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.THEME;
-import static com.github.ostrovskal.ssh.utils.UtilsGraphics.getDp;
 
 public final class Constants
 {
+    public static final String droidController        = "UUUUUUUUUUUUUUUUUUUU" +
+                                                        "LLLLUUUUUUUUUUUUUURR" +
+                                                        "LLLLLLUUUUUUUUUURRRR" +
+                                                        "LLLLLL00000000RRRRRR" +
+                                                        "LLLLLL00000000RRRRRR" +
+                                                        "LLLLLL00000000RRRRRR" +
+                                                        "LLLLLL00000000RRRRRR" +
+                                                        "LLLLLLDDDDDDDDRRRRRR" +
+                                                        "LLDDDDDDDDDDDDDDRRRR" +
+                                                        "DDDDDDDDDDDDDDDDDDDD";
     // режимы сдвига
     public static final int SHIFT_UNDEF            = 0;
     public static final int SHIFT_MAP              = 1;
@@ -77,11 +85,13 @@ public final class Constants
     public final static int REC_DROID_NONE         = 0x00;
     public final static int REC_DROID_MOVE         = 0x01;
     public final static int REC_DROID_DROP         = 0x02;
-    // направление движения 2 бит = 0й(0-вниз,1-вправо,2-вверх,3-влево)
-    public final static int REC_DROID_MOVE_DOWN    = 0x00;
-    public final static int REC_DROID_MOVE_RIGHT   = 0x04;
-    public final static int REC_DROID_MOVE_UP      = 0x08;
+    // направление движения 2 бит = 0й(0-вверх,1-вниз,2-вправо,3-влево)
+    public final static int REC_DROID_MOVE_UP      = 0x00;
+    public final static int REC_DROID_MOVE_DOWN    = 0x04;
+    public final static int REC_DROID_MOVE_RIGHT   = 0x08;
     public final static int REC_DROID_MOVE_LEFT    = 0x0c;
+    // стандартная скорость игры
+    public static final int STD_GAME_SPEED          = 50;
     // задержка между сменой статуса
     public static final long MESSAGE_DELAYED = 2000;
     // задержка сплэш экрана
@@ -122,7 +132,7 @@ public final class Constants
     public static final int STATUS_SUICIDED = 9;
 
     // константы для генерации планеты
-    public static final int    PLANET_GEN_NULL     = 0;
+    //public static final int    PLANET_GEN_NULL     = 0;
     public static final int    PLANET_GEN_EARTH    = 1;
     public static final int    PLANET_GEN_BETON    = 2;
     public static final int    PLANET_GEN_STONE    = 3;
@@ -143,10 +153,10 @@ public final class Constants
     public static final int    SND_VOLUME          = 7;
     // типы форм
     public final static int    FORM_GAME           = 0;
-    public final static int    FORM_CHOICE         = 1;
-    public final static int    FORM_OPTIONS        = 2;
-    public final static int    FORM_RECORDS        = 3;
-    public final static int    FORM_EDITOR         = 4;
+    //public final static int    FORM_CHOICE         = 1;
+    //public final static int    FORM_OPTIONS        = 2;
+    //public final static int    FORM_RECORDS        = 3;
+    //public final static int    FORM_EDITOR         = 4;
     public final static int    FORM_GAME_HELP      = 5;
     public final static int    FORM_DLG_EXIT       = 6;
     public final static int    FORM_SPLASH         = 7;
@@ -154,27 +164,27 @@ public final class Constants
     public static final int    FORM_DLG_E_ACTIONS  = 9;
     public static final int    FORM_PLANET_OPEN    = 10;
     public static final int    FORM_PLANET_NEW     = 11;
-    public static final int    FORM_PLANET_PROP    = 12;
+    //public static final int    FORM_PLANET_PROP    = 12;
     public static final int    FORM_DLG_DELETE     = 13;
     public static final int    FORM_DLG_GENERATE   = 14;
     public static final int    FORM_DLG_SAVE       = 15;
-    public static final int    FORM_SEND           = 16;
+    //public static final int    FORM_SEND           = 16;
     public static final int    FORM_RECV           = 17;
     public static final int    FORM_FINISH         = 18;
     public static final int    FORM_EDITOR_HELP    = 19;
     public static final int    FORM_DLG_NEW_SYSTEM = 20;
     public static final int    FORM_DLG_G_ACTIONS  = 21;
     // дествия формы операций в редакторе планет
-    public static final int    FORM_CHOICE_OPEN    = 1;
-    public static final int    FORM_CHOICE_NEW     = 2;
+    //public static final int    FORM_CHOICE_OPEN    = 1;
+    //public static final int    FORM_CHOICE_NEW     = 2;
     public static final int    FORM_CHOICE_PROP    = 3;
     public static final int    FORM_CHOICE_DEL     = 4;
-    public static final int    FORM_CHOICE_GEN     = 5;
+    //public static final int    FORM_CHOICE_GEN     = 5;
     public static final int    FORM_CHOICE_SAVE    = 6;
     public static final int    FORM_CHOICE_SEND    = 7;
     public static final int    FORM_CHOICE_PREV    = 8;
     public static final int    FORM_CHOICE_TEST    = 9;
-    public static final int    FORM_CHOICE_HELP    = 10;
+    //public static final int    FORM_CHOICE_HELP    = 10;
     // ключи установок
     public final static String KEY_SCALE           = "scale";
     public final static String KEY_SPEED           = "speed";
@@ -196,7 +206,6 @@ public final class Constants
     public final static String KEY_TYPE_PLANET     = "#type_planet";
     public final static String KEY_EDIT_PLANET     = "#edit_planet";
     public final static String KEY_EDIT_TILE       = "#edit_tile";
-    public final static String KEY_TMP_PACK        = "#tmp_pack";
     public final static String KEY_EDIT_PREVIEW    = "#edit_preview";
     // индексы параметров планеты
     public static final int PARAM_SCORE    = 0;
@@ -226,87 +235,87 @@ public final class Constants
     public final static int DROID_ADD_LIMIT     = 2500;
 
     // индексы всех тайлов
-    public static final byte   T_NULL              = 0;
-    public static final byte   T_EARTH             = 1;
-    public static final byte   T_BETON             = 2;
-    public static final byte   T_BRICK             = 3;
-    public static final byte   T_LIFE              = 4;
-    public static final byte   T_FUEL              = 5;
-    public static final byte   T_BOMBS             = 6;
-    public static final byte   T_EXPL0             = 7;
-    public static final byte   T_EXPL1             = 8;
-    public static final byte   T_EXPL2             = 9;
-    public static final byte   T_EXPL3             = 10;
-    public static final byte   T_DROIDD            = 11;
-    public static final byte   T_DROIDR            = 12;
-    public static final byte   T_DROIDU            = 13;
-    public static final byte   T_DROIDL            = 14;
-    public static final byte   T_REDD              = 15;
-    public static final byte   T_REDR              = 16;
-    public static final byte   T_REDU              = 17;
-    public static final byte   T_REDL              = 18;
-    public static final byte   T_YELLOWD           = 19;
-    public static final byte   T_YELLOWR           = 20;
-    public static final byte   T_YELLOWU           = 21;
-    public static final byte   T_YELLOWL           = 22;
-    public static final byte   T_EYEG              = 23;
-    public static final byte   T_BOMB              = 24;
-    public static final byte   T_STONE0            = 25;
+    public static final  byte T_NULL            = 0;
+    public static final  byte T_EARTH           = 1;
+    public static final  byte T_BETON           = 2;
+    public static final  byte T_BRICK           = 3;
+    private static final byte T_LIFE            = 4;
+    private static final byte T_FUEL            = 5;
+    private static final byte T_BOMBS           = 6;
+    public static final  byte T_EXPL0           = 7;
+    public static final  byte T_EXPL1           = 8;
+    private static final byte T_EXPL2           = 9;
+    public static final  byte T_EXPL3           = 10;
+    public static final  byte T_DROIDD          = 11;
+    public static final  byte T_DROIDR          = 12;
+    public static final  byte T_DROIDU          = 13;
+    public static final  byte T_DROIDL          = 14;
+    public static final  byte T_REDD            = 15;
+    private static final byte T_REDR            = 16;
+    private static final byte T_REDU            = 17;
+    private static final byte T_REDL            = 18;
+    public static final  byte T_YELLOWD         = 19;
+    private static final byte T_YELLOWR         = 20;
+    public static final  byte T_YELLOWU         = 21;
+    private static final byte T_YELLOWL         = 22;
+    private static final byte T_EYEG            = 23;
+    public static final  byte T_BOMB            = 24;
+    public static final  byte T_STONE0          = 25;
     // новые тайлы
-    public static final byte   T_STONE1            = 26;
-    public static final byte   T_STONE2            = 27;
-    public static final byte   T_STONE3            = 28;
-    public static final byte   T_EGG0              = 29;
-    public static final byte   T_EGG1              = 30;
-    public static final byte   T_EGG2              = 31;
-    public static final byte   T_EGG3              = 32;
-    public static final byte   T_SCORE             = 33;
-    public static final byte   T_TIME              = 34;
-    public static final byte   T_EYEB              = 35;
-    public static final byte   T_GREEND            = 36;
-    public static final byte   T_GREENR            = 37;
-    public static final byte   T_GREENU            = 38;
-    public static final byte   T_GREENL            = 39;
-    public static final byte   T_BOMBDROID         = 40;
-    public static final byte   T_EXPLEGG           = 41;
-    public static final byte   T_EXPLDROID0        = 42;
+    public static final  byte T_STONE1          = 26;
+    public static final  byte T_STONE2          = 27;
+    public static final  byte T_STONE3          = 28;
+    public static final  byte T_EGG0            = 29;
+    private static final byte T_EGG1            = 30;
+    private static final byte T_EGG2            = 31;
+    public static final  byte T_EGG3            = 32;
+    private static final byte T_SCORE           = 33;
+    private static final byte T_TIME            = 34;
+    public static final  byte T_EYEB            = 35;
+    public static final  byte T_GREEND          = 36;
+    private static final byte T_GREENR          = 37;
+    private static final byte T_GREENU          = 38;
+    private static final byte T_GREENL          = 39;
+    public static final  byte T_BOMBDROID       = 40;
+    public static final  byte T_EXPLEGG         = 41;
+    public static final  byte T_EXPLDROID0      = 42;
     // первый номер падающих тайлов
-    public static final byte   T_DROP              = (43 - 24);
+    public static final  byte T_DROP            = (43 - 24);
     // типы объектов
-    public static final int    O_STONE             = 0;
-    public static final int    O_BOMB              = 1;
-    public static final int    O_EXPL              = 2;
-    public static final int    O_DROID             = 3;
-    public static final int    O_RED               = 4;
-    public static final int    O_GREEN             = 5;
-    public static final int    O_YELLOW            = 6;
-    public static final int    O_EYE               = 7;
-    public static final int    O_EGG               = 8;
-    public static final int    O_EXPLEGG           = 9;
-    public static final int    O_BOMBDROID         = 10;
-    public static final int    O_NULL              = 11;
-    public static final int    O_BETON             = 12;
-    public static final int    O_BRICK             = 13;
-    public static final int    O_EARTH             = 14;
-    public static final int    O_SCORE             = 15;
-    public static final int    O_TIME              = 16;
-    public static final int    O_LIFE              = 17;
-    public static final int    O_BOMBS             = 18;
-    public static final int    O_FUEL              = 19;
+    public static final  int O_STONE            = 0;
+    public static final  int O_BOMB             = 1;
+    private static final int O_EXPL             = 2;
+    public static final  int O_DROID            = 3;
+    public static final  int O_RED              = 4;
+    public static final  int O_GREEN            = 5;
+    public static final  int O_YELLOW           = 6;
+    private static final int O_EYE              = 7;
+    public static final  int O_EGG              = 8;
+    public static final  int O_EXPLEGG          = 9;
+    public static final  int O_BOMBDROID        = 10;
+    private static final int O_NULL             = 11;
+    public static final  int O_BETON            = 12;
+    private static final int O_BRICK            = 13;
+    private static final int O_EARTH            = 14;
+    public static final  int O_SCORE            = 15;
+    public static final  int O_TIME             = 16;
+    public static final  int O_LIFE             = 17;
+    public static final  int O_BOMBS            = 18;
+    public static final  int O_FUEL             = 19;
     // флаги тайлов
-    public static final int    MSKT                = 0x003f; // маска тайла
-    public static final int    MSKO                = 0x001f; // маска объекта
-    public static final int    MSKU                = 0x0040; // признак обновления
+    public static final  int MSKT               = 0x003f; // маска тайла
+    public static final  int MSKO               = 0x001f; // маска объекта
+    public static final  int MSKU               = 0x0040; // признак обновления
     // флаги характеристик
-    public static final int    FK                  = 0x0020; // твари гибнут
-    public static final int    FY                  = 0x0040; // желтая гибнет
-    public static final int    FB                  = 0x0080; // падающие камень и бомба взрываются
-    public static final int    FN                  = 0x0100; // пустота для всех
-    public static final int    FG                  = 0x0200; // человек и глаз проходит
-    public static final int    FS                  = 0x0400; // соскок
-    public static final int    FM                  = 0x0800; // гибель человека
-    public static final int    FT                  = 0x1000; // человек берет
-    public static final int    FE                  = 0x2000; // взрывается от другого взрыва
+    public static final int    FK               = 0x0020; // твари гибнут
+    public static final int    FY               = 0x0040; // желтая гибнет
+    public static final int    FB               = 0x0080; // падающие камень и бомба взрываются
+    public static final int    FN               = 0x0100; // пустота для всех
+    public static final int    FG               = 0x0200; // человек и глаз проходит
+    public static final int    FS               = 0x0400; // соскок
+    public static final int    FM               = 0x0800; // гибель человека
+    public static final int    FT               = 0x1000; // человек берет
+    public static final int    FE               = 0x2000; // взрывается от другого взрыва
 
     // смещение бомб дроида
     public final static int[] offsBombPos   = {0, 1, 1, 0, 0, -1, -1, 0};
@@ -413,11 +422,17 @@ public final class Constants
                                                    R.integer.I_SEND_PACK, R.integer.I_PREVIEW_PLANET, R.integer.I_TEST_PLANET,
                                                    R.integer.I_HELP};
 
-    public static final int ATTR_SSH_COLOR_PANEL_COUNTERS = 1000 | ATTR_INT;
-    public static final int ATTR_SSH_COLOR_NAME_PLANET    = 1001 | ATTR_INT;
-    public static final int ATTR_SSH_COLOR_STAT_COUNTERS  = 1002 | ATTR_INT;
-    public static final int ATTR_SSH_BM_PANEL_PORT        = 1003 | ATTR_DRW;
-    public static final int ATTR_SSH_BM_PANEL_LAND        = 1004 | ATTR_DRW;
+    // Координаты элементов сплэша по вертикали
+    public static final int[] coordV            = {22, 44, 0, 0, 22, 4, 2, 30, 15, 5, 17, 31, 4, 4, 0, 36, 22, 4, 1, 4, 20, 30};
+
+    // Координаты элементов сплэша по горизонтали
+    public static final int[] coordH            = {44, 33, 0, 0, 44, 4, 8, 17, 26, 6, 33, 18, 5, 5, 0, 24, 44, 3, 6, 4, 32, 17};
+
+    private static final int ATTR_SSH_COLOR_PANEL_COUNTERS = 1000 | ATTR_INT;
+    private static final int ATTR_SSH_COLOR_NAME_PLANET    = 1001 | ATTR_INT;
+    private static final int ATTR_SSH_COLOR_STAT_COUNTERS  = 1002 | ATTR_INT;
+    private static final int ATTR_SSH_BM_PANEL_PORT        = 1003 | ATTR_DRW;
+    private static final int ATTR_SSH_BM_PANEL_LAND        = 1004 | ATTR_DRW;
 
     public static final int[] themeDark = {ATTR_SSH_SPACING, R.dimen.cellSpacing,
                                            ATTR_SSH_THEME_NAME, R.string.themeDark,
@@ -464,7 +479,7 @@ public final class Constants
                                             ATTR_SSH_COLOR_NORMAL, 0xea5191 | COLOR,
                                             ATTR_SSH_COLOR_LARGE, 0x5670f1 | COLOR,
                                             ATTR_SSH_COLOR_SMALL, 0x9841df | COLOR,
-                                            ATTR_SSH_COLOR_HINT, 0 | COLOR,
+                                            ATTR_SSH_COLOR_HINT, 0xf77499 | COLOR,
                                             ATTR_SSH_COLOR_SELECTOR, 0xf23346 | COLOR,
                                             ATTR_SSH_COLOR_HEADER, 0xa9f145 | COLOR,
                                             ATTR_SSH_COLOR_HTML_HEADER, 0x9a4dfc | COLOR,
@@ -499,12 +514,12 @@ public final class Constants
     public static final int[] style_button_actions = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
                                                        ATTR_SHADOW_DY, R.dimen.shadowTextY,
                                                        ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
-                                                       ATTR_SHADOW_COLOR, 0 | COLOR,
+                                                       ATTR_SHADOW_COLOR, 0x1 | COLOR,
                                                        ATTR_SIZE, R.dimen.large,
                                                        ATTR_FONT, R.string.font_large,
                                                        ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_MESSAGE | THEME,
                                                        ATTR_CLICKABLE, 1,
-                                                       ATTR_PADDING, getDp(2),
+                                                       ATTR_PADDING, 2,
                                                        ATTR_SSH_ALIGNED, 1,
                                                        ATTR_SSH_HORZ, 2,
                                                        ATTR_SSH_STATES, TILE_STATE_HOVER,
@@ -515,7 +530,7 @@ public final class Constants
     public static final int[] style_text_finish = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
                                                    ATTR_SHADOW_DY, R.dimen.shadowTextY,
                                                    ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
-                                                   ATTR_SHADOW_COLOR, 0 | COLOR,
+                                                   ATTR_SHADOW_COLOR, 0x1 | COLOR,
                                                    ATTR_GRAVITY, Gravity.CENTER_VERTICAL,
                                                    ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_NORMAL | THEME,
                                                    ATTR_SIZE, R.dimen.finish,
@@ -524,7 +539,7 @@ public final class Constants
     public static final int[] style_text_counters = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
                                                      ATTR_SHADOW_DY, R.dimen.shadowTextY,
                                                      ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
-                                                     ATTR_SHADOW_COLOR, 0 | COLOR,
+                                                     ATTR_SHADOW_COLOR, 0x1 | COLOR,
                                                      ATTR_GRAVITY, Gravity.CENTER_VERTICAL,
                                                      ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_PANEL_COUNTERS | THEME,
                                                      ATTR_SIZE, R.dimen.panel,
@@ -533,7 +548,7 @@ public final class Constants
     public static final int[] style_text_planet = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
                                                    ATTR_SHADOW_DY, R.dimen.shadowTextY,
                                                    ATTR_SHADOW_RADIUS, R.dimen.shadowTextR,
-                                                   ATTR_SHADOW_COLOR, 0 | COLOR,
+                                                   ATTR_SHADOW_COLOR, 0x1 | COLOR,
                                                    ATTR_GRAVITY, Gravity.CENTER,
                                                    ATTR_COLOR_DEFAULT, ATTR_SSH_COLOR_NAME_PLANET | THEME,
                                                    ATTR_SIZE, R.dimen.planet,
@@ -547,15 +562,6 @@ public final class Constants
                                                    ATTR_SSH_ALIGNED, 1,
                                                    ATTR_SSH_SCALE, TILE_SCALE_MIN,
                                                    ATTR_SSH_GRAVITY, Gravity.CENTER};
-
-    public static final int[] style_icon_actions  = {ATTR_SSH_SCALE, TILE_SCALE_HEIGHT,
-                                                     ATTR_CLICKABLE, 0,
-                                                     ATTR_FOCUSABLE, 0,
-                                                     ATTR_SSH_ALIGNED, 1,
-                                                     ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_ICONS | THEME,
-                                                     ATTR_SSH_VERT, 3,
-                                                     ATTR_SSH_HORZ, 10,
-                                                     ATTR_BACKGROUND, ATTR_SSH_COLOR_SELECTOR | THEME};
 
     public static final int[] style_dlg_actions = {ATTR_SSH_SHAPE, TILE_SHAPE_ROUND,
                                                    ATTR_SSH_RADII, com.github.ostrovskal.ssh.R.string.radii_dlg};

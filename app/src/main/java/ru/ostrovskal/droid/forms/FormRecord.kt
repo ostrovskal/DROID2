@@ -1,7 +1,6 @@
 package ru.ostrovskal.droid.forms
 
 import android.content.Context
-import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +22,7 @@ import com.github.ostrovskal.ssh.utils.*
 import com.github.ostrovskal.ssh.widgets.Chart
 import com.github.ostrovskal.ssh.widgets.Text
 import com.github.ostrovskal.ssh.widgets.Tile
+import com.github.ostrovskal.ssh.widgets.lists.BaseListView
 import ru.ostrovskal.droid.Constants.FORM_GAME
 import ru.ostrovskal.droid.Constants.style_tile_droid
 import ru.ostrovskal.droid.R
@@ -41,8 +41,12 @@ class FormRecord: Form() {
 				formHeader(R.string.header_record)
 				list(config.isVert) {
 					id = android.R.id.list
-					selector = ColorDrawable(0)
 					adapter = StatAdapter(wnd).apply { this@FormRecord.adapter = this }
+					itemClickListener = object : BaseListView.OnListItemClickListener {
+						override fun onItemClick(list: BaseListView, view: View, position: Int, id: Long) {
+							wnd.instanceForm(FORM_GAME, "record", id)
+						}
+					}
 				}
 			}
 		}
@@ -77,14 +81,14 @@ class FormRecord: Form() {
 		loaderManager.initLoader(Constants.LOADER_CONNECTOR, null, this).forceLoad()
 	}
 	
-	override fun queryConnector() = Stat.select(Stat.fPlanet, Stat.fRandom, Stat.fTime, Stat.fFuel, Stat.fScore,
+	override fun queryConnector() = Stat.select(Stat.fPlanet, Stat.fDate, Stat.fTime, Stat.fFuel, Stat.fScore,
 	                                            Stat.fCount, Stat.fBomb, Stat.fYellow, Stat.fRed, Stat.fGreen,
-	                                            Stat.fDeath, Stat.fEgg, Stat.fCycles, Stat.id) { orderBy(Stat.fRandom, false) }
+	                                            Stat.fDeath, Stat.fEgg, Stat.fCycles, Stat.id) { orderBy(Stat.fDate, false) }
 	
-	private inner class StatAdapter(context: Context) : ListAdapter(context, if(config.isVert) RecordVertItem() else RecordHorzItem(), 4) {
+	private inner class StatAdapter(context: Context) : ListAdapter(context, if(config.isVert) RecordVertItem() else RecordHorzItem(), 2) {
 		override fun bindField(view: View?, rs: Rowset, idx: Int) {
 			if(view is Text && idx == 1) {
-				view.text = rs.datetime(Stat.fRandom)
+				view.text = rs.datetime(Stat.fDate)
 			} else {
 				super.bindField(view, rs, idx)
 			}
@@ -92,11 +96,6 @@ class FormRecord: Form() {
 		
 		override fun bindView(view: View, context: Context, rs: Rowset) {
 			super.bindView(view, context, rs)
-			view.byIdx<View>(2).apply {
-				setOnClickListener {
-					wnd.instanceForm(FORM_GAME, "record", rs.getLong(mRowIDColumn))
-				}
-			}
 			// подсчитать текущие показатели
 			val curValues = IntArray(maxValues.size)
 			var mx = 0f; var mn = 0f
@@ -105,7 +104,7 @@ class FormRecord: Form() {
 				curValues[it] = v
 				if(flags[it]) mx += v else mn += v
 			}
-			view.byIdx<Chart>(3).apply {
+			view.byIdx<Chart>(2).apply {
 				max = maxValues
 				current = curValues
 				startAnim()
@@ -114,7 +113,7 @@ class FormRecord: Form() {
 			val countMin = Math.round((valMin / mn) * 4)
 			val count = countMax + countMin
 			// отобразить результат
-			repeat(8) { view.byIdx<Tile>(it + 4).visibility = if(it < count) View.VISIBLE else View.GONE }
+			repeat(8) { view.byIdx<Tile>(it + 3).visibility = if(it < count) View.VISIBLE else View.GONE }
 		}
 	}
 	
@@ -132,18 +131,14 @@ class FormRecord: Form() {
 	class RecordVertItem : RecordItem() {
 		
 		override fun createView(ui: UiCtx): View = with(ui) {
-			cellLayout(32, 18) {
+			cellLayout(28, 18) {
 				backgroundSet(StylesAndAttrs.style_item)
 				padding = 4.dp
 				layoutParams = LinearLayout.LayoutParams(Constants.MATCH, Theme.dimen(ctx, R.dimen.heightDlgItemRecord))
-				text(R.string.panel_text) {gravity = Gravity.CENTER}.lps(4, 0, 16, 4)
+				text(R.string.panel_text) {gravity = Gravity.CENTER}.lps(3, 0, 17, 4)
 				text(R.string.null_text, style_text_small) {
 					text = System.currentTimeMillis().datetime
-				}.lps(21, 0, 11, 4)
-				button(style_icon) {
-					numResource = R.integer.I_PLAY_RECORD
-					states = Constants.TILE_STATE_HOVER
-				}.lps(27, 8, 4, 5)
+				}.lps(20, 0, 8, 4)
 				chart(Constants.SSH_MODE_DIAGRAM) {
 					direction = Constants.DIRU
 					showText = false
@@ -170,23 +165,20 @@ class FormRecord: Form() {
 				layoutParams = LinearLayout.LayoutParams(Theme.dimen(ctx, R.dimen.heightDlgItemRecord), Constants.MATCH)
 				text(R.string.panel_text) {gravity = Gravity.CENTER}.lps(0, 0, 18, 3)
 				text(R.string.null_text, style_text_small) {
+					gravity = Gravity.CENTER
 					text = System.currentTimeMillis().datetime
-				}.lps(0, 3, 13, 3)
-				button(style_icon) {
-					numResource = R.integer.I_PLAY_RECORD
-					states = Constants.TILE_STATE_HOVER
-				}.lps(13, 3, 4, 4)
+				}.lps(0, 3, 18, 3)
 				chart(Constants.SSH_MODE_DIAGRAM) {
 					direction = Constants.DIRR
 					showText = false
 					colors = colorsItem
-				}.lps(3, 8, 13, 22)
+				}.lps(3, 7, 13, 22)
 				
-				repeat(8) { button(style_icon) { numResource = R.integer.I_STAR2}.lps(2 + it * 2, 30, 2, 2) }
+				repeat(8) { button(style_icon) { numResource = R.integer.I_STAR2}.lps(2 + it * 2, 29, 2, 2) }
 				
 				repeat(11) {
 					val style = if(it > 8) style_icon else style_tile_droid
-					button(style) { numResource = nums[it] }.lps(0, 8 + it * 2, 2, 2)
+					button(style) { numResource = nums[it] }.lps(0, 7 + it * 2, 2, 2)
 				}
 			}
 		}

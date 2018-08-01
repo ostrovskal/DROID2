@@ -64,8 +64,6 @@ open class FormDialog: Form() {
 		}
 		when(index) {
 			FORM_DLG_SAVE       -> sendResult(MSG_FORM, if(btnId == BTN_OK) ACTION_SAVE else ACTION_EXIT, 1)
-			FORM_FINISH         -> {}
-			FORM_DLG_NEW_SYSTEM -> {}
 		}
 		super.footer(btnId, param)
 	}

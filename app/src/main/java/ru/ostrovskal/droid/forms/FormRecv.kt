@@ -138,7 +138,7 @@ class FormRecv: Form() {
 				// date
 				text(R.string.null_text, style_text_small) { text = System.currentTimeMillis().datetime; gravity = Gravity.CENTER }.lps(12, 13, 8, 2)
 				// select
-				check(R.string.null_text) {
+				check(-1, R.string.null_text) {
 					setOnClickListener {
 						val idx = it.tag as? Int ?: return@setOnClickListener
 						val checked = (context as? Wnd)?.findForm<FormRecv>("recv_system")?.checked ?: return@setOnClickListener

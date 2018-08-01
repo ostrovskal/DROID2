@@ -1,7 +1,5 @@
 <resources>
-    <string name="press_restart">Restart?</string>
     <string name="new_planet_types">Emptities</string>
-    <string name="new_planet_packs">CLASSIC</string>
     <string name="panel_text">Pleiades</string>
     <string name="null_text" translatable="false"> </string>
     <string name="copyright">Copyright @ 2018 S.V. Shataloff</string>
@@ -10,7 +8,7 @@
     <string name="error_make_or_save">It was not succeeded to create or save the planet %s!</string>
 
     <string name="dialog_exit">Do you really want to leave?</string>
-    <string name="dialog_generate">Do you really want to generate classical planets? (All changes will be lost)</string>
+    <string name="dialog_generate">Do you really want to generate classical planets?</string>
     <string name="dialog_delete">Do you really want to remove the planet?</string>
     <string name="dialog_save">The planet is changed. To keep changes before an exit?</string>
 
@@ -18,7 +16,6 @@
     <string name="msg_out_of_fuel">OUT OF FUEL</string>
     <string name="msg_out_of_time">OUT OF TIME</string>
     <string name="msg_game_over">GAME OVER</string>
-    <string name="msg_paused">PAUSED</string>
     <string name="msg_droid_destroyed">DROID DESTROYED</string>
     <string name="msg_droid_suicyded">RESTART</string>
     <string name="msg_planet_cleaned">PLANET CLEARED</string>
@@ -27,10 +24,10 @@
     <string name="save_planet_success">The planet is successfully kept!</string>
     <string name="save_planet_failed">The droid isn\'t found!</string>
     <string name="droid_not_found">At the planet of %s the position of the droid isn\'t established!</string>
-    <string name="pack_already_exist">The %s package already is!</string>
+    <string name="pack_already_exist">The %s system already is!</string>
     <string name="planet_name_already_exist">The planet with the name %s already exists!</string>
 
-    <string name="hint_number">number</string>
+    <string name="hint_number">position</string>
     <string name="hint_name">name</string>
     <string name="hint_width">width</string>
     <string name="hint_fuel">fuel</string>
@@ -38,7 +35,7 @@
     <string name="hint_time">time</string>
     <string name="hint_desc">description</string>
     <string name="hint_new_pack">name of system</string>
-    <string name="hint_price">цена</string>
+    <string name="hint_price">price</string>
     <string name="hint_splash_name">Enter your name</string>
 
     <string name="options_music">Music</string>
@@ -78,4 +75,6 @@
     <string name="game_actions_exit">Exit from game</string>
     <string name="game_actions_restart">Restart</string>
     <string name="game_actions_continue">Continue</string>
+    <string name="new_system">New system</string>
+    <string name="classic_30">classic: 30</string>
 </resources>

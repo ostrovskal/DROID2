@@ -3,15 +3,13 @@
     <string name="lang">ru</string>
     <string name="copyright">Copyright @ 2018 Шаталов С.В.</string>
     <string name="rights">Все права защищены.</string>
-    <string name="dialog_generate">Вы действительно хотите сгенерировать классические планеты? (Все изменения будут потеряны)</string>
+    <string name="dialog_generate">Вы действительно хотите сгенерировать классические планеты?</string>
     <string name="dialog_delete">Вы действительно хотите удалить планету?</string>
     <string name="dialog_save">Планета изменена. Сохранить изменения перед выходом?</string>
     <string name="dialog_exit">Вы действительно хотите выйти?</string>
     <string name="droid_not_found">У планеты %s не установлена позиция дроида!</string>
-    <string name="pack_already_exist">Пакет %s уже есть!</string>
-    <string name="press_restart">Перезапуск?</string>
+    <string name="pack_already_exist">Система %s уже есть!</string>
     <string name="new_planet_types">Пустота</string>
-    <string name="new_planet_packs">CLASSIC</string>
     <string name="panel_text">Pleiades</string>
     <string name="error_make_or_save">Не удалось создать или сохранить планету %s!</string>
 
@@ -26,7 +24,6 @@
     <string name="msg_out_of_fuel">ТОПЛИВО КОНЧИЛОСЬ</string>
     <string name="msg_out_of_time">ВРЕМЯ ЗАКОНЧИЛОСЬ</string>
     <string name="msg_game_over">ИГРА ОКОНЧЕНА</string>
-    <string name="msg_paused">ПАУЗА</string>
     <string name="msg_droid_suicyded">ПЕРЕЗАПУСК</string>
     <string name="msg_droid_destroyed">ДРОИД УНИЧТОЖЕН</string>
     <string name="msg_planet_cleaned">ПЛАНЕТА СВОБОДНА</string>
@@ -41,7 +38,7 @@
     <string name="hint_width">ширина</string>
     <string name="hint_fuel">топливо</string>
     <string name="hint_height">высота</string>
-    <string name="hint_number">номер</string>
+    <string name="hint_number">позиция</string>
     <string name="hint_time">время</string>
     <string name="hint_desc">описание</string>
     <string name="hint_new_pack">имя системы</string>
@@ -71,4 +68,6 @@
     <string name="game_actions_exit">Выйти из игры</string>
     <string name="game_actions_restart">Перезапустить</string>
     <string name="game_actions_continue">Продолжить</string>
+    <string name="new_system">Новая система</string>
+    <string name="classic_30">classic: 30</string>
 </resources>

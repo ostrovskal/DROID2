@@ -10,10 +10,12 @@ import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.ui.*
 import com.github.ostrovskal.ssh.utils.config
 import com.github.ostrovskal.ssh.utils.debug
+import com.github.ostrovskal.ssh.utils.put
 import com.github.ostrovskal.ssh.utils.send
 import com.github.ostrovskal.ssh.widgets.Text
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
+import ru.ostrovskal.droid.gameView
 import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.views.ViewGame
@@ -35,7 +37,7 @@ class FormGame : Form() {
 					wnd.instanceForm(FORM_DLG_G_ACTIONS)
 				}
 			} else {
-				wnd.showToast(getString(R.string.press_restart), true, null, ToastLayout())
+				wnd.showToast(getString(R.string.again_press_for_exit), true, null, ToastLayout())
 			}
 		}
 		tmBACK = System.currentTimeMillis()
@@ -52,7 +54,7 @@ class FormGame : Form() {
 					ACTION_LOAD     -> s.send(a1 = ACTION_LOAD, a2 = arg2)
 					ACTION_NAME     -> namePlanet?.text = Planet.MAP.name
 					ACTION_EXIT     -> footer(BTN_NO, 0)
-					ACTION_FINISH   -> wnd.instanceForm(FORM_FINISH)
+					ACTION_FINISH   -> game.finishForm()
 				}
 			}
 		}
@@ -64,13 +66,13 @@ class FormGame : Form() {
 			linearLayout(port) {
 				containerLayout(if(port) 100 else 70, if(port) 70 else 100, true) {
 					id = R.id.gameContainer
-					game = custom { id = R.id.game }
+					game = gameView { id = R.id.game }
 				}.lps(WRAP, WRAP)
 				root = cellLayout(if(port) 28 else 17, if(port) 19 else 32) {
 					backgroundSet(if(port) style_panel_port else style_panel_land)
 					repeat(3) {
 						button(style_tile_droid) { numResource = tilesGamePanel[it] }.lps(2, 6 + it * 4, 4, 4)
-						text(R.string._00000, style_text_counters).lps(6, 6 + it * 4, 5, 4)
+						text(R.string._00000, style_text_counters).lps(6, 6 + it * 4, 6, 4)
 					}
 					val x = if(port) 11 else 1
 					val y = if(port) 6 else 19
@@ -94,20 +96,16 @@ class FormGame : Form() {
 		game.isTest = arguments.containsKey("isTest")
 	}
 	
-	override fun footer(btnId: Int, param: Int) {
-		if(param == ACTION_BACKPRESSED) {
-		}
-		else super.footer(id, 0)
-	}
-	
 	override fun saveState(state: Bundle) {
 		game.saveState(state)
 		super.saveState(state)
+		namePlanet?.apply { state.put("name_planet", text) }
 	}
 	
 	override fun restoreState(state: Bundle) {
 		super.restoreState(state)
 		game.restoreState(state)
+		namePlanet?.apply { text = state.getString("name_planet") }
 	}
 	
 	override fun setAnimation(trans: FragmentTransaction) { trans.setTransition(FragmentTransaction.TRANSIT_NONE) }

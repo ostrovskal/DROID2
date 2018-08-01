@@ -16,7 +16,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0.0"
+        versionName "3.0.0"
     }
     buildTypes {
         release {
@@ -50,5 +50,5 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'com.github.ostrovskal:ssh:1.2.5'
+    implementation 'com.github.ostrovskal:ssh:1.6.2'
 }

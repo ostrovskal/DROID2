@@ -7,7 +7,7 @@
     <string name="tag_main" translatable="false">main</string>
     <string name="tag_choice" translatable="false">choice</string>
     <string name="tag_stat" translatable="false">statistic</string>
-    <string name="tag_game_help" translatable="false">game_help</string>
+    <string name="tag_game_help" translatable="false">help</string>
     <string name="tag_dialog_exit" translatable="false">dialog_exit</string>
     <string name="tag_planet_new" translatable="false">planet_new</string>
     <string name="tag_planet_open" translatable="false">planet_open</string>
@@ -16,7 +16,7 @@
     <string name="tag_dialog_save" translatable="false">dialog_save</string>
     <string name="tag_dialog_generate" translatable="false">dialog_generate</string>
     <string name="tag_dialog_delete" translatable="false">dialog_delete</string>
-    <string name="tag_editor_help" translatable="false">help_editor</string>
+    <string name="tag_editor_help" translatable="false">help</string>
     <string name="tag_dialog_new_system" translatable="false">new_system</string>
     <string name="tag_dialog_e_actions" translatable="false">dialog_e_actions</string>
     <string name="tag_dialog_g_actions" translatable="false">dialog_g_actions</string>

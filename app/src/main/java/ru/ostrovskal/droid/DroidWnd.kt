@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "NOTHING_TO_INLINE")
 
 package ru.ostrovskal.droid
 
@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.ViewManager
 import com.github.ostrovskal.ssh.Constants.*
 import com.github.ostrovskal.ssh.Theme
 import com.github.ostrovskal.ssh.Wnd
@@ -13,16 +14,18 @@ import com.github.ostrovskal.ssh.layouts.AbsLayout
 import com.github.ostrovskal.ssh.singleton.Settings
 import com.github.ostrovskal.ssh.singleton.Sound
 import com.github.ostrovskal.ssh.sql.SQL
-import com.github.ostrovskal.ssh.ui.UiComponent
-import com.github.ostrovskal.ssh.ui.UiCtx
-import com.github.ostrovskal.ssh.ui.absoluteLayout
-import com.github.ostrovskal.ssh.ui.setContent
+import com.github.ostrovskal.ssh.ui.*
 import com.github.ostrovskal.ssh.utils.*
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.tables.RecvSystem
 import ru.ostrovskal.droid.tables.Stat
+import ru.ostrovskal.droid.views.ViewEditor
+import ru.ostrovskal.droid.views.ViewGame
+
+inline fun ViewManager.editorView(init: ViewEditor.() -> Unit) = uiView({ ViewEditor(it) }, init)
+inline fun ViewManager.gameView(init: ViewGame.() -> Unit) = uiView({ ViewGame(it) }, init)
 
 val Int.msg get() = when(this) {
 	ACTION_FINISH   -> "ACTION_FINISH"
@@ -117,30 +120,6 @@ class DroidWnd: Wnd() {
 					Pack.default()
 					Planet.default(this@DroidWnd)
 				}
-/*
-				val rnd = Random(System.currentTimeMillis())
-				repeat(10) {num ->
-					Stat.insert {
-						it[Stat.planet] = "Планета $num"
-						it[Stat.auth] = "Шаталов С.В."
-						it[Stat.pack] = SYSTEM_DEFAULT
-						it[Stat.date] = System.currentTimeMillis()
-						it[Stat.time] = rnd.nextLong(100000)
-						it[Stat.fuel] = rnd.nextLong(10000)
-						it[Stat.score] = rnd.nextLong(5000)
-						it[Stat.count] = rnd.nextLong(30)
-						it[Stat.bomb] = rnd.nextLong(100)
-						it[Stat.yellow] = rnd.nextLong(100)
-						it[Stat.red] = rnd.nextLong(100)
-						it[Stat.green] = rnd.nextLong(100)
-						it[Stat.death] = rnd.nextLong(10)
-						it[Stat.egg] = rnd.nextLong(100)
-						it[Stat.cycles] = rnd.nextLong(10000)
-						it[Stat.master] = 0
-						it[Stat.god] = 0
-					}
-				}
-*/
 			}
 		}
 	}

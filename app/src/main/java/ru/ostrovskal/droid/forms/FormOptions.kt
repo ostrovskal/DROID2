@@ -3,6 +3,8 @@ package ru.ostrovskal.droid.forms
 import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import com.github.ostrovskal.ssh.Constants.*
 import com.github.ostrovskal.ssh.Form
@@ -20,6 +22,7 @@ import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.DroidWnd
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.tables.Pack
+import ru.ostrovskal.droid.tables.Planet
 
 class FormOptions : Form() {
 	private var keysToggle 	= arrayOf<String>()
@@ -34,7 +37,8 @@ class FormOptions : Form() {
 			if(arg1 == ACTION_PACK) {
 				if(arg2 == BTN_OK) {
 				
-				} else root.byIdx<Select>(2).selectionString = KEY_TMP_PACK.optText
+				}
+				content.byId<Select>(R.id.slPack).selectionString = Planet.MAP.pack
 			}
 		}
 	}
@@ -43,7 +47,7 @@ class FormOptions : Form() {
 		val pack = select.selectionString
 		if(pack == "...") {
 			wnd.instanceForm(FORM_RECV)
-		} else KEY_TMP_PACK.optText = pack
+		} else Planet.MAP.pack = pack
 	}
 	
 	override fun inflateContent(container: LayoutInflater): UiCtx {
@@ -63,7 +67,7 @@ class FormOptions : Form() {
 				
 				select {
 					id = R.id.slTheme
-					adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), ctx.arrayStr(R.array.themesNames).toList())
+					adapter = SelectAdapter(ctx, SelectPopup(), SelectItem(), ctx.arrayStr(R.array.themesNames).toList())
 					itemClickListener = object : Select.OnSelectItemClickListener {
 						override fun onItemClick(select: Select, view: View, position: Int, id: Long) {
 							if(position != KEY_THEME.optInt) {
@@ -75,23 +79,25 @@ class FormOptions : Form() {
 				}.lps(0, 0, coord[2], 2)
 				select {
 					id = R.id.slPack
-					adapter = SelectAdapter(this, ctx, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name) + "...")
+					adapter = SelectAdapter(ctx, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name) + "...")
 					itemClickListener = this@FormOptions
 				}.lps(x, coord[3])
 				
-				seek(1..19, true) { id = R.id.skMus; setOnClickListener(this@FormOptions) }.lps(0, coord[8])
-				seek(1..19, true) { id = R.id.skSnd; setOnClickListener(this@FormOptions) }.lps(x, coord[9])
-				seek(1..29, true) { id = R.id.skScl }.lps(0, coord[10])
-				seek(1..29, true) { id = R.id.skSpd }.lps(x, coord[11])
+				seek(R.id.skMus, 1..19, true) { setOnClickListener(this@FormOptions) }.lps(0, coord[8])
+				seek(R.id.skSnd, 1..19, true) { setOnClickListener(this@FormOptions) }.lps(x, coord[9])
+				seek(R.id.skScl, 5..29, true).lps(0, coord[10])
+				seek(R.id.skSpd, 1..29, true).lps(x, coord[11])
 				
-				switch(R.string.options_music) { id = R.id.tgMus; setOnClickListener(this@FormOptions) }.lps(0, coord[4])
-				switch(R.string.options_sound) { id = R.id.tgSnd; setOnClickListener(this@FormOptions) }.lps(x, coord[5])
-				switch(R.string.options_scale) { id = R.id.tgScl; setOnClickListener(this@FormOptions) }.lps(0, coord[6])
-				switch(R.string.options_speed) { id = R.id.tgSpd; setOnClickListener(this@FormOptions) }.lps(x, coord[7])
+				switch(R.id.tgMus, R.string.options_music) { setOnClickListener(this@FormOptions) }.lps(0, coord[4])
+				switch(R.id.tgSnd, R.string.options_sound) { setOnClickListener(this@FormOptions) }.lps(x, coord[5])
+				switch(R.id.tgScl, R.string.options_scale) { setOnClickListener(this@FormOptions) }.lps(0, coord[6])
+				switch(R.id.tgSpd, R.string.options_speed) { setOnClickListener(this@FormOptions) }.lps(x, coord[7])
 				
-				check(R.string.options_classic) { id = R.id.ckCls }.lps(0, y, dx, 2)
-				check(R.string.options_master) { id = R.id.ckMst }.lps(dx, y)
-				if(KEY_AUTHOR_COUNT.optInt > 10) check(R.string.options_author) { id = R.id.ckAth }.lps(dx + dx, y)
+				check(R.id.ckCls, R.string.options_classic).lps(0, y, dx, 2)
+				check(R.id.ckMst, R.string.options_master).lps(dx, y)
+				check(R.id.ckAth, R.string.options_author) {
+					visibility = if(KEY_AUTHOR_COUNT.optInt > 10) VISIBLE else GONE
+				}.lps(dx + dx - if(vert) 1 else 0, y)
 				
 				formFooter(BTN_OK, R.integer.I_SAVE_OPTIONS, BTN_DEF, R.integer.I_DEFAULT_OPTIONS, BTN_NO, R.integer.I_NO)
 			}
@@ -99,6 +105,7 @@ class FormOptions : Form() {
 	}
 	
 	override fun initContent(content: ViewGroup) {
+		Planet.MAP.pack = KEY_PACK.optText
 		setUI()
 	}
 	
@@ -106,7 +113,8 @@ class FormOptions : Form() {
 		when(v) {
 			is Switch   -> {
 				root?.indexOfChild(v)?.apply {
-					val s = root.byIdx<Seek>(this - 4); val b = v.isChecked
+					val s = root.byIdx<Seek>(this - 4)
+					val b = v.isChecked
 					s.isEnabled = b
 					if(this == 7) { if(b) Sound.playMusic(wnd, 0, true, s.progress / 20f) else Sound.stopMusic() }
 				}
@@ -128,9 +136,12 @@ class FormOptions : Form() {
 						// тема
 						val updateTheme = (root.byIdx<Check>(11).isChecked != KEY_CLASSIC.optBool)
 						// флажки
-						for(i in 0..1) keysCheck[i].optBool = root.byIdx<Check>(i + 11).isChecked
+						for(i in 0..2) keysCheck[i].optBool = root.byIdx<Check>(i + 11).isChecked
 						// Seek/Toggle
-						for(i in 0..3) { keysToggle[i].optBool = root.byIdx<Switch>(i + 7).isChecked; keysSeek[i].optInt = root.byIdx<Seek>(i + 3).progress }
+						for(i in 0..3) {
+							keysToggle[i].optBool = root.byIdx<Switch>(i + 7).isChecked
+							keysSeek[i].optInt = root.byIdx<Seek>(i + 3).progress
+						}
 						if(updateTheme) wnd.changeTheme()
 					}
 					BTN_DEF -> {
@@ -163,9 +174,9 @@ class FormOptions : Form() {
 		for(i in 0..3) {
 			root.byIdx<Switch>(i + 7).isChecked = keysToggle[i].optBool
 		}
-		for(i in 0..1) root.byIdx<Check>(i + 11).isChecked = keysCheck[i].optBool
+		for(i in 0..2) root.byIdx<Check>(i + 11).isChecked = keysCheck[i].optBool
 		root.byIdx<Select>(1).selection = KEY_THEME.optInt
-		root.byIdx<Select>(2).selectionString = KEY_TMP_PACK.optText
+		root.byIdx<Select>(2).selectionString = Planet.MAP.pack
 		// громкость
 		DroidWnd.soundVolume()
 	}

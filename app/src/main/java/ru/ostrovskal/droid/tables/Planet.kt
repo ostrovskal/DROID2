@@ -5,6 +5,7 @@ package ru.ostrovskal.droid.tables
 import android.content.Context
 import android.graphics.*
 import com.github.ostrovskal.ssh.Constants.FOLDER_FILES
+import com.github.ostrovskal.ssh.Rand
 import com.github.ostrovskal.ssh.SqlField
 import com.github.ostrovskal.ssh.sql.RuleOption
 import com.github.ostrovskal.ssh.sql.Table
@@ -13,7 +14,6 @@ import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
 import kotlin.concurrent.thread
 
 object Planet: Table() {
@@ -28,8 +28,8 @@ object Planet: Table() {
 	@JvmField val content         = blob("content").notNull()
 	@JvmField val create          = integer("create").notNull()
 	
-	@JvmField val rnd   = Random(System.currentTimeMillis())
-
+	@JvmField val rnd             = Rand(System.currentTimeMillis())
+	
 	object MAP {
 		@SqlField("position") @JvmField var num       = 0L
 		@SqlField("traffic")  @JvmField var fuel      = 0
@@ -62,9 +62,8 @@ object Planet: Table() {
 		}
 		
 		// Сбросить в исходное состояние
-		private fun reset()
-		{
-			name = ""; auth = ""; pack = ""
+		private fun reset() {
+			name = ""; auth = ""
 			num = -1; time = 0; fuel = 0
 			block = true
 			droidNull()
@@ -73,8 +72,7 @@ object Planet: Table() {
 		}
 		
 		// Найти объекты на карте
-		fun searchEntities(): Boolean
-		{
+		fun searchEntities(): Boolean {
 			droidNull()
 			yellow 	= 0; red 	= 0; green 	= 0; egg 	= 0
 			for(idx in buffer.indices) {
@@ -92,8 +90,7 @@ object Planet: Table() {
 		}
 		
 		// Сохранить в папку программы
-		private fun save()
-		{
+		private fun save() {
 			val sb = StringBuilder(width * height + name.length + 10 * 6)
 			// запомнить название, автор, габариты, время, топливо
 			sb.append("$num\n").append("$auth\n").append("$width\n").append("$height\n").
@@ -196,7 +193,6 @@ object Planet: Table() {
 			}
 			name = nm
 			pack = pck
-			date = System.currentTimeMillis()
 			true
 		} catch(e: IOException) {
 			reset()
@@ -266,16 +262,17 @@ object Planet: Table() {
 				context.resources.getString(R.string.droid_not_found, name).debug()
 				return false
 			}
-			//date = System.currentTimeMillis()
 			miniature(context)
 			save()
 			val result: Boolean
-			if(exist( { system.eq(pack) and title.eq(name) } )) {
+			if(exist { system.eq(pack) and position.eq(num) } ) {
 				result = update {
 					autoValues(this@MAP)
-					where { title.eq(this@MAP.name) and system.eq(pack) }
+					where { position.eq(this@MAP.num) and system.eq(pack) }
 				} > 0L
 			} else {
+				date = System.currentTimeMillis()
+				if(auth.isEmpty()) auth = KEY_PLAYER.optText
 				result = insert { it.autoValues(this@MAP) } > 0L
 				if(result) Pack.changeCountPlanets(pack, true)
 			}
@@ -283,18 +280,32 @@ object Planet: Table() {
 		}
 
 		// Удалить планету
-		fun delete(): Boolean
-		{
+		fun delete(isReset: Boolean): Boolean {
 			// удалить из БД
 			if(delete { where { system.eq(pack) and position.eq(num) and title.eq(name) } } > 0L) {
-				// удалить текстовое представление карты
-				makeDirectories("planets/$pack", FOLDER_FILES, "$name.pl").delete()
-				// удалить миниатюру
-				makeDirectories("miniatures/$pack", FOLDER_FILES, "$name.png").delete()
 				// Изменить количество планет в системе
 				Pack.changeCountPlanets(pack, false)
-				// сброс
-				reset()
+				// Сжать номера
+				Planet.select(Planet.position) {
+					where { Planet.system.eq(pack) and Planet.position.greater(num) }
+					orderBy(Planet.position, true)
+				}.execute()?.release {
+					forEach {
+						val n = integer(0)
+						Planet.update {
+							it[Planet.position] = n - 1
+							where { Planet.system.eq(pack) and Planet.position.eq(n) }
+						}
+					}
+				}
+				if(isReset) {
+					// удалить текстовое представление карты
+					makeDirectories("planets/$pack", FOLDER_FILES, "$name.pl").delete()
+					// удалить миниатюру
+					makeDirectories("miniatures/$pack", FOLDER_FILES, "$name.png").delete()
+					// сброс
+					reset()
+				}
 				return true
 			}
 			return false
@@ -302,7 +313,7 @@ object Planet: Table() {
 		
 		// Загрузить из БД
 		fun load(pos: Int): Boolean {
-			select { where { Planet.position.eq(pos.toLong()) and Planet.system.eq(KEY_TMP_PACK.optText) } }.execute()?.release {
+			select { where { Planet.position.eq(pos.toLong()) and Planet.system.eq(pack) } }.execute()?.release {
 				autoValues(this@MAP)
 				searchEntities()
 				return true

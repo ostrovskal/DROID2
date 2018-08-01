@@ -6,8 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.github.ostrovskal.ssh.Constants
-import com.github.ostrovskal.ssh.Constants.BTN_NO
-import com.github.ostrovskal.ssh.Constants.TILE_SCALE_MIN
+import com.github.ostrovskal.ssh.Constants.*
 import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs
 import com.github.ostrovskal.ssh.Theme
@@ -31,7 +30,7 @@ class FormChoice: Form() {
 			result = pack
 			connector?.apply { update(queryConnector()); forceLoad() }
 		}
-		adapter.path = "${Constants.folderFiles}/miniatures/$result"
+		adapter.path = "$folderFiles/miniatures/$result"
 	}
 	
 	override fun queryConnector() = Planet.select(Planet.title, Planet.title, Planet.blocked, Planet.id) {
@@ -51,7 +50,7 @@ class FormChoice: Form() {
 				formHeader(R.string.header_choice)
 				select {
 					id = R.id.slPack
-					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name))
+					adapter = SelectAdapter(wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name))
 					selectionString = result
 					itemClickListener = this@FormChoice
 				}
@@ -66,7 +65,7 @@ class FormChoice: Form() {
 						override fun onItemClick(list: BaseListView, view: View, position: Int, id: Long) {
 							if(Planet.exist { Planet.system.eq(result) and Planet.blocked.eq(0) and Planet.id.eq(id) }) {
 								wnd.apply {
-									KEY_TMP_PACK.optText = result
+									Planet.MAP.pack = result
 									footer(BTN_NO, 0)
 									instanceForm(FORM_GAME, "position", position)
 								}

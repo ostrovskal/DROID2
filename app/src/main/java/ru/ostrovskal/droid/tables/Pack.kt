@@ -27,19 +27,22 @@ object Pack : Table() {
 	}
 
 	// Удалить пустые пакеты, если есть
-	// Проверить, что количество планет в классической системе > 30
+	// Проверить, что количество планет в классической системе > 0
 	fun check(): Boolean {
-		select(name).execute()?.release {
+		val curDate = System.currentTimeMillis()
+		select(name, date).execute()?.release {
 			forEach {
 				val nm = it.text(name)
+				val dt = it.integer(date)
 				val count = countPlanets(nm)
-				if(count <= 0L) {
+				// удалить пакет, если в нем нет планет и дата создания отличается от текущей на 100 минут
+				if(count <= 0L && (curDate - dt) > 360000) {
 					delete { where { name eq nm } }
 					if(nm == Constants.KEY_PACK.optText) Constants.KEY_PACK.optText = SYSTEM_DEFAULT
 				}
 			}
 		}
-		return countPlanets(SYSTEM_DEFAULT) > 0L
+		return countPlanets(SYSTEM_DEFAULT) == 30L
 	}
 	
 	// Создание пустой классической системы

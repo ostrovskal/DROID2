@@ -7,15 +7,11 @@ import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs.style_menu
 import com.github.ostrovskal.ssh.StylesAndAttrs.style_tool
 import com.github.ostrovskal.ssh.singleton.Sound
-import com.github.ostrovskal.ssh.sql.sql
 import com.github.ostrovskal.ssh.ui.UI
 import com.github.ostrovskal.ssh.ui.backgroundSet
 import com.github.ostrovskal.ssh.ui.button
 import com.github.ostrovskal.ssh.ui.cellLayout
-import com.github.ostrovskal.ssh.utils.config
-import com.github.ostrovskal.ssh.utils.optInt
-import com.github.ostrovskal.ssh.utils.optText
-import com.github.ostrovskal.ssh.utils.release
+import com.github.ostrovskal.ssh.utils.*
 import com.github.ostrovskal.ssh.widgets.Tile
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.DroidWnd
@@ -53,16 +49,16 @@ class FormMenu: Form() {
 			buttons[5].startAnimation(shake)
 		}
 		// кнопка редактора
-		//buttons[4].visibility = if(DroidWnd.isAuthor()) View.VISIBLE else View.GONE
+		buttons[4].visibility = if(DroidWnd.isAuthor()) View.VISIBLE else View.GONE
 		// кнопка выбор планеты
 		buttons[1].isEnabled = Planet.exist { Planet.blocked eq 0 }
 		// определить кол-во статистики и если необходимо удалить старую
 		val count = Stat.count()
 		if(count > LIMIT_RECORDS) {
-			Stat.select(Stat.fRandom) {
-				orderBy(Stat.fRandom, false)
+			Stat.select(Stat.fDate) {
+				orderBy(Stat.fDate, false)
 				limit(1, 50)
-			}.execute()?.release { Stat.delete { where { Stat.fRandom less this@release[Stat.fRandom] } } }
+			}.execute()?.release { Stat.delete { where { Stat.fDate less this@release[Stat.fDate] } } }
 		}
 		// разблокировать статистику
 		buttons[3].isEnabled = count > 0
@@ -77,17 +73,17 @@ class FormMenu: Form() {
 		KEY_TMP_THEME.optInt = KEY_THEME.optInt
 		// Запомним текущую систему
 		val pack = KEY_PACK.optText
-		KEY_TMP_PACK.optText = pack
+		Planet.MAP.pack = pack
 		
 		val idx = buttons.indexOf(v)
-		var position = 0L
+		var position = 0
 		if(idx == FORM_GAME) {
 			sql {
 				Planet.select(Planet.position) {
 					where { (Planet.system eq pack) and (Planet.blocked eq 1) }
 					orderBy(Planet.position)
 					limit(1)
-				}.execute()?.apply { position = this[Planet.position] }
+				}.execute()?.apply { position = this[Planet.position].toInt() }
 				if(position >= Planet.count { Planet.system eq pack }) position = 0
 			}
 		}

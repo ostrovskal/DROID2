@@ -1,6 +1,7 @@
 package ru.ostrovskal.droid.forms
 
 import android.content.Context
+import android.content.Loader
 import android.database.Cursor
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -8,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.github.ostrovskal.ssh.Constants
-import com.github.ostrovskal.ssh.Constants.MSG_FORM
+import com.github.ostrovskal.ssh.Constants.folderFiles
 import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs
 import com.github.ostrovskal.ssh.Theme
@@ -21,6 +22,7 @@ import com.github.ostrovskal.ssh.utils.*
 import com.github.ostrovskal.ssh.widgets.Text
 import com.github.ostrovskal.ssh.widgets.Tile
 import com.github.ostrovskal.ssh.widgets.lists.BaseListView
+import com.github.ostrovskal.ssh.widgets.lists.ListView
 import com.github.ostrovskal.ssh.widgets.lists.Select
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
@@ -35,7 +37,7 @@ class FormOpen: Form() {
 			result = nPack
 			connector?.apply { update(queryConnector()); forceLoad() }
 		}
-		adapter.path = "${wnd.filesDir}/miniatures/$result"
+		adapter.path = "$folderFiles/miniatures/$result"
 	}
 	
 	override fun queryConnector() = Planet.select(Planet.title, Planet.title, Planet.create, Planet.position, Planet.id) {
@@ -52,22 +54,18 @@ class FormOpen: Form() {
 					id = R.id.slPack
 					val tmp = Planet.MAP.pack
 					result = if(tmp.isEmpty()) KEY_PACK.optText else tmp
-					adapter = SelectAdapter(this, wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name))
-					selectionString = result
+					adapter = SelectAdapter(wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name))
 					itemClickListener = this@FormOpen
+					selectionString = result
 				}
 				list {
 					id = android.R.id.list
-					adapter = PlanetAdapter(wnd).apply {
-						this@FormOpen.adapter = this
-						path = "${wnd.filesDir}/miniatures/$result"
-					}
-					wnd.findForm<FormEditor>("editor")?.apply { selection = editor.position }
+					adapter = PlanetAdapter(wnd).apply { this@FormOpen.adapter = this }
 					itemClickListener = object : BaseListView.OnListItemClickListener {
 						override fun onItemClick(list: BaseListView, view: View, position: Int, id: Long) {
-							KEY_TMP_PACK.optText = result
-							sendResult(MSG_FORM, ACTION_LOAD, position)
-							footer(Constants.BTN_OK, 0)
+							Planet.MAP.pack = result
+							sendResult(Constants.MSG_FORM, ACTION_LOAD, position)
+							footer(Constants.BTN_NO, 0)
 						}
 					}
 				}
@@ -77,6 +75,16 @@ class FormOpen: Form() {
 	
 	override fun initContent(content: ViewGroup) {
 		loaderManager.initLoader(Constants.LOADER_CONNECTOR, null, this).forceLoad()
+	}
+	
+	override fun onLoadFinished(loader: Loader<Rowset>, data: Rowset?) {
+		super.onLoadFinished(loader, data)
+		val lst = content.byIdx<ListView>(2)
+		if(lst.mSelection == -1) {
+			wnd.findForm<FormEditor>("editor")?.apply {
+				lst.selection = editor.position
+			}
+		}
 	}
 	
 	private inner class PlanetAdapter(context: Context) : ListAdapter(context, OpenItem(), 3), View.OnClickListener {
@@ -154,7 +162,7 @@ class FormOpen: Form() {
 				button(StylesAndAttrs.style_icon) { numResource = R.integer.I_CANCEL }.lps(1, 1, 8, 8)
 				text(R.string.panel_text, style_text_planet).lps(10, 3, 10, 3)
 				text(R.string.null_text, StylesAndAttrs.style_text_small) {
-					text = System.currentTimeMillis().time
+					text = System.currentTimeMillis().datetime
 					gravity = Gravity.CENTER
 				}.lps(10, 6, 10, 3)
 				button(StylesAndAttrs.style_tool_arrow).lps(20, 0, 5, 5)

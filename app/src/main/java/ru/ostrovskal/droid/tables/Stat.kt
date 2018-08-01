@@ -5,6 +5,7 @@ import com.github.ostrovskal.ssh.STORAGE
 import com.github.ostrovskal.ssh.SqlField
 import com.github.ostrovskal.ssh.sql.Table
 import com.github.ostrovskal.ssh.utils.flags
+import com.github.ostrovskal.ssh.utils.info
 import com.github.ostrovskal.ssh.utils.optText
 import com.github.ostrovskal.ssh.utils.release
 import ru.ostrovskal.droid.Constants.*
@@ -23,7 +24,7 @@ object Stat: Table() {
 	@JvmField val fScore = integer("score").notNull()
 	@JvmField val fCount = integer("count").notNull()
 	@JvmField val fBomb = integer("bomb").notNull()
-	@JvmField val fRandom = integer("random").notNull()
+	@JvmField val fDate = integer("date").notNull()
 	@JvmField val fYellow = integer("yellow").notNull()
 	@JvmField val fRed = integer("red").notNull()
 	@JvmField val fGreen = integer("green").notNull()
@@ -32,13 +33,14 @@ object Stat: Table() {
 	@JvmField val fCycles = integer("cycles").notNull()
 	@JvmField val fMaster = integer("master").notNull()
 	@JvmField val fGod = integer("god").notNull()
+	@JvmField val fSeed = integer("seed").notNull()
 	
 	// все действия игрока
 	@STORAGE @SqlField("") @JvmField var rec        = byteArrayOf()
 	// карты на момент запуска
 	@STORAGE @SqlField("") @JvmField var maps       = byteArrayOf()
 	// начальный для random
-	@STORAGE @SqlField("") @JvmField var random     = 0L
+	@STORAGE @SqlField("") @JvmField var date       = 0L
 	// топливо затраченное
 	@STORAGE @SqlField("") @JvmField var fuel       = 0
 	// очков заработано
@@ -65,6 +67,8 @@ object Stat: Table() {
 	@STORAGE @SqlField("") @JvmField var master     = false
 	// игра в режиме бога
 	@STORAGE @SqlField("") @JvmField var god        = false
+	// seed псевдослучайной величины на момент завершения(для самопроверки состояния)
+	@STORAGE @SqlField("") @JvmField var seed       = 0L
 	
 	@STORAGE @JvmField var name							= ""
 	@STORAGE @JvmField var isRecord						= false
@@ -89,8 +93,8 @@ object Stat: Table() {
 		}
 		else {
 			if(begin) {
-				random = System.currentTimeMillis()
-				startTime = random
+				date = System.currentTimeMillis()
+				startTime = date
 				// сбрасываем значения
 				time = 0
 				fuel = 0; score = 0; count = 0; bomb = 0
@@ -128,7 +132,7 @@ object Stat: Table() {
 		}
 	}
 	
-	fun save() {
+	fun save(seed: Long) {
 		if(!isRecord) {
 			// поместить в БД
 			// обрезать массив записи в соответствии с реальным объемом
@@ -140,7 +144,10 @@ object Stat: Table() {
 				it[fAuth] = KEY_PLAYER.optText
 				it[fPack] = Planet.MAP.pack
 				it[fPlanet] = Planet.MAP.name
+				it[fSeed] = seed
 			}
+		} else {
+			if(this.seed != seed) "seed записи <${this.seed}> не соответствует текущему seed <$seed>!".info()
 		}
 	}
 	
@@ -188,9 +195,7 @@ object Stat: Table() {
 	{
 		if(posMap == 0) {
 			// грузим себя из БД
-			select(fMaps, fRec, fMaster, fGod, fRandom) {
-				where { id eq statID }
-			}.execute()?.release {
+			select(fMaps, fRec, fMaster, fGod, fSeed) { where { id eq statID } }.execute()?.release {
 				autoValues(this@Stat)
 			}
 		}
@@ -203,6 +208,7 @@ object Stat: Table() {
 				posNum = position
 			}
 			// инициализируем данные
+			if(posMap >= maps.size) return false
 			val l 			= maps[posMap].toInt() + 1
 			Planet.MAP.name 	= String(maps.copyOfRange(posMap + 1, posMap + l))
 			Planet.MAP.time		= maps[posMap + l + 0].toInt() * 100 + maps[posMap + l + 1].toInt()
@@ -214,26 +220,17 @@ object Stat: Table() {
 		return false
 	}
 	
-	fun control(time: Int, function: (Int, Boolean) -> Unit)
-	{
-		val idx = pos / 8
-		if(time > 0 && idx < rec.size) {
-			val sh = pos and 4
-			val v = (rec[idx].toInt() shr sh) and DIRS
-			var dir: Int = DIRN
-			if(v != DIRS) {
-				val m = 2 shl (v shr 2)
-				dir = when {
-				// кидаем бомбу ?
-					v flags REC_DROID_DROP -> DIR0
-				// движемся ?
-					v flags REC_DROID_MOVE -> m
-					else                   -> DIRN
-				}
-			}
-			function(dir, v == DIRS)
-			pos += 4
+	fun control(time: Int): Int {
+		if(time <= 0 && pos >= (rec.size * 8)) return DIRN
+		val sh = pos and 4
+		val v = (rec[pos / 8].toInt() shr sh) and DIRS
+		val dir = when {
+			v flags REC_DROID_DROP -> DIR0// кидаем бомбу ?
+			v flags REC_DROID_MOVE -> 2 shl (v shr 2)// движемся ?
+			else                   -> DIRN
 		}
+		pos += 4
+		return if(v == DIRS) DIRS else dir
 	}
 	
 	override fun toString() = "Stat"

@@ -15,6 +15,7 @@ import com.github.ostrovskal.ssh.widgets.Text
 import com.github.ostrovskal.ssh.widgets.Tile
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.R
+import ru.ostrovskal.droid.editorView
 import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.views.ViewEditor
@@ -34,7 +35,7 @@ class FormEditor : Form() {
 	}
 	
 	override fun onResume() {
-		"onResume".info()
+		editor.preview = KEY_EDIT_PREVIEW.optBool
 		super.onResume()
 	}
 	
@@ -64,9 +65,9 @@ class FormEditor : Form() {
 		linearLayout(port) {
 			containerLayout(if(port) 100 else 70, if(port) 70 else 100, true) {
 				id = R.id.editorContainer
-				editor = custom { id = R.id.editor }
+				editor = editorView { id = R.id.editor }
 			}.lps(WRAP, WRAP)
-			root = cellLayout(if(port) 28 else 14, if(port) 18 else 32) {
+			root = cellLayout(if(port) 28 else 14, if(port) 19 else 32) {
 				backgroundSet(style = if(port) style_panel_port else style_panel_land)
 				var x = if(port) 2 else 1
 				var y = if(port) 5 else 6
@@ -95,17 +96,15 @@ class FormEditor : Form() {
 	
 	override fun initContent(content: ViewGroup) {
 		setTile(KEY_EDIT_TILE.optInt)
-		editor.preview = KEY_EDIT_PREVIEW.optBool
 		val lst = KEY_EDIT_PLANET.optText.split('#')
 		if(lst.size == 2) {
 			editor.position = lst[0].ival(0, 10)
-			KEY_TMP_PACK.optText = lst[1]
+			Planet.MAP.pack = lst[1]
 		}
 		else {
 			editor.position = 0
-			KEY_TMP_PACK.optText = SYSTEM_DEFAULT
+			Planet.MAP.pack = SYSTEM_DEFAULT
 		}
-		"${KEY_EDIT_PLANET.optText} ${editor.position} ${KEY_TMP_PACK.optText}".info()
 		Sound.playMusic(wnd, 0, true)
 	}
 	
@@ -125,11 +124,13 @@ class FormEditor : Form() {
 	override fun saveState(state: Bundle) {
 		editor.saveState(state)
 		super.saveState(state)
+		namePlanet?.apply { state.put("name_planet", text) }
 	}
 	
 	override fun restoreState(state: Bundle) {
 		super.restoreState(state)
 		editor.restoreState(state)
+		namePlanet?.apply { text = state.getString("name_planet") }
 	}
 	
 	override fun setAnimation(trans: FragmentTransaction) { trans.setTransition(FragmentTransaction.TRANSIT_NONE) }

@@ -15,7 +15,6 @@ import com.github.ostrovskal.ssh.Constants.MSG_SERVICE
 import com.github.ostrovskal.ssh.Constants.fPt
 import com.github.ostrovskal.ssh.STORAGE
 import com.github.ostrovskal.ssh.Touch
-import com.github.ostrovskal.ssh.singleton.Sound
 import com.github.ostrovskal.ssh.utils.*
 import ru.ostrovskal.droid.Constants.*
 import ru.ostrovskal.droid.forms.FormEditor
@@ -43,7 +42,6 @@ class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 	private var dragSensitive = Size()
 	
 	init {
-		Sound.playMusic(wnd, 0, true)
 		anim.start(false, false)
 	}
 	

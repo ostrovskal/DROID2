@@ -10,8 +10,9 @@ import android.os.Bundle
 import android.os.Message
 import android.view.MotionEvent
 import android.view.SurfaceHolder
-import android.widget.AbsoluteLayout
+import android.view.View
 import com.github.ostrovskal.ssh.Constants.*
+import com.github.ostrovskal.ssh.Rand
 import com.github.ostrovskal.ssh.STORAGE
 import com.github.ostrovskal.ssh.StylesAndAttrs.style_seek
 import com.github.ostrovskal.ssh.Touch
@@ -33,14 +34,20 @@ import java.util.*
 
 class ViewGame(context: Context) : ViewCommon(context) {
 	
+	// Задержка обработки всех объектов, кроме дроида
+	private var delayEntity         = 0
+	
 	// признак запуска в режиме теста
 	@STORAGE @JvmField var isTest	= false
 
+	// Псевдослучайная последовательность
+	private val rnd                 = Rand()
+	
 	// Главная разметка
 	private val main                = wnd.main
 	
 	// курсор
-	private val cursor				= Controller(context, wnd.main, 1)
+	private val cursor				= Controller(context, wnd.main, 1).apply { setControllerMap(droidController, Size(10, 10) ) }
 	
 	// слайдер скорости
 	private val speed				= Seek(context, style_seek)
@@ -70,9 +77,6 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	// признак дроида
 	private var isDroid 			= false
 	
-	// режим паузы
-	@STORAGE @JvmField var isPause	= false
-	
 	// параметры планеты
 	@STORAGE @JvmField var params 	= IntArray(PARAMS_COUNT)
 	
@@ -86,7 +90,10 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		main.layoutTouchListener = object : AbsLayout.OnAbsLayoutTouched {
 			override fun onTouch(event: MotionEvent) = if(record == 0L) {
 				Touch.onTouch(event)
-				Touch.findTouch(0)?.apply { cursor.position = p1.toInt(iPt) }
+				Touch.findTouch(0)?.apply {
+					cursor.visibility = View.VISIBLE
+					cursor.position = p1.toInt(iPt)
+				}
 				true
 			} else false
 		}
@@ -95,11 +102,13 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	override fun restoreState(state: Bundle, vararg params: Any?) {
 		super.restoreState(state, *params)
 		cursor.restoreState(state)
+		rnd.restoreState(state)
 	}
 	
 	override fun saveState(state: Bundle, vararg params: Any?) {
 		super.saveState(state, *params)
 		cursor.saveState(state)
+		rnd.saveState(state)
 	}
 	
 	// обновление счетчиков в основном потоке
@@ -123,19 +132,17 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	{
 		super.surfaceChanged(holder, format, width, height)
 		if(record == 0L) {
-			// Удалить - при тесте
-			main.removeView(cursor)
 			// Добавить контроллер
 			main.addView(cursor)
 			cursor.restoreCoord()
 		} else {
 			// добавить слайдер скорости
 			speed.apply {
-				main.addView(this, AbsoluteLayout.LayoutParams(width - 40.dp, 40.dp, 20.dp, height - 40.dp))
+				main.addView(this, AbsLayout.LayoutParams(width - 10.dp, 40.dp, 10.dp, height - 45.dp))
+				isEnabled = true
 				alpha = 0.65f
 				range = 0..30
-				progress = KEY_SPEED_VOLUME.optInt * 10
-				isEnabled = true
+				progress = KEY_SPEED_VOLUME.optInt
 				setOnClickListener {
 					var v = 3f - progress / 10f
 					if(v < 0.1f) v = 0.1f
@@ -144,19 +151,6 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			}
 		}
 		// счетчики
-		val form = wnd.findForm<FormGame>("game")
-		if(form != null) {
-			form.namePlanet?.setOnClickListener {
-				isPause = !isPause
-				sysMsg = if(isPause) {
-					Sound.pauseAll()
-					resources.getString(R.string.msg_paused)
-				} else {
-					Sound.resumeAll()
-					""
-				}
-			}
-		}
 		Arrays.fill(paramsCache, -1)
 	}
 	
@@ -172,12 +166,13 @@ class ViewGame(context: Context) : ViewCommon(context) {
 							if(arg1 == ACTION_LOAD) {
 								params[PARAM_FUEL]	+= Planet.MAP.fuel
 								params[PARAM_TIME]	+= Planet.MAP.time
-								params[PARAM_EGG] = Planet.MAP.egg
-								params[PARAM_YELLOW] = Planet.MAP.yellow
-								params[PARAM_RED] = Planet.MAP.red
-								params[PARAM_GREEN] = Planet.MAP.green
-								"${Planet.MAP.yellow} ${Planet.MAP.red}".info()
-								post(updatePanel)
+								if(record == 0L) {
+									params[PARAM_YELLOW] = Planet.MAP.yellow
+									params[PARAM_RED] = Planet.MAP.red
+									params[PARAM_GREEN] = Planet.MAP.green
+									params[PARAM_EGG] = Planet.MAP.egg
+									post(updatePanel)
+								}
 							}
 						}
 						STATUS_INIT 	-> {
@@ -209,32 +204,18 @@ class ViewGame(context: Context) : ViewCommon(context) {
 							idMsg = 0
 							sysMsg = ""
 							Stat.init(false, isMaster, isGod, record)
-							rnd = Random(Stat.random)
+							rnd.seed = Stat.date
 							status = STATUS_LOOP
 							cursor.reset()
 						}
 						STATUS_SUICIDED -> {
 							if(status == STATUS_LOOP) {
-								if(isTest) {
-									idMsg = R.string.msg_test_complete
-									newStatus = STATUS_EXIT
-								}
-								else {
-									if(record != 0L && arg1 != 0) {
-										wnd.wndHandler?.send(MSG_FORM, a1 = ACTION_EXIT)
-										return true
-									}
-									else {
-										if(record == 0L) {
-											// добавить суицид в запись
-											Stat.add(1, 0, 0, false, true)
-											Stat.death++
-										}
-										newStatus = restart()
-										status = STATUS_DEAD
-										idMsg = if(newStatus == STATUS_EXIT) R.string.msg_game_over else R.string.msg_droid_suicyded
-									}
-								}
+								// добавить суицид в запись
+								Stat.add(1, 0, 0, false, true)
+								Stat.death++
+								newStatus = restart()
+								status = STATUS_DEAD
+								idMsg = if(newStatus == STATUS_EXIT) R.string.msg_game_over else R.string.msg_droid_suicyded
 								surHandler?.send(STATUS_MESSAGE, 0, newStatus, nArg, idMsg)
 							}
 						}
@@ -249,7 +230,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	{
 		if(newStatus == 0) {
 			var dead = !isDroid
-			if(!isDroid) {
+			if(dead) {
 				idMsg = if(params[PARAM_LIFE] == 1) R.string.msg_game_over else R.string.msg_droid_destroyed
 				Sound.playSound(SND_DROID_DEATH)
 				// подсчитываем сколько раз умирал
@@ -291,7 +272,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	
 	private fun restart(): Int {
 		return if(params[PARAM_LIFE] <= 1) {
-			Stat.save(); STATUS_EXIT
+			Stat.save(rnd.seed); STATUS_EXIT
 		} else {
 			params[PARAM_LIFE]--
 			STATUS_DEAD
@@ -303,12 +284,11 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		// обработчики объектов
 		fun procEye()
 		{
-			val limit = if(t == T_EYEB.toInt()) 4 else 2
-			val r = rnd.nextInt(countMapCells - params[PARAM_EYE])
-			if(r in 1..limit) {
+			val limit = if(t == T_EYEB.toInt()) 5 else 3
+			if(rnd.nextInt(countMapCells - params[PARAM_EYE]) in 1..limit) {
 				val xx = x + offsEye[rnd.nextInt(3)]
 				val yy = y + offsEye[rnd.nextInt(3)]
-				if(isProp(xx, yy, FN or FG)) setToMap(xx, yy, if(isProp(xx, yy, FT)) T_EXPL0.toInt() else t)
+				if(isCaps(xx, yy, FN or FG)) setToMap(xx, yy, if(isCaps(xx, yy, FT)) T_EXPL0.toInt() else t)
 			}
 			params[PARAM_EYE]++
 		}
@@ -320,13 +300,13 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			var yy = y + offsYellow[s]
 			var tt = T_NULL
 			// смотрим вбок - пусто - поворачиваем
-			if(isProp(xx, yy, FN)) setToMap(xx, yy, offsYellow[s + 2].toInt())
+			if(isCaps(xx, yy, FN)) setToMap(xx, yy, offsYellow[s + 2].toInt())
 			// проверяем вбок на гибель
 			else if(!checkKill(xx, yy, FY or FK)) {
 				xx = x + offsYellow[s + 4]
 				yy = y + offsYellow[s + 3]
 				// смотрим по направлению движения
-				if(isProp(xx, yy, FN)) setToMap(xx, yy, t)
+				if(isCaps(xx, yy, FN)) setToMap(xx, yy, t)
 				// проверяем по направлению движения на гибель
 				else if(!checkKill(xx, yy, FY or FK)) tt = offsYellow[s + 5]
 			}
@@ -340,7 +320,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			val xx = x + offsRG[tmp + 1]
 			val yy = y + offsRG[tmp]
 			var tt = T_NULL
-			if(isProp(xx, yy, FN)) setToMap(xx, yy, t)
+			if(isCaps(xx, yy, FN)) setToMap(xx, yy, t)
 			else if(!checkKill(xx, yy, FK)) tt = offsRG[tmp + 2]
 			buffer[x, y] = tt
 			params[PARAM_RED1 + (o - O_RED)]++
@@ -351,8 +331,10 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			for(i in 0..8) {
 				val xx = x + offsExplo[i * 2 + 1]
 				val yy = y + offsExplo[i * 2]
-				o = remapProp[buffer[xx, yy] and MSKT]
-				if(o flags (FN or FG) || o == O_EXPLEGG) setToMap(xx, yy, T_EGG0.toInt())
+				if(rnd.nextBoolean) {
+					o = remapProp[buffer[xx, yy] and MSKT]
+					if(o flags (FN or FG) || o == O_EXPLEGG) setToMap(xx, yy, T_EGG0.toInt())
+				}
 			}
 			Sound.playSound(SND_EXPLOSIVE, Point(x, y), Planet.MAP.droidPos())
 		}
@@ -406,13 +388,13 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			if(moveDrop() && (o == O_BOMB || o == O_BOMBDROID)) setToMap(x, y, expl.toInt())
 		}
 		
-		fun droidControl(dir: Int) {
+		fun droidControl(dir: Int, x: Int, y: Int) {
 			if(dir == DIR0) {
 				if(params[PARAM_BOMB] > 0) {
 					// кидаем бомбу
 					val xx = x + offsBombPos[(t - T_DROIDD) * 2]
 					val yy = y + offsBombPos[(t - T_DROIDD) * 2 + 1]
-					if(isProp(xx, yy, FG)) {
+					if(isCaps(xx, yy, FG)) {
 						isDropBomb = true
 						setToMap(xx, yy, T_BOMBDROID.toInt())
 						params[PARAM_BOMB]--
@@ -468,7 +450,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 									T_DROIDR -> 1
 									else     -> 0
 								}
-								if(isProp(xx + dx, yy, FN)) {
+								if(isCaps(xx + dx, yy, FN)) {
 									buffer[xx + dx, yy] = nn
 									isTmp = true
 								}
@@ -491,17 +473,20 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		fun procDroid() {
 			isDroid = true
 			isDropBomb = false
-			val oldX = x
-			val oldY = y
+			val pt = Planet.MAP.droidPos()
+			val oldX = pt.x
+			val oldY = pt.y
 			if(params[PARAM_FUEL] > 0) {
-				val pt = Planet.MAP.droidPos()
-				droid.set(canvasOffset.x + (pt.x - mapOffset.x) * tileCanvasSize + tileCanvasSize / 2f,
-						  canvasOffset.y + (pt.y - mapOffset.y) * tileCanvasSize + tileCanvasSize / 2f)
-				if(record != 0L && newStatus == 0) {
-					Stat.control(params[PARAM_TIME]) {dir, suicide -> if(suicide) surHandler?.send(STATUS_SUICIDED) else droidControl(dir) } }
-				else {
-					droidControl(cursor.buttonStates())
-				}
+				droid.set(canvasOffset.x + (oldX - mapOffset.x) * tileCanvasSize + tileCanvasSize / 2f,
+						  canvasOffset.y + (oldY - mapOffset.y) * tileCanvasSize + tileCanvasSize / 2f)
+				val buttons = if(record != 0L && newStatus == 0) {
+					val dir = Stat.control(params[PARAM_TIME])
+					if(dir == DIRS) {
+						surHandler?.send(STATUS_SUICIDED)
+						DIRN
+					} else dir
+				} else cursor.buttonStates()
+				droidControl(buttons, oldX, oldY)
 			}
 			if(newStatus == 0) Stat.add(params[PARAM_TIME], oldX, oldY, isDropBomb)
 		}
@@ -513,19 +498,21 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		post(updatePanel)
 		// обработка карты
 		if(status == STATUS_LOOP) {
-			// проверка на паузу
-			if(isPause) return
+			delayEntity++
 			// подсчитываем время затраченное на игру
 			val tm = System.currentTimeMillis()
 			Stat.time += tm - Stat.startTime
 			Stat.startTime = tm
 			// сбрасываем временные счетчики
-			isDroid = false
-			params[PARAM_RED1] 		= 0
-			params[PARAM_GREEN1] 	= 0
-			params[PARAM_YELLOW1]	= 0
-			params[PARAM_EGG1] 		= 0
-			params[PARAM_EYE] 		= 0
+			val procAll = delayEntity flags 1
+			if(procAll) {
+				isDroid = false
+				params[PARAM_RED1] = 0
+				params[PARAM_GREEN1] = 0
+				params[PARAM_YELLOW1] = 0
+				params[PARAM_EGG1] = 0
+				params[PARAM_EYE] = 0
+			}
 			y = 0
 			repeat(Planet.MAP.height) {
 				x = 0
@@ -534,17 +521,23 @@ class ViewGame(context: Context) : ViewCommon(context) {
 					if(t flags MSKU) buffer[x, y] = t and MSKT
 					else {
 						o = remapProp[t] and MSKO
-						if(o <= O_BOMBDROID) funHandlers[o].invoke()
+						if(o <= O_BOMBDROID) {
+							var isProc = o == O_DROID
+							if(!isProc) isProc = procAll
+							if(isProc) funHandlers[o].invoke()
+						}
 					}
 					x++
 				}
 				y++
 			}
-			checkStates()
-			params[PARAM_RED] 	= params[PARAM_RED1]
-			params[PARAM_GREEN] = params[PARAM_GREEN1]
-			params[PARAM_YELLOW]= params[PARAM_YELLOW1]
-			params[PARAM_EGG] 	= params[PARAM_EGG1]
+			if(procAll) {
+				checkStates()
+				params[PARAM_RED] = params[PARAM_RED1]
+				params[PARAM_GREEN] = params[PARAM_GREEN1]
+				params[PARAM_YELLOW] = params[PARAM_YELLOW1]
+				params[PARAM_EGG] = params[PARAM_EGG1]
+			}
 		}
 	}
 	
@@ -570,7 +563,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		Stat.score += score
 	}
 	
-	private fun isProp(xx: Int, yy: Int, msk: Int): Boolean = remapProp[buffer[xx, yy] and MSKT] flags msk
+	private fun isCaps(xx: Int, yy: Int, msk: Int): Boolean = remapProp[buffer[xx, yy] and MSKT] flags msk
 
 	private fun setToMap(xx: Int, yy: Int, n: Int) { buffer[xx, yy] = (n or if(yy > y || yy == y && xx > x) MSKU else 0) }
 	
@@ -579,7 +572,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			// объект уже падает
 			buffer[x, y] = T_NULL
 			// падать дальше?
-			if(isProp(x, y + 1, FN)) setToMap(x, y + 1, t)
+			if(isCaps(x, y + 1, FN)) setToMap(x, y + 1, t)
 			else if(o == O_EGG || !checkKill(x, y + 1, FB)) {
 				buffer[x, y] = t - T_DROP
 				if(o == O_STONE) Sound.playSound(SND_STONE_COLISSION, Point(x, y), Planet.MAP.droidPos())
@@ -589,15 +582,15 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		else {
 			val tt = t + T_DROP
 			// падать?
-			if(isProp(x, y + 1, FN)) {
+			if(isCaps(x, y + 1, FN)) {
 				buffer[x, y] = T_NULL
 				setToMap(x, y + 1, tt)
 			}
 			else {
 				// соскок?
-				if(isProp(x, y + 1, FS)) {
-					val dx = if(isProp(x - 1, y + 1, FN) && isProp(x - 1, y, FN)) -1
-					else if(isProp(x + 1, y + 1, FN) && isProp(x + 1, y, FN)) 1
+				if(isCaps(x, y + 1, FS)) {
+					val dx = if(isCaps(x - 1, y + 1, FN) && isCaps(x - 1, y, FN)) -1
+					else if(isCaps(x + 1, y + 1, FN) && isCaps(x + 1, y, FN)) 1
 					else return false
 					// падаем
 					buffer[x, y] = T_NULL
@@ -614,13 +607,17 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		if(oo nflags msk) return false
 		oo = oo and MSKO
 		// проверка при признаке бога на дроида
-		if(god && oo == O_DROID) return false
+		if(oo == O_DROID) {
+			if(god) return false
+			isDroid = false
+		}
 		// добавить очки с проверкой на бомбу дроида
 		val bd = oo == O_BOMBDROID
 		addScore(if(bd) o else oo, (o == O_BOMBDROID) or bd)
 		// поставить взрыв/яичный взрыв
 		var bt = if(bd) T_EXPLDROID0 else T_EXPL0
 		when(oo) {
+			// Гибель существ -> выпадать яйцам или нет?
 			O_YELLOW, O_RED, O_GREEN -> {
 				if(!classic && rnd.nextInt(countMapCells - (params[PARAM_YELLOW1] + params[PARAM_RED1] +
 				                                            params[PARAM_GREEN1] + 1)) < 3) bt = T_EXPLEGG
@@ -628,5 +625,21 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		}
 		setToMap(xx, yy, bt.toInt())
 		return true
+	}
+	
+	override fun onDetachedFromWindow() {
+		main.removeView(cursor)
+		main.removeView(speed)
+		super.onDetachedFromWindow()
+	}
+	
+	/**
+	 * При активации формы финиша игры - убрать лишиние элементы
+	 */
+	fun finishForm() {
+		Stat.save(rnd.seed)
+		main.removeView(speed)
+		main.removeView(cursor)
+		wnd.instanceForm(FORM_FINISH)
 	}
 }

@@ -8,7 +8,8 @@ import android.view.Gravity
 import android.view.SurfaceHolder
 import com.github.ostrovskal.ssh.Constants.*
 import com.github.ostrovskal.ssh.STORAGE
-import com.github.ostrovskal.ssh.StylesAndAttrs.*
+import com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_MESSAGE
+import com.github.ostrovskal.ssh.StylesAndAttrs.THEME
 import com.github.ostrovskal.ssh.Surface
 import com.github.ostrovskal.ssh.Theme
 import com.github.ostrovskal.ssh.Touch
@@ -20,16 +21,19 @@ import ru.ostrovskal.droid.msg
 import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
 import ru.ostrovskal.droid.tables.Stat
-import java.util.*
 
-open class ViewCommon(context: Context) : Surface(context, style_wnd)
-{
+open class ViewCommon(context: Context) : Surface(context) {
+	
+	// Размер карты
 	@JvmField protected var previewMap	= Size()
 	
+	// Размер блока
 	@JvmField protected var previewBlk	= Size()
 	
+	// Смещение от начала карты
 	@JvmField protected var previewMO	= Point()
 	
+	// Смещение от начала канвы
 	@JvmField protected var previewCO	= Point()
 	
 	// признак планеты
@@ -72,9 +76,6 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 	// количество ячеек в карте
 	@JvmField var countMapCells 		= 0
 	
-	// случайная величина
-	@JvmField var rnd 					= Random(System.currentTimeMillis())
-	
 	// смещение началы карты в блоках
 	@JvmField var mapOffset 			= Point()
 	
@@ -110,7 +111,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 	val wnd: DroidWnd                   get() = context as DroidWnd
 	
 	init {
-		delay = DroidWnd.applySpeed(50)
+		delay = DroidWnd.applySpeed(STD_GAME_SPEED)
 		tileBitmapSize = (tiles?.height ?: 0) / 4
 		tilesCol = 10
 	}
@@ -136,14 +137,13 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 					countMapCells = width * height
 					Touch.reset()
 					wnd.wndHandler?.send(MSG_FORM, 0, ACTION_NAME)
-					updatePreview(preview, true)
 				}
 				val pt = droidPos()
 				val droidOffs = Point(pt.x - canvasMaxSize.w / 2 , pt.y - canvasMaxSize.h / 2)
 				mapOffset.set(if(droidOffs.x < 0) 0 else droidOffs.x, if(droidOffs.y < 0) 0 else droidOffs.y)
 				if(mapOffset.x + canvasSize.w > width) mapOffset.x = width - canvasSize.w
 				if(mapOffset.y + canvasSize.h > height) mapOffset.y = height - canvasSize.h
-				updatePreview(preview, false)
+				updatePreview(preview, calcCanvas)
 			}
 		}
 	}
@@ -151,7 +151,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 	override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
 		super.surfaceChanged(holder, format, width, height)
 		// применить масштаб
-		tileCanvasSize = DroidWnd.applyScale((if(width > height) height else width) / (10 * config.multiplySW).toInt())
+		tileCanvasSize = DroidWnd.applyScale((if(width > height) height else width) / (12 * config.multiplySW).toInt())
 		canvasMaxSize = Size(width / tileCanvasSize, height / tileCanvasSize)
 		messageRect.right = width.toFloat(); messageRect.bottom = height.toFloat()
 		sys.apply {
@@ -164,7 +164,7 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 			               Theme.dimen(context, R.dimen.shadowTextY) * 2f,
 			               0x0.color)
 		}
-		initMap(true)
+		if(canvasSize.isEmpty()) initMap(true)
 	}
 	
 	override fun handleMessage(msg: Message): Boolean
@@ -195,17 +195,19 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 							ACTION_LOAD     -> {
 								// загружаем карту
 								position = msg.arg2
-								canvasSize.empty()
 								val success = if(record != 0L) Stat.load(position) else Planet.MAP.load(position)
 								if(success) {
 									initMap(true)
 									if(editor != null) editor.modify = false else sysMsg = Planet.MAP.name
 									s.send(STATUS_PREPARED, MESSAGE_DELAYED)
 								}
-								else if(editor == null) {
-									// НЕ УДАЛОСЬ ЗАГРУЗИТЬ ПЛАНЕТУ - ВОЗМОЖНО ОНА БЫЛА ПОСЛЕДНЕЙ
-									sysMsg = ""
-									h.send(MSG_FORM, a1 = ACTION_FINISH)
+								else {
+									h.send(MSG_FORM, a1 = ACTION_NAME)
+									if(editor == null) {
+										// НЕ УДАЛОСЬ ЗАГРУЗИТЬ ПЛАНЕТУ - ВОЗМОЖНО ОНА БЫЛА ПОСЛЕДНЕЙ
+										sysMsg = ""
+										h.send(MSG_FORM, a1 = ACTION_FINISH)
+									}
 								}
 							}
 							ACTION_SAVE     -> {
@@ -219,13 +221,12 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 								}
 							}
 							ACTION_DELETE   -> {
-								val count = Pack.countPlanets(Planet.MAP.pack)
-								Planet.MAP.delete()
+								val count = Pack.countPlanets(Planet.MAP.pack) - 1
+								Planet.MAP.delete(true)
 								h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = if(position >= count) position - 1 else position)
 								editor?.modify = false
 							}
 							ACTION_NEW      -> {
-								canvasSize.empty()
 								Planet.MAP.generator(context, arg2)
 								editor?.modify = false
 								initMap(true)
@@ -283,6 +284,6 @@ open class ViewCommon(context: Context) : Surface(context, style_wnd)
 			previewCO.x = if(v) ((width - (w * previewBlk.w)) / 2f).toInt() else canvasOffset.x
 			previewCO.y = if(v) ((height - (h * previewBlk.h)) / 2f).toInt() else canvasOffset.y
 		}
-		KEY_EDIT_PREVIEW.optBool = v
+		if(this is ViewEditor) KEY_EDIT_PREVIEW.optBool = v
 	}
 }
