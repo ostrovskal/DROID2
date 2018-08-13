@@ -564,7 +564,7 @@ public final class Constants
                                                    ATTR_SSH_GRAVITY, Gravity.CENTER};
 
     public static final int[] style_dlg_actions = {ATTR_SSH_SHAPE, TILE_SHAPE_ROUND,
-                                                   ATTR_SSH_RADII, com.github.ostrovskal.ssh.R.string.radii_dlg};
+                                                   ATTR_SSH_RADII, R.string.radii_dlg};
 
     public static final int[] style_panel_port = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_PORT | THEME};
 

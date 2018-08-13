@@ -282,8 +282,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	override fun draw(canvas: Canvas)
 	{
 		// обработчики объектов
-		fun procEye()
-		{
+		fun procEye() {
 			val limit = if(t == T_EYEB.toInt()) 5 else 3
 			if(rnd.nextInt(countMapCells - params[PARAM_EYE]) in 1..limit) {
 				val xx = x + offsEye[rnd.nextInt(3)]
@@ -293,8 +292,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			params[PARAM_EYE]++
 		}
 		
-		fun procYellow()
-		{
+		fun procYellow() {
 			val s = (t - T_YELLOWD) * 6
 			var xx = x + offsYellow[s + 1]
 			var yy = y + offsYellow[s]
@@ -314,8 +312,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			params[PARAM_YELLOW1]++
 		}
 		
-		fun procRG()
-		{
+		fun procRG() {
 			val tmp = (t - if(o == O_RED) T_REDD else T_GREEND) * 3
 			val xx = x + offsRG[tmp + 1]
 			val yy = y + offsRG[tmp]
@@ -326,8 +323,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			params[PARAM_RED1 + (o - O_RED)]++
 		}
 		
-		fun procExplEgg()
-		{
+		fun procExplEgg() {
 			for(i in 0..8) {
 				val xx = x + offsExplo[i * 2 + 1]
 				val yy = y + offsExplo[i * 2]
@@ -339,8 +335,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			Sound.playSound(SND_EXPLOSIVE, Point(x, y), Planet.MAP.droidPos())
 		}
 		
-		fun procExpl()
-		{
+		fun procExpl() {
 			val isExplDroid = t == T_EXPLDROID0.toInt()
 			if(t == T_EXPL0.toInt() || isExplDroid) {
 				for(i in 0..8) {
@@ -361,8 +356,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			else buffer[x, y] = if(t == T_EXPL3.toInt()) T_NULL.toInt() else t + 1
 		}
 		
-		fun procEgg()
-		{
+		fun procEgg() {
 			var make = false
 			// запускать ли процесс дрожания яйца?
 			if((t == T_EGG0.toInt() || t == T_EGG0 + T_DROP) && rnd.nextInt(countMapCells - params[PARAM_EGG1]) != 1) t--
@@ -420,7 +414,10 @@ class ViewGame(context: Context) : ViewCommon(context) {
 				val pe = remapProp[buffer[xx, yy] and MSKT]
 				o = pe and MSKO
 				// гибель
-				if(pe and FM == FM && !god) setToMap(xx, yy, T_EXPL0.toInt())
+				if(pe and FM == FM && !god) {
+					setToMap(xx, yy, T_EXPL0.toInt())
+					isDroid = false
+				}
 				else {
 					var isTmp = (pe and (FN or FG or FT)) != 0
 					if(isTmp) {
@@ -492,7 +489,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		}
 		
 		val funHandlers = arrayOf(::procDrop, ::procDrop, ::procExpl, ::procDroid, ::procRG, ::procRG,
-								  ::procYellow, ::procEye, ::procEgg, ::procExplEgg, ::procDrop, ::procExpl)
+								                        ::procYellow, ::procEye, ::procEgg, ::procExplEgg, ::procDrop, ::procExpl)
 		super.draw(canvas)
 		// обновляем счетчики
 		post(updatePanel)
