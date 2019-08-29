@@ -6,11 +6,15 @@
 
 static long seed = time(nullptr);
 
-static int x, y, w, h, countMapCells;
+static int w, h, countMapCells;
 static uint8_t t, o;
 static uint8_t* level = nullptr;
+static uint8_t* buf = nullptr;
 static int* params = nullptr;
 static bool droidMove = false;
+static jobject mBuffer = nullptr;
+static jobject mParams = nullptr;
+static uint8_t* ret_addr = nullptr;
 
 #define SEED1   214013L
 #define SEED2   2531011L
@@ -87,6 +91,7 @@ constexpr uint32_t DROID_ADD_BOMB    = 8;
 constexpr uint32_t DROID_ADD_SCORE   = 1000;
 constexpr uint32_t DROID_ADD_LIMIT   = 2500;
 
+constexpr uint8_t O_STONE            = 0x0;
 constexpr uint8_t O_BOMB             = 0x1;
 constexpr uint8_t O_EXPL             = 0x2;
 constexpr uint8_t O_DROID            = 0x3;
@@ -125,6 +130,7 @@ constexpr uint16_t FE               = 0x2000; // взрывается от др�
 
 // индексы всех тайлов
 constexpr uint8_t T_NULL            = 0;
+constexpr uint8_t T_BETON           = 2;
 constexpr uint8_t T_EXPL0           = 7;
 constexpr uint8_t T_EXPL1           = 8;
 constexpr uint8_t T_EXPL3           = 10;
@@ -159,17 +165,8 @@ constexpr uint8_t T_EXPLDROID0      = 42;
 // первый номер падающих тайлов
 constexpr uint8_t T_DROP            = (43 - 24);
 
-// смещение бомб дроида
-static int offsBombPos[]            = {0, 1, 1, 0, 0, -1, -1, 0};
-
-// смещение координат красных/зеленых тварей
-static int offsRG[]                 = {1, 0, T_REDR, 0, 1, T_REDU, -1, 0, T_REDL, 0, -1, T_REDD,
-                                       1, 0, T_GREENL, 0, 1, T_GREEND, -1, 0, T_GREENR, 0, -1, T_GREENU};
-// смещение координат при формировании взрыва
-static int offsExplo[]              = {-1, -1, -1, 0, -1, 1, 0, -1, 0, 0, 0, 1, 1, -1, 1, 0, 1, 1};
-
-// массив смещений для глаза
-static int  offsEye[]               = {0, -1, 1};
+// смещения вокруг исходной точки
+static int offsets[]                = {0, 0, 0, 1, 0, 0, 0, -1, 0};
 
 // массив значений увеличения очков
 static int  numScored[]             = {0, 0, 0, -50, 10, 20, 30, 5, 40, 0, 0, 0, 0, 0, 0, -100, 200, 150, 100, 50};
@@ -228,21 +225,22 @@ static uint16_t remapProp[]         = { // T_NULL, T_EARTH
         O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG, O_NULL | FN | FG
 };
 
-static __inline uint8_t getBuf(int xx, int yy) {
-    return *(level + yy * w + xx);
+static __inline bool isCaps(uint16_t msk) {
+    return (remapProp[*ret_addr & MSKT] & msk) != 0;
 }
 
-static __inline void setBuf(int xx, int yy, uint8_t tile) {
-    *(level + yy * w + xx) = tile;
+static bool isCapsIdx(int idx, uint16_t msk) {
+    ret_addr = buf + offsets[idx];
+    return isCaps(msk);
 }
 
-static bool isCaps(int xx, int yy, uint16_t msk) {
-    return (remapProp[getBuf(xx, yy) & MSKT] & msk) != 0;
+static __inline void setToMap(uint8_t n) {
+    *ret_addr = (uint8_t)(n | (ret_addr > buf ? MSKU : 0));
 }
 
-static void setToMap(int xx, int yy, uint8_t n) {
-    if(yy > y || (yy == y && xx > x)) n |= MSKU;
-    setBuf(xx, yy, n);
+static void setToMapIdx(int idx, uint8_t n) {
+    ret_addr = buf + offsets[idx];
+    setToMap(n);
 }
 
 static void addScore(int obj, bool isBomb) {
@@ -266,9 +264,8 @@ static void addScore(int obj, bool isBomb) {
     params[PARAM_STAT_SCORE] += score;
 }
 
-static bool checkKill(int xx, int yy, uint16_t msk) {
-    uint8_t oo = (uint8_t)remapProp[getBuf(xx, yy) & MSKT];
-    if(!(oo & msk)) return false;
+static bool checkKill(uint16_t msk) {
+    uint8_t oo = (uint8_t)remapProp[*ret_addr & MSKT];
     if(!(oo & msk)) return false;
     oo &= MSKO;
     // проверка признака бога на дроида
@@ -283,57 +280,52 @@ static bool checkKill(int xx, int yy, uint16_t msk) {
     uint8_t bt = bd ? T_EXPLDROID0 : T_EXPL0;
     if(oo == O_YELLOW || oo == O_RED || oo == O_GREEN) {
         // Гибель существ -> выпадать яйцам или нет?
-        if(params[PARAM_DROID_CLASSIC] && nextInt(countMapCells - (params[PARAM_YELLOW1] + params[PARAM_RED1]
-        + params[PARAM_GREEN1] + 1)) < 3) bt = T_EXPLEGG;
+        if(params[PARAM_DROID_CLASSIC] == 0 && nextInt(countMapCells - (params[PARAM_YELLOW1] + params[PARAM_RED1]
+                                                                        + params[PARAM_GREEN1] + 1)) < 3) bt = T_EXPLEGG;
     }
-    setToMap(xx, yy, bt);
+    setToMap(bt);
     return true;
 }
 
 static bool moveDrop() {
+    auto is = isCapsIdx(1, FN);
+    auto tc = T_NULL;
+    auto tt = t;
+    // объект уже падает?
     if(t > T_BOMBDROID) {
-        // объект уже падает
-        setBuf(x, y, T_NULL);
         // падать дальше?
-        if(isCaps(x, y + 1, FN)) setToMap(x, y + 1, t);
-        else if(o == O_EGG || !checkKill(x, y + 1, FB)) {
-            setBuf(x, y, t - T_DROP);
-            params[PARAM_SOUND_STONE]++;
+        if(!is) {
+            *buf = T_NULL;
+            if(o != O_EGG) { if (checkKill(FB)) return false; }
+            *buf = t - T_DROP;
+            if (o == O_STONE) params[PARAM_SOUND_STONE]++;
             return true;
         }
     } else {
-        uint8_t tt = t + T_DROP;
         // падать?
-        if (isCaps(x, y + 1, FN)) {
-            setBuf(x, y, T_NULL);
-            setToMap(x, y + 1, tt);
-        } else {
+        if (is) tt = t + T_DROP;
+        else {
             // соскок?
-            if (isCaps(x, y + 1, FS)) {
-                int dx = 0;
-                if (isCaps(x - 1, y + 1, FN) && isCaps(x - 1, y, FN)) dx = -1;
-                else if (isCaps(x + 1, y + 1, FN) && isCaps(x + 1, y, FN)) dx = 1;
-                else return false;
-                // падаем
-                setBuf(x, y, T_NULL);
-                setToMap(x + dx, y, tt);
-            }
+            if (!isCapsIdx(1, FS)) return false;
+            if (isCapsIdx(8, FN) && isCapsIdx(7, FN)) {}
+            else if (!isCapsIdx(2, FN) || !isCapsIdx(3, FN)) return false;
         }
     }
+    *buf = tc;
+    setToMap(tt);
     return false;
 }
 
 static void procDrop() {
-    if(moveDrop() && (o == O_BOMB || o == O_BOMBDROID)) setToMap(x, y, o == O_BOMBDROID ? T_EXPLDROID0 : T_EXPL0);
+    if(moveDrop() && (o == O_BOMB || o == O_BOMBDROID)) *buf = (o == O_BOMBDROID ? T_EXPLDROID0 : T_EXPL0);
 }
 
 static void procExpl() {
     bool isExplDroid = t == T_EXPLDROID0;
     if(t == T_EXPL0 || isExplDroid) {
-        for(int i = 0 ; i < 8 ; i++) {
-            int yy = y + offsExplo[i * 2];
-            int xx = x + offsExplo[i * 2 + 1];
-            o = (uint8_t)remapProp[getBuf(xx, yy) & MSKT];
+        for (int idx = 0; idx < 9; idx++) {
+            ret_addr = buf + offsets[idx];
+            o = (uint8_t)remapProp[*ret_addr & MSKT];
             uint8_t oo = o & MSKO;
             if(oo == O_BETON) continue;
             else if(oo == O_DROID) {
@@ -341,44 +333,37 @@ static void procExpl() {
                 params[PARAM_IS_DROID] = 0;
             }
             if(isExplDroid) addScore(oo, true);
-            setToMap(xx, yy, (o & FE) ? t : T_EXPL1);
+            setToMap(o & FE ? t : T_EXPL1);
         }
         params[PARAM_SOUND_EXPL]++;
     }
-    else setBuf(x, y, (t == T_EXPL3) ? T_NULL : t + (uint8_t)1);
+    else *buf = (t == T_EXPL3 ? T_NULL : t + (uint8_t)1);
 }
 
 static void procRG() {
-    int tmp = (t - (o == O_RED ? T_REDD : T_GREEND)) * 3;
-    int xx = x + offsRG[tmp + 1];
-    int yy = y + offsRG[tmp];
+    static int offsRG[] = {1, T_REDR, 3, T_REDU, 5, T_REDL, 7, T_REDD, 1, T_GREENL, 3, T_GREEND, 5, T_GREENR, 7, T_GREENU};
+    int tmp = (t - (o == O_RED ? T_REDD : T_GREEND)) << 1;
     uint8_t tt = T_NULL;
-    if(isCaps(xx, yy, FN)) setToMap(xx, yy, t);
-    else if(!checkKill(xx, yy, FK)) tt = (uint8_t)offsRG[tmp + 2];
-    setBuf(x, y, tt);
+    if(isCapsIdx(offsRG[tmp], FN)) setToMap(t);
+    else if(!checkKill(FK)) tt = (uint8_t)offsRG[tmp + 1];
+    *buf = tt;
 	params[PARAM_RED1 + (o - O_RED)]++;
 }
 
 static void procYellow() {
-    // смещение координат желтых тварей
-    static int offsYellow[]             = {0, 1, T_YELLOWR, 1, 0, T_YELLOWL, -1, 0, T_YELLOWU, 0, 1, T_YELLOWD,
-                                           0, -1, T_YELLOWL, -1, 0, T_YELLOWR, 1, 0, T_YELLOWD, 0, -1, T_YELLOWU};
-    int s = (t - T_YELLOWD) * 6;
-    int xx = x + offsYellow[s + 1];
-    int yy = y + offsYellow[s];
+    static uint8_t offsYellow[] = {3, T_YELLOWR, 1, T_YELLOWL, 5, T_YELLOWU, 3, T_YELLOWD, 7, T_YELLOWL, 5, T_YELLOWR, 1, T_YELLOWD, 7, T_YELLOWU};
+    int s = (t - T_YELLOWD) * 4;
     uint8_t tt = T_NULL;
     // смотрим вбок - пусто - поворачиваем
-    if(isCaps(xx, yy, FN)) setToMap(xx, yy, (uint8_t)offsYellow[s + 2]);
+    if(isCapsIdx(offsYellow[s], FN)) setToMap(offsYellow[s + 1]);
     // проверяем вбок на гибель
-    else if(!checkKill(xx, yy, FY | FK)) {
-        xx = x + offsYellow[s + 4];
-        yy = y + offsYellow[s + 3];
+    else if(!checkKill(FY | FK)) {
         // смотрим по направлению движения
-        if(isCaps(xx, yy, FN)) setToMap(xx, yy, t);
+        if(isCapsIdx(offsYellow[s + 2], FN)) setToMap(t);
         // проверяем по направлению движения на гибель
-        else if(!checkKill(xx, yy, FY | FK)) tt = (uint8_t)offsYellow[s + 5];
+        else if(!checkKill(FY | FK)) tt = offsYellow[s + 3];
     }
-    setBuf(x, y, tt);
+    *buf = tt;
     params[PARAM_YELLOW1]++;
 }
 
@@ -396,7 +381,7 @@ static void procEgg() {
         }
     }
     t++;
-    setBuf(x, y, t);
+    *buf = t;
     if(!make) {
         params[PARAM_EGG1]++;
         moveDrop();
@@ -404,23 +389,19 @@ static void procEgg() {
 }
 
 static void procEye() {
-    int limit = (t == T_EYEB ? 5 : 3);
     int rnd = nextInt(countMapCells - params[PARAM_EYE]);
-    if(rnd >= 1 && rnd < limit) {
-        int xx = x + offsEye[nextInt(3)];
-        int yy = y + offsEye[nextInt(3)];
-        if(isCaps(xx, yy, FN | FG)) setToMap(xx, yy, isCaps(xx, yy, FT) ? T_EXPL0 : t);
+    if(rnd > 0 && rnd < (t == T_EYEB ? 5 : 3)) {
+        if(isCapsIdx(nextInt(7) + 1, FN | FG)) setToMap(isCaps(FT) ? T_EXPL0 : t);
     }
     params[PARAM_EYE]++;
 }
 
 static void procExplEgg() {
-    for(int i = 0 ; i < 8 ; i++) {
-        int xx = x + offsExplo[i * 2 + 1];
-        int yy = y + offsExplo[i * 2];
+    for(int idx = 1 ; idx < 9 ; idx++) {
         if(nextBoolean()) {
-            o = (uint8_t)remapProp[getBuf(xx, yy) & MSKT];
-            if(o & (FN | FG) || o == O_EXPLEGG) setToMap(xx, yy, T_EGG0);
+            ret_addr = buf + offsets[idx];
+            o = (uint8_t)remapProp[*ret_addr & MSKT];
+            if(o & (FN | FG) || o == O_EXPLEGG) setToMap(T_EGG0);
         }
     }
     params[PARAM_SOUND_EXPL]++;
@@ -429,57 +410,43 @@ static void procExplEgg() {
 static void procDroid() {
     if(params[PARAM_FUEL] <= 0) return;
     uint8_t dir = (uint8_t)params[PARAM_DROID_BUT];
-    uint8_t tt = T_NULL;
+    int idx = 0;
     droidMove = false;
-    int xx = x;
-    int yy = y;
-    params[PARAM_DROID_BOMB] = 0;
     params[PARAM_IS_DROID] = 1;
     if (dir == DIR0) {
         if (params[PARAM_BOMB] > 0) {
             // кидаем бомбу
-            xx = x + offsBombPos[(t - T_DROIDD) * 2];
-            yy = y + offsBombPos[(t - T_DROIDD) * 2 + 1];
-            if (isCaps(xx, yy, FG)) {
+            if (isCapsIdx((t - T_DROIDD) * 2 + 1, FG)) {
                 params[PARAM_DROID_BOMB] = 1;
-                setToMap(xx, yy, T_BOMBDROID);
+                setToMap(T_BOMBDROID);
                 params[PARAM_BOMB]--;
             }
         }
     } else if (dir != DIRN) {
-        if (dir & DIRR) { xx++; tt = T_DROIDR; }
-        else if (dir & DIRL) { xx--; tt = T_DROIDL; }
+        if (dir & DIRR)  idx = 3; // 16
+        else if (dir & DIRL) idx = 7; // 8
         else {
-            if (dir & DIRD) { yy++; tt = T_DROIDD; }
-            else if (dir & DIRU) { yy--; tt = T_DROIDU; }
+            if (dir & DIRD) idx = 1; // 4
+            else if (dir & DIRU) idx = 5;// 2
         }
         // движемся
-        auto pe = remapProp[getBuf(xx, yy) & MSKT];
+        ret_addr = buf + offsets[idx];
+        auto pe = remapProp[*ret_addr & MSKT];
         o = (uint8_t)(pe & MSKO);
         // гибель
         if (pe & FM) {
-            setToMap(xx, yy, T_EXPL0);
+            setToMap(T_EXPL0);
             params[PARAM_IS_DROID] = 0;
         } else {
             droidMove = (pe & (FN | FG | FT)) != 0;
             if (droidMove) {
                 // особые случаи
                 switch (o) {
-                    case O_SCORE:
-                        params[PARAM_SCORE] += DROID_ADD_SCORE;
-                        break;
-                    case O_TIME:
-                        params[PARAM_TIME] += DROID_ADD_TIME;
-                        break;
-                    case O_LIFE:
-                        params[PARAM_LIFE]++;
-                        break;
-                    case O_FUEL:
-                        params[PARAM_FUEL] += DROID_ADD_FUEL;
-                        break;
-                    case O_BOMBS:
-                        params[PARAM_BOMB] += params[PARAM_DROID_MASTER] != 0 ? DROID_ADD_BOMB / 2 : DROID_ADD_BOMB;
-                        break;
+                    case O_SCORE: params[PARAM_SCORE] += DROID_ADD_SCORE; break;
+                    case O_TIME: params[PARAM_TIME] += DROID_ADD_TIME; break;
+                    case O_LIFE: params[PARAM_LIFE]++; break;
+                    case O_FUEL: params[PARAM_FUEL] += DROID_ADD_FUEL; break;
+                    case O_BOMBS: params[PARAM_BOMB] += params[PARAM_DROID_MASTER] != 0 ? DROID_ADD_BOMB / 2 : DROID_ADD_BOMB; break;
                 }
                 if (pe & FT) {
                     params[PARAM_SOUND_TAKE] = o == O_EGG ? SND_DROID_TAKE_EGG : SND_DROID_TAKE_MISC;
@@ -488,31 +455,26 @@ static void procDroid() {
                   if(o == O_EGG) params[PARAM_STAT_EGG]++;
                 }
             } else {
-                auto nn = getBuf(xx, yy);
+                auto nn = *ret_addr;
                 switch (nn) {
-                    case T_STONE0:
-                    case T_STONE1:
-                    case T_STONE2:
-                    case T_STONE3:
-                    case T_BOMB:
-                    case T_BOMBDROID: {
+                    case T_STONE0: case T_STONE1: case T_STONE2: case T_STONE3:
+                    case T_BOMB: case T_BOMBDROID:
                         // сдвигаем камень/бомбу
-                        int dx = 0;
-                        if (tt == T_DROIDL) dx = -1;
-                        else if (tt == T_DROIDR) dx = 1;
-                        if (isCaps(xx + dx, yy, FN)) {
-                            setBuf(xx + dx, yy, nn);
-                            droidMove = true;
+                        if(idx & 2) {
+                            auto addr = ret_addr;
+                            ret_addr += offsets[idx];
+                            if(isCaps(FN)) { setToMap(nn); droidMove = true; }
+                            ret_addr = addr;
                         }
-                    }
                 }
             }
             if(droidMove) {
-                setBuf(x, y, T_NULL);
-                setToMap(xx, yy, tt);
+                *buf = T_NULL;
+                setToMap((uint8_t)(idx / 2 + T_DROIDD));
                 params[PARAM_FUEL]--;
-                params[PARAM_DROID_X] = xx;
-                params[PARAM_DROID_Y] = yy;
+                auto addr = (int)(ret_addr - level);
+                params[PARAM_DROID_X] = (addr % w) - 1;
+                params[PARAM_DROID_Y] = (addr / w) - 1;
             }
         }
     }
@@ -522,33 +484,45 @@ static fun objHundlers[] = { &procDrop, &procDrop, &procExpl, &procDroid, &procR
                              &procYellow, &procEye, &procEgg, &procExplEgg, &procDrop, &procExpl };
 
 extern "C" {
-    JNIEXPORT bool Java_ru_ostrovskal_droid_views_ViewGame_processBuffer(JNIEnv *env, jclass, jbyteArray buffer,
-                                                                         jintArray pars, jboolean delay) {
-        jboolean isCopy;
+    JNIEXPORT void Java_ru_ostrovskal_droid_views_ViewGame_releaseBuffer(JNIEnv *env, jclass) {
+        env->DeleteGlobalRef(mBuffer);
+        env->DeleteGlobalRef(mParams);
+        mBuffer = nullptr; mParams = nullptr;
+    }
+
+    JNIEXPORT void Java_ru_ostrovskal_droid_views_ViewGame_initBuffer(JNIEnv *env, jclass, jbyteArray buffer, jintArray pars) {
+        if (mBuffer || mParams) Java_ru_ostrovskal_droid_views_ViewGame_releaseBuffer(env, nullptr);
+        mBuffer = env->NewGlobalRef(buffer);
+        mParams = env->NewGlobalRef(pars);
+        auto buf = (uint8_t *) env->GetPrimitiveArrayCritical(buffer, nullptr);
+        params = (jint *) env->GetPrimitiveArrayCritical(pars, nullptr);
+        w = buf[0];
+        h = buf[1];
+        level = buf + 2;
+        offsets[1] = w;     // down
+        offsets[2] = w + 1; // down + right
+        offsets[4] = -w + 1;// up + right
+        offsets[5] = -w;    // up
+        offsets[6] = -w - 1;// up + left
+        offsets[8] = w - 1; // down + left
+        env->ReleasePrimitiveArrayCritical(buffer, buf, JNI_ABORT);
+        env->ReleasePrimitiveArrayCritical(pars, params, JNI_ABORT);
+    }
+
+    JNIEXPORT bool Java_ru_ostrovskal_droid_views_ViewGame_processBuffer(JNIEnv, jobject, jboolean delay) {
         droidMove = false;
-        auto b = (jbyte *) env->GetPrimitiveArrayCritical(buffer, &isCopy);
-        params = (jint *) env->GetPrimitiveArrayCritical(pars, &isCopy);
         memset(&params[PARAM_EYE], 0, 10 * sizeof(jint));
-        auto buf = (uint8_t *) b;
-        w = *buf++;
-        h = *buf++;
         countMapCells = w * h;
-        level = buf;
-        for (int yy = 0; yy < h; yy++) {
-            y = yy;
-            for (int xx = 0; xx < w; xx++) {
-                x = xx;
-                t = *buf;
-                if (t & MSKU) *buf &= MSKT;
-                else {
-                    o = (uint8_t) remapProp[t] & MSKO;
-                    if (o <= O_BOMBDROID && (o == O_DROID || delay)) objHundlers[o]();
-                }
-                buf++;
+        buf = level + 2;
+        auto bufEnd = buf + countMapCells;
+        while(buf++ < bufEnd) {
+            t = *buf;
+            if (t & MSKU) *buf &= MSKT;
+            else {
+                o = (uint8_t) remapProp[t] & MSKO;
+                if (o <= O_BOMBDROID && (o == O_DROID || delay)) objHundlers[o]();
             }
         }
-        env->ReleasePrimitiveArrayCritical(buffer, b, JNI_ABORT);
-        env->ReleasePrimitiveArrayCritical(pars, params, JNI_ABORT);
         return droidMove;
     }
 }

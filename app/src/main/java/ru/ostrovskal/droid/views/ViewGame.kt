@@ -72,7 +72,9 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		}
 	}
 
-	external fun processBuffer(buffer: ByteArray, params: IntArray, delay: Boolean): Boolean
+	external fun processBuffer(delay: Boolean): Boolean
+	external fun initBuffer(buffer: ByteArray, params: IntArray)
+	external fun releaseBuffer()
 
 	// обновление счетчиков в основном потоке
 	private val updatePanel = Runnable {
@@ -143,6 +145,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 							params[PARAM_LIMIT]	= if(params[PARAM_DROID_MASTER] != 0) DROID_ADD_LIMIT * 2 else DROID_ADD_LIMIT
 							status = STATUS_DEAD
 							s.send(STATUS_DEAD, a2 = 1)
+							testDroid()
 						}
 						STATUS_DEAD     -> {
 							params[PARAM_BOMB]	= if(params[PARAM_DROID_MASTER] != 0) DROID_ADD_BOMB / 2 else DROID_ADD_BOMB
@@ -157,6 +160,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 							if(params[PARAM_TIME] != 0 || arg2 == 1) Sound.playRandomMusic(wnd, true)
 						}
 						STATUS_PREPARED -> {
+							initBuffer(buffer, params)
 							if(record != 0L) {
 								params[PARAM_DROID_MASTER] = Stat.master.toInt()
 								params[PARAM_DROID_GOD] = god.toInt()
@@ -248,6 +252,9 @@ class ViewGame(context: Context) : ViewCommon(context) {
 		}
 	}
 
+	fun testDroid() {
+	}
+
 	override fun draw(canvas: Canvas) {
 		super.draw(canvas)
 		// обновляем счетчики
@@ -264,8 +271,6 @@ class ViewGame(context: Context) : ViewCommon(context) {
 			val pt = Planet.droidPos()
 			val xd = pt.x
 			val yd = pt.y
-			params[PARAM_IS_DROID] = 0
-			params[PARAM_DROID_BOMB] = 0
 			droid.set(canvasOffset.x + (xd - mapOffset.x) * tileCanvasSize + tileCanvasSize / 2f,
 					canvasOffset.y + (yd - mapOffset.y) * tileCanvasSize + tileCanvasSize / 2f)
 			params[PARAM_DROID_BUT] = if(record != 0L && newStatus == 0) {
@@ -275,7 +280,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 					DIRN
 				} else dir
 			} else cursor.buttonStates()
-			if(processBuffer(buffer, params, procAll)) {
+			if(processBuffer(procAll)) {
 				Planet.droidPos(params[PARAM_DROID_X], params[PARAM_DROID_Y])
 				prepareMap(false)
 				// подсчитываем сколько топлива потратил
@@ -306,6 +311,7 @@ class ViewGame(context: Context) : ViewCommon(context) {
 	}
 
 	override fun onDetachedFromWindow() {
+		releaseBuffer()
 		main.removeView(cursor)
 		main.removeView(speed)
 		super.onDetachedFromWindow()

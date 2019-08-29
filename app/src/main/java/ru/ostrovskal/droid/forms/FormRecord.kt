@@ -29,6 +29,7 @@ import ru.ostrovskal.droid.Constants.FORM_GAME
 import ru.ostrovskal.droid.Constants.style_tile_droid
 import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.tables.Stat
+import kotlin.math.roundToInt
 
 class FormRecord: Form() {
 	private val test 			= booleanArrayOf(false, false, true, true, false, true, true, true, false, true, false)
@@ -111,8 +112,8 @@ class FormRecord: Form() {
 				current = curValues
 				startAnim()
 			}
-			val countMax = Math.round((mx / valMax) * 4)
-			val countMin = Math.round((valMin / mn) * 4)
+			val countMax = ((mx / valMax) * 4).roundToInt()
+			val countMin = ((valMin / mn) * 4).roundToInt()
 			val count = countMax + countMin
 			// отобразить результат
 			repeat(8) { view.byIdx<Tile>(it + 3).visibility = if(it < count) View.VISIBLE else View.GONE }
@@ -120,8 +121,8 @@ class FormRecord: Form() {
 	}
 	
 	abstract class RecordItem: UiComponent() {
-		protected val nums = intArrayOf(R.integer.TILE_TIME, R.integer.TILE_FUEL, R.integer.TILE_SCORE, R.integer.I_GEN_PLANET, R.integer.TILE_BOMB,
-		                                R.integer.TILE_YELLOWD, R.integer.TILE_REDD, R.integer.TILE_GREEND, R.integer.TILE_DROIDR, R.integer.TILE_EGG, R.integer.I_CYCLES)
+		protected val nums = intArrayOf(R.integer.I_CYCLES, R.integer.TILE_FUEL, R.integer.TILE_SCORE, R.integer.I_GEN_PLANET, R.integer.TILE_BOMB,
+		                                R.integer.TILE_YELLOWD, R.integer.TILE_REDD, R.integer.TILE_GREEND, R.integer.TILE_DROIDR, R.integer.TILE_EGG, R.integer.TILE_TIME)
 		val colorsItem = intArrayOf(0xc3f556.color, 0x063f5e.color, 0xf5e6e6.color, 0x0e24e9.color, 0xeadada.color, 0x66093a.color,
 		                        0xe0f907.color, 0x292807.color, 0x7df442.color, 0x15480a.color, 0xfa11ac.color, 0x260221.color,
 		                        0xf24949.color, 0x450303.color, 0x4e16e7.color, 0x460707.color, 0xec550a.color, 0x53261e.color,
