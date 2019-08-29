@@ -66,12 +66,12 @@
     <string name="header_dialog_actions">Operation choice</string>
     <string name="header_send_system">Send of planet system</string>
     <string name="header_recv_system">Receive of planet system</string>
-    <string name="themeLight">light</string>
-    <string name="themeDark">dark</string>
-    <string name="_00000">00000</string>
-    <string name="_000">000</string>
+    <string name="themeLight" translatable="false">light</string>
+    <string name="themeDark" translatable="false">dark</string>
+    <string name="_00000" translatable="false">00000</string>
+    <string name="_000" translatable="false">000</string>
     <string name="no_planet">Planet not found!</string>
-    <string name="panel_text2">Raticus Major</string>
+    <string name="panel_text2" translatable="false">Raticus Major</string>
     <string name="game_actions_exit">Exit from game</string>
     <string name="game_actions_restart">Restart</string>
     <string name="game_actions_continue">Continue</string>
