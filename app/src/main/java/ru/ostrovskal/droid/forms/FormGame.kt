@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.ostrovskal.droid.forms
 
 import android.app.FragmentTransaction
@@ -52,7 +54,7 @@ class FormGame : Form() {
 				"onMessageFormGame(what: ${what.msg} arg1: ${arg1.msg} arg2: $arg2 obj: $obj)".debug()
 				when(arg1) {
 					ACTION_LOAD     -> s.send(a1 = ACTION_LOAD, a2 = arg2)
-					ACTION_NAME     -> namePlanet?.text = Planet.MAP.name
+					ACTION_NAME     -> namePlanet?.text = Planet.name
 					ACTION_EXIT     -> footer(BTN_NO, 0)
 					ACTION_FINISH   -> game.finishForm()
 				}

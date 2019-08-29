@@ -9,7 +9,6 @@
     <string name="dialog_exit">Вы действительно хотите выйти?</string>
     <string name="droid_not_found">У планеты %s не установлена позиция дроида!</string>
     <string name="pack_already_exist">Система %s уже есть!</string>
-    <string name="new_planet_types">Пустота</string>
     <string name="panel_text">Pleiades</string>
     <string name="error_make_or_save">Не удалось создать или сохранить планету %s!</string>
 

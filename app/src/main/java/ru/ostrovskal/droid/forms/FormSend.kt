@@ -52,7 +52,7 @@ class FormSend: Form() {
 			it[Pack.desc] = desc
 			it[Pack.price] = price.toFloat()
 			it[Pack.skull] = skull.toLong()
-			where { Pack.name eq Planet.MAP.pack }
+			where { Pack.name eq Planet.pack }
 		}
 		// сформировать пакет
 		// отправить на сервер
@@ -96,7 +96,7 @@ class FormSend: Form() {
 	
 	override fun initContent(content: ViewGroup) {
 		Pack.select(Pack.name, Pack.date, Pack.price, Pack.desc, Pack.skull, Pack.author, Pack.planets) {
-			where { Pack.name eq Planet.MAP.pack }
+			where { Pack.name eq Planet.pack }
 		}.execute()?.release {
 			root.byId<Text>(R.id.etName).text = "${text("name")}: ${text("planets")}"
 			root.byId<Text>(R.id.etNumber).text = datetime(Pack.date)

@@ -4,6 +4,7 @@
     <item type="id" name="editor"/>
     <item type="id" name="gameContainer"/>
     <item type="id" name="editorContainer"/>
+    <item type="id" name="controller"/>
     <item type="id" name="namePlanet"/>
     <item name="tgMus" type="id"/>
     <item name="tgSnd" type="id"/>

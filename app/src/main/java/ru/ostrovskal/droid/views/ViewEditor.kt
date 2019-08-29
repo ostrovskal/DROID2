@@ -75,7 +75,7 @@ class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 				}
 				if(event) {
 					if(modeShift == SHIFT_MAP) {
-						Planet.MAP.apply {
+						Planet.apply {
 							mapOffset.x = moffs.x + ((t.p0.x - offs.w) / tileCanvasSize).toInt()
 							mapOffset.y = moffs.y + ((t.p0.y - offs.h) / tileCanvasSize).toInt()
 							if(mapOffset.x < 0) mapOffset.x = 0
@@ -101,7 +101,7 @@ class ViewEditor(context: Context) : ViewCommon(context), AnimFrames.Callback {
 	
 	private fun shiftTile(abs: PointF)
 	{
-		Planet.MAP.apply {
+		Planet.apply {
 			// установка элемента
 			val xx = previewMO.x + (Math.round(abs.x) - previewCO.x) / previewBlk.w
 			val yy = previewMO.y + (Math.round(abs.y) - previewCO.y) / previewBlk.h

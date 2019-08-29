@@ -10,11 +10,12 @@ android {
             storePassword 'IfnfkjdCthutq'
         }
     }
-    compileSdkVersion 26
+    compileSdkVersion 28
+    buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "ru.ostrovskal.droid"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 1
         versionName "3.0.0"
     }
@@ -27,12 +28,23 @@ android {
             signingConfig signingConfigs.config
         }
     }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
     flavorDimensions "default"
     productFlavors {
         pro {
             dimension "default"
             applicationId "ru.ostrovskal.droid.pro"
             resValue "string", "app_name", "DROID PRO"
+            minSdkVersion 19
+            signingConfig signingConfigs.config
+            targetSdkVersion 28
+            versionCode 1
+            versionName '3.0.0'
         }
         trial {
             dimension "default"
@@ -40,7 +52,6 @@ android {
             resValue "string", "app_name", "DROID TRIAL"
         }
     }
-    buildToolsVersion '28.0.0'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -50,5 +61,5 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'com.github.ostrovskal:ssh:1.6.3'
+    implementation 'com.github.ostrovskal:ssh:1.6.5'
 }

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.ostrovskal.droid.forms
 
 import android.content.Context
@@ -52,7 +54,7 @@ class FormOpen: Form() {
 				backgroundSet(StylesAndAttrs.style_form)
 				select {
 					id = R.id.slPack
-					val tmp = Planet.MAP.pack
+					val tmp = Planet.pack
 					result = if(tmp.isEmpty()) KEY_PACK.optText else tmp
 					adapter = SelectAdapter(wnd, SelectPopup(), SelectItem(), Pack.listOf(Pack.name, Pack.name))
 					itemClickListener = this@FormOpen
@@ -63,7 +65,7 @@ class FormOpen: Form() {
 					adapter = PlanetAdapter(wnd).apply { this@FormOpen.adapter = this }
 					itemClickListener = object : BaseListView.OnListItemClickListener {
 						override fun onItemClick(list: BaseListView, view: View, position: Int, id: Long) {
-							Planet.MAP.pack = result
+							Planet.pack = result
 							sendResult(Constants.MSG_FORM, ACTION_LOAD, position)
 							footer(Constants.BTN_NO, 0)
 						}
@@ -115,7 +117,7 @@ class FormOpen: Form() {
 		override fun onClick(v: View)
 		{
 			val numFrom = (v.tag as? Long) ?: return
-			Planet.select(Planet.position, Planet.title) {
+			Planet.select(Planet.position) {
 				where { Planet.system eq result}
 				orderBy(Planet.position)
 			}.execute()?.release {
@@ -139,7 +141,7 @@ class FormOpen: Form() {
 					}
 				}
 				// проверим, если текущая планета имеет тот же номер и пакет - обновить номер
-				Planet.MAP.apply {
+				Planet.apply {
 					if(result == pack) {
 						num = when(num) {
 							numFrom	-> numTo

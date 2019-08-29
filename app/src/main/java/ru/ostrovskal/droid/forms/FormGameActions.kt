@@ -21,7 +21,7 @@ class FormGameActions: Form() {
 	
 	override fun initContent(content: ViewGroup) {
 		game = wnd.findForm<FormGame>("game")?.game
-		game?.sleepThread(true)
+		game?.sleepThread = true
 	}
 	
 	override fun inflateContent(container: LayoutInflater): UiCtx {
@@ -59,7 +59,7 @@ class FormGameActions: Form() {
 	}
 	
 	override fun footer(btnId: Int, param: Int) {
-		game?.sleepThread(false)
+		game?.sleepThread = false
 		super.footer(btnId, param)
 	}
 }

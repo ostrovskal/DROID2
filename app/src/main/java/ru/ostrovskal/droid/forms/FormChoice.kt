@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.ostrovskal.droid.forms
 
 import android.content.Context
@@ -5,12 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import com.github.ostrovskal.ssh.Constants
 import com.github.ostrovskal.ssh.Constants.*
-import com.github.ostrovskal.ssh.Form
 import com.github.ostrovskal.ssh.StylesAndAttrs
 import com.github.ostrovskal.ssh.Theme
-import com.github.ostrovskal.ssh.adapters.ListAdapter
 import com.github.ostrovskal.ssh.adapters.SelectAdapter
 import com.github.ostrovskal.ssh.sql.Rowset
 import com.github.ostrovskal.ssh.ui.*
@@ -23,7 +22,7 @@ import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.tables.Pack
 import ru.ostrovskal.droid.tables.Planet
 
-class FormChoice: Form() {
+class FormChoice: com.github.ostrovskal.ssh.Form() {
 	override fun onItemClick(select: Select, view: View, position: Int, id: Long) {
 		val pack = select.selectionString
 		if(pack != result) {
@@ -39,7 +38,7 @@ class FormChoice: Form() {
 	}
 	
 	override fun initContent(content: ViewGroup) {
-		loaderManager.initLoader(Constants.LOADER_CONNECTOR, null, this).forceLoad()
+		loaderManager.initLoader(LOADER_CONNECTOR, null, this).forceLoad()
 	}
 	
 	override fun inflateContent(container: LayoutInflater): UiCtx {
@@ -59,13 +58,13 @@ class FormChoice: Form() {
 					cellSize = Theme.dimen(ctx, R.dimen.heightDlgItemChoicePlanet)
 					adapter = PlanetAdapter(wnd).apply {
 						this@FormChoice.adapter = this
-						path = "${Constants.folderFiles}/miniatures/$result"
+						path = "$folderFiles/miniatures/$result"
 					}
 					itemClickListener = object : BaseListView.OnListItemClickListener {
 						override fun onItemClick(list: BaseListView, view: View, position: Int, id: Long) {
 							if(Planet.exist { Planet.system.eq(result) and Planet.blocked.eq(0) and Planet.id.eq(id) }) {
 								wnd.apply {
-									Planet.MAP.pack = result
+									Planet.pack = result
 									footer(BTN_NO, 0)
 									instanceForm(FORM_GAME, "position", position)
 								}
@@ -80,7 +79,7 @@ class FormChoice: Form() {
 	private class ChoiceItem: UiComponent() {
 		override fun createView(ui: UiCtx) = ui.run {
 			cellLayout(10, 12) {
-				layoutParams = LinearLayout.LayoutParams (Constants.MATCH, Theme.dimen(ctx, R.dimen.heightDlgItemChoicePlanet))
+				layoutParams = LinearLayout.LayoutParams(MATCH, Theme.dimen(ctx, R.dimen.heightDlgItemChoicePlanet))
 				backgroundSet(StylesAndAttrs.style_item)
 				button(StylesAndAttrs.style_icon) { scale = TILE_SCALE_MIN }.lps(1, 1, 8, 8)
 				text(R.string.panel_text, style_text_planet).lps(0, 9, 10, 3)
@@ -88,7 +87,7 @@ class FormChoice: Form() {
 		}
 	}
 	
-	private class PlanetAdapter(context: Context) : ListAdapter(context, ChoiceItem(), 2) {
+	private class PlanetAdapter(context: Context) : com.github.ostrovskal.ssh.adapters.ListAdapter(context, ChoiceItem(), 2) {
 		private val iCancel = context.resources.getInteger(R.integer.I_CANCEL)
 		
 		override fun bindField(view: View?, rs: Rowset, idx: Int) {

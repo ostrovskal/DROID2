@@ -38,7 +38,7 @@ class FormPlanetNP: Form() {
 	
 	override fun inflateContent(container: LayoutInflater): UiCtx {
 		isNew = index == FORM_PLANET_NEW
-		nPack = Planet.MAP.pack
+		nPack = Planet.pack
 		if(nPack.isEmpty()) nPack = KEY_PACK.optText
 		return UI {
 			include(PlanetNP(index == FORM_PLANET_NEW, nPack)) {}
@@ -47,7 +47,7 @@ class FormPlanetNP: Form() {
 	
 	override fun initContent(content: ViewGroup) {
 		if(!isNew) {
-			with(Planet.MAP) {
+			with(Planet) {
 				oldNum = num
 				oldPack = nPack
 				oldName = name
@@ -90,9 +90,9 @@ class FormPlanetNP: Form() {
 				// время
 				val nTime = content.byId<Edit>(R.id.etTime).valid.toInt()
 				// ширина
-				val nWidth = if(!isNew) Planet.MAP.width else content.byId<Edit>(R.id.etWidth).valid.toInt()
+				val nWidth = if(!isNew) Planet.width else content.byId<Edit>(R.id.etWidth).valid.toInt()
 				// высота
-				val nHeight = if(!isNew) Planet.MAP.height else content.byId<Edit>(R.id.etHeight).valid.toInt()
+				val nHeight = if(!isNew) Planet.height else content.byId<Edit>(R.id.etHeight).valid.toInt()
 				// изменилось имя или система?
 				val isPack = nPack != oldPack && oldPack != ""
 				val isName = nName != oldName && oldName != ""
@@ -104,7 +104,7 @@ class FormPlanetNP: Form() {
 						throw EditInvalidException(getString(R.string.planet_name_already_exist, nName), etName)
 				}
 				// если изменилась позиция планеты, удаляем планету по старому номеру и сжимаем позиции, после ее номера
-				if(isNum || isPack) Planet.MAP.delete(false)
+				if(isNum || isPack) Planet.delete(false)
 				// если планета новая или изменился пакет или изменилась позиция - вставляем позицию планеты
 				if(isNum || isPack || isNew) {
 					if(Planet.exist { Planet.system.eq(nPack) and Planet.position.eq(nNum) }) {
@@ -127,7 +127,7 @@ class FormPlanetNP: Form() {
 					}
 				}
 				// Изменяем характеристики планеты, на новые:
-				with(Planet.MAP) {
+				with(Planet) {
 					num = nNum
 					name = nName
 					pack = nPack

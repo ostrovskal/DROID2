@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.ostrovskal.droid.forms
 
 import android.content.Context
@@ -29,7 +31,7 @@ import ru.ostrovskal.droid.R
 import ru.ostrovskal.droid.tables.Stat
 
 class FormRecord: Form() {
-	private val flags 			= booleanArrayOf(false, false, true, true, false, true, true, true, false, true, false)
+	private val test 			= booleanArrayOf(false, false, true, true, false, true, true, true, false, true, false)
 	private var maxValues 		= intArrayOf()
 	private var valMin	  		= 0f
 	private var valMax			= 0f
@@ -68,7 +70,7 @@ class FormRecord: Form() {
 			for(i in maxValues.indices) {
 				val mx = getInt(i)
 				maxValues[i] = mx
-				if(flags[i]) valMax += mx
+				if(test[i]) valMax += mx
 			}
 		}
 		valMin = Float.MIN_VALUE
@@ -102,7 +104,7 @@ class FormRecord: Form() {
 			repeat(11) {
 				val v = rs.getInt(it + 2)
 				curValues[it] = v
-				if(flags[it]) mx += v else mn += v
+				if(test[it]) mx += v else mn += v
 			}
 			view.byIdx<Chart>(2).apply {
 				max = maxValues
@@ -118,9 +120,8 @@ class FormRecord: Form() {
 	}
 	
 	abstract class RecordItem: UiComponent() {
-		protected val nums = intArrayOf(R.integer.TILE_YELLOWD, R.integer.TILE_REDD, R.integer.TILE_GREEND, R.integer.TILE_EGG, R.integer.TILE_DROIDR,
-		                                R.integer.TILE_TIME, R.integer.TILE_BOMB, R.integer.TILE_FUEL, R.integer.TILE_SCORE, R.integer.I_GEN_PLANET, R.integer.I_CYCLES)
-		
+		protected val nums = intArrayOf(R.integer.TILE_TIME, R.integer.TILE_FUEL, R.integer.TILE_SCORE, R.integer.I_GEN_PLANET, R.integer.TILE_BOMB,
+		                                R.integer.TILE_YELLOWD, R.integer.TILE_REDD, R.integer.TILE_GREEND, R.integer.TILE_DROIDR, R.integer.TILE_EGG, R.integer.I_CYCLES)
 		val colorsItem = intArrayOf(0xc3f556.color, 0x063f5e.color, 0xf5e6e6.color, 0x0e24e9.color, 0xeadada.color, 0x66093a.color,
 		                        0xe0f907.color, 0x292807.color, 0x7df442.color, 0x15480a.color, 0xfa11ac.color, 0x260221.color,
 		                        0xf24949.color, 0x450303.color, 0x4e16e7.color, 0x460707.color, 0xec550a.color, 0x53261e.color,
@@ -141,7 +142,7 @@ class FormRecord: Form() {
 				}.lps(20, 0, 8, 4)
 				chart(Constants.SSH_MODE_DIAGRAM) {
 					direction = Constants.DIRU
-					showText = false
+					showText = true
 					colors = colorsItem
 					max = intArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
 					current = intArrayOf(700, 200, 800, 400, 660, 100, 900, 350, 600, 250, 700)
@@ -150,7 +151,7 @@ class FormRecord: Form() {
 				repeat(8) { button(style_icon) { numResource = R.integer.I_STAR2}.lps(1, 15 - it * 2, 2, 2) }
 				
 				repeat(11) {
-					val style = if(it > 8) style_icon else style_tile_droid
+					val style = if(it == 3 || it == 10) style_icon else style_tile_droid
 					button(style) { numResource = nums[it] }.lps(4 + it * 2, 16, 2, 2)
 				}
 			}
@@ -170,14 +171,14 @@ class FormRecord: Form() {
 				}.lps(0, 3, 18, 3)
 				chart(Constants.SSH_MODE_DIAGRAM) {
 					direction = Constants.DIRR
-					showText = false
+					showText = true
 					colors = colorsItem
 				}.lps(3, 7, 13, 22)
 				
 				repeat(8) { button(style_icon) { numResource = R.integer.I_STAR2}.lps(2 + it * 2, 29, 2, 2) }
 				
 				repeat(11) {
-					val style = if(it > 8) style_icon else style_tile_droid
+					val style = if(it == 3 || it == 10) style_icon else style_tile_droid
 					button(style) { numResource = nums[it] }.lps(0, 7 + it * 2, 2, 2)
 				}
 			}

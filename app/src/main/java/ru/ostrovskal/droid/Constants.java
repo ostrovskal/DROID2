@@ -3,13 +3,13 @@ package ru.ostrovskal.droid;
 import android.graphics.Color;
 import android.view.Gravity;
 
+import static android.view.View.GONE;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_ROTATE;
 import static com.github.ostrovskal.ssh.Constants.SEEK_ANIM_SCALE;
 import static com.github.ostrovskal.ssh.Constants.TILE_GRAVITY_CENTER;
 import static com.github.ostrovskal.ssh.Constants.TILE_SCALE_MIN;
 import static com.github.ostrovskal.ssh.Constants.TILE_SHAPE_ROUND;
 import static com.github.ostrovskal.ssh.Constants.TILE_STATE_HOVER;
-import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_BACKGROUND;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_CLICKABLE;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_COLOR_DEFAULT;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_DRW;
@@ -24,6 +24,8 @@ import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_DY;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SHADOW_RADIUS;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SIZE;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_ALIGNED;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_ALPHA;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BACKGROUND;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BITMAP_NAME;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_BACKGROUND;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_BM_BUTTONS;
@@ -52,8 +54,10 @@ import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_SMALL;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_WINDOW;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_COLOR_WIRED;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_GRAVITY;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_HEIGHT;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_HORZ;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_MODE;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_NUM;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_RADII;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SCALE;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SHAPE;
@@ -61,21 +65,23 @@ import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_SPACING;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_STATES;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_THEME_NAME;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_VERT;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_WIDTH;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_SSH_WIDTH_SELECTOR;
+import static com.github.ostrovskal.ssh.StylesAndAttrs.ATTR_VISIBILITY;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.COLOR;
 import static com.github.ostrovskal.ssh.StylesAndAttrs.THEME;
 
 public final class Constants
 {
-    public static final String droidController        = "UUUUUUUUUUUUUUUUUUUU" +
-                                                        "LLLLUUUUUUUUUUUUUURR" +
-                                                        "LLLLLLUUUUUUUUUURRRR" +
-                                                        "LLLLLL00000000RRRRRR" +
-                                                        "LLLLLL00000000RRRRRR" +
-                                                        "LLLLLL00000000RRRRRR" +
-                                                        "LLLLLL00000000RRRRRR" +
-                                                        "LLLLLLDDDDDDDDRRRRRR" +
-                                                        "LLDDDDDDDDDDDDDDRRRR" +
+    public static final String droidController        = "UUUUUUUUUUUUUUUUUUUU\n" +
+                                                        "LLLLUUUUUUUUUUUUUURR\n" +
+                                                        "LLLLLLUUUUUUUUUURRRR\n" +
+                                                        "LLLLLLFFFFFFFFRRRRRR\n" +
+                                                        "LLLLLLFFFFFFFFRRRRRR\n" +
+                                                        "LLLLLLFFFFFFFFRRRRRR\n" +
+                                                        "LLLLLLFFFFFFFFRRRRRR\n" +
+                                                        "LLLLLLDDDDDDDDRRRRRR\n" +
+                                                        "LLDDDDDDDDDDDDDDRRRR\n" +
                                                         "DDDDDDDDDDDDDDDDDDDD";
     // режимы сдвига
     public static final int SHIFT_UNDEF            = 0;
@@ -218,13 +224,29 @@ public final class Constants
     public static final int PARAM_RED      = 7;
     public static final int PARAM_GREEN    = 8;
 
-    public static final int PARAM_EYE      = 9;
-    public static final int PARAM_EGG1     = 10;
-    public static final int PARAM_YELLOW1  = 11;
-    public static final int PARAM_RED1     = 12;
-    public static final int PARAM_GREEN1   = 13;
-    public static final int PARAM_LIMIT    = 14;
-    public static final int PARAMS_COUNT   = 15;
+    public static final int PARAM_EYE           = 9;
+    public static final int PARAM_EGG1          = 10;
+    public static final int PARAM_YELLOW1       = 11;
+    public static final int PARAM_RED1          = 12;
+    public static final int PARAM_GREEN1        = 13;
+    public static final int PARAM_IS_DROID      = 14;
+    public static final int PARAM_DROID_BOMB    = 15;
+    public static final int PARAM_SOUND_EXPL    = 16;
+    public static final int PARAM_SOUND_STONE   = 17;
+    public static final int PARAM_SOUND_TAKE    = 18;
+    public static final int PARAM_LIMIT         = 19;
+    public static final int PARAM_DROID_X       = 20;
+    public static final int PARAM_DROID_Y       = 21;
+    public static final int PARAM_DROID_BUT     = 22;
+    public static final int PARAM_DROID_GOD     = 23;
+    public static final int PARAM_DROID_CLASSIC = 24;
+    public static final int PARAM_DROID_MASTER  = 25;
+    public static final int PARAM_STAT_GREEN    = 26;
+    public static final int PARAM_STAT_RED      = 27;
+    public static final int PARAM_STAT_YELLOW   = 28;
+    public static final int PARAM_STAT_EGG      = 29;
+    public static final int PARAM_STAT_SCORE    = 30;
+    public static final int PARAMS_COUNT        = 31;
 
     // константы
     public final static int DROID_LIFE          = 5;
@@ -408,7 +430,6 @@ public final class Constants
                                                    T_DROIDD, T_DROIDR, T_DROIDU, T_DROIDL, T_STONE0, T_STONE1, T_STONE2,
                                                    T_STONE3, T_EYEG, T_EYEB, T_EYEG, T_EYEB, T_EXPL0, T_EXPL1, T_EXPL2, T_EXPL3};
 
-    // Массив перекодировки при сохранении в текстовом виде
     public static final int[] tilesEditorPanel  = {R.integer.TILE_NULL, R.integer.TILE_EARTH, R.integer.TILE_STONE, R.integer.TILE_BOMB, R.integer.TILE_BRICK,
                                                    R.integer.TILE_BETON, R.integer.TILE_BOMBS, R.integer.TILE_FUEL, R.integer.TILE_EXPL, R.integer.TILE_SCORE,
                                                    R.integer.TILE_TIME, R.integer.TILE_LIFE, R.integer.TILE_EYEG, R.integer.TILE_DROIDR, R.integer.TILE_EGG,
@@ -508,7 +529,7 @@ public final class Constants
                                                   ATTR_SSH_HORZ, 10,
                                                   ATTR_FOCUSABLE, 0,
                                                   ATTR_SSH_WIDTH_SELECTOR, R.dimen.widthSelector,
-                                                  ATTR_BACKGROUND, ATTR_SSH_COLOR_SELECTOR | THEME,
+                                                  ATTR_SSH_BACKGROUND, ATTR_SSH_COLOR_SELECTOR | THEME,
                                                   ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_TILES | THEME};
 
     public static final int[] style_button_actions = {ATTR_SHADOW_DX, R.dimen.shadowTextX,
@@ -522,6 +543,7 @@ public final class Constants
                                                        ATTR_PADDING, 2,
                                                        ATTR_SSH_ALIGNED, 1,
                                                        ATTR_SSH_HORZ, 2,
+                                                       ATTR_SSH_NUM, 0,
                                                        ATTR_SSH_STATES, TILE_STATE_HOVER,
                                                        ATTR_GRAVITY, Gravity.CENTER,
                                                        ATTR_SSH_GRAVITY, TILE_GRAVITY_CENTER,
@@ -566,8 +588,16 @@ public final class Constants
     public static final int[] style_dlg_actions = {ATTR_SSH_SHAPE, TILE_SHAPE_ROUND,
                                                    ATTR_SSH_RADII, R.string.radii_dlg};
 
-    public static final int[] style_panel_port = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_PORT | THEME};
+    public static final int[] style_panel_port = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_PORT | THEME, ATTR_SSH_NUM, 0 };
 
-    public static final int[] style_panel_land = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_LAND | THEME};
+    public static final int[] style_panel_land = {ATTR_SSH_BITMAP_NAME, ATTR_SSH_BM_PANEL_LAND | THEME, ATTR_SSH_NUM, 0 };
 
+    public static final int[] style_droidController=   {ATTR_VISIBILITY, GONE,
+                                                        ATTR_SSH_WIDTH, 180,
+                                                        ATTR_SSH_HEIGHT, 180,
+                                                        ATTR_SSH_ALPHA, 184,
+                                                        ATTR_SSH_BITMAP_NAME, R.drawable.controller_tiles,
+                                                        ATTR_SSH_HORZ, 6,
+                                                        ATTR_SSH_VERT, 1,
+                                                        ATTR_SSH_NUM, 0};
 }

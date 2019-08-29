@@ -50,7 +50,7 @@ class FormEditorActions : FormDialog() {
 		root.byIdx<Tile>(FORM_CHOICE_PROP).isEnabled = isMap
 		root.byIdx<Tile>(FORM_CHOICE_DEL).isEnabled = isMap
 		root.byIdx<Tile>(FORM_CHOICE_TEST).isEnabled = isMap
-		root.byIdx<Tile>(FORM_CHOICE_SEND).isEnabled = isMap//(Planet.MAP.pack != SYSTEM_DEFAULT && isMap)
+		root.byIdx<Tile>(FORM_CHOICE_SEND).isEnabled = (Planet.pack != SYSTEM_DEFAULT && isMap)
 	}
 	
 	override fun onClick(v: View) {
@@ -64,7 +64,7 @@ class FormEditorActions : FormDialog() {
 			FORM_CHOICE_TEST    -> wnd.apply {
 				super.footer(Constants.BTN_NO, 0)
 				// проверить на модификацию
-				if(editor.modify && !Planet.MAP.store(this)) {
+				if(editor.modify && !Planet.store(this)) {
 					editor.surHandler?.send(STATUS_MESSAGE, 0, STATUS_PREPARED, R.string.save_planet_failed)
 				}
 				else {

@@ -38,7 +38,7 @@ class FormOptions : Form() {
 				if(arg2 == BTN_OK) {
 				
 				}
-				content.byId<Select>(R.id.slPack).selectionString = Planet.MAP.pack
+				content.byId<Select>(R.id.slPack).selectionString = Planet.pack
 			}
 		}
 	}
@@ -47,7 +47,7 @@ class FormOptions : Form() {
 		val pack = select.selectionString
 		if(pack == "...") {
 			wnd.instanceForm(FORM_RECV)
-		} else Planet.MAP.pack = pack
+		} else Planet.pack = pack
 	}
 	
 	override fun inflateContent(container: LayoutInflater): UiCtx {
@@ -105,7 +105,7 @@ class FormOptions : Form() {
 	}
 	
 	override fun initContent(content: ViewGroup) {
-		Planet.MAP.pack = KEY_PACK.optText
+		Planet.pack = KEY_PACK.optText
 		setUI()
 	}
 	
@@ -176,7 +176,7 @@ class FormOptions : Form() {
 		}
 		for(i in 0..2) root.byIdx<Check>(i + 11).isChecked = keysCheck[i].optBool
 		root.byIdx<Select>(1).selection = KEY_THEME.optInt
-		root.byIdx<Select>(2).selectionString = Planet.MAP.pack
+		root.byIdx<Select>(2).selectionString = Planet.pack
 		// громкость
 		DroidWnd.soundVolume()
 	}

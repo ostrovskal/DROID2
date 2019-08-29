@@ -9,7 +9,6 @@ import android.os.Looper
 import android.view.ViewManager
 import com.github.ostrovskal.ssh.Constants.*
 import com.github.ostrovskal.ssh.Theme
-import com.github.ostrovskal.ssh.Wnd
 import com.github.ostrovskal.ssh.layouts.AbsLayout
 import com.github.ostrovskal.ssh.singleton.Settings
 import com.github.ostrovskal.ssh.singleton.Sound
@@ -51,10 +50,13 @@ val Int.msg get() = when(this) {
 	else            -> this.toString()
 }
 
-class DroidWnd: Wnd() {
+class DroidWnd: com.github.ostrovskal.ssh.Wnd() {
 	lateinit var main: AbsLayout
 
 	companion object {
+		init {
+			System.loadLibrary("native-lib")
+		}
 		/**
 		 * Установка уровня звука и музыки
 		 */
@@ -93,7 +95,7 @@ class DroidWnd: Wnd() {
 		theme[theme.size - 1] = if(KEY_CLASSIC.optBool) R.drawable.classic_sprites else R.drawable.custom_sprites
 		Theme.setTheme(this, theme)
 	}
-
+	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		startLog(this, "DROID", true, BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME, BuildConfig.DEBUG)
 		super.onCreate(savedInstanceState)
@@ -101,13 +103,13 @@ class DroidWnd: Wnd() {
 		// загружаем фрагмент
 		if(savedInstanceState == null) instanceForm(FORM_SPLASH)
 	}
-	
+
 	override fun initialize(restart: Boolean) {
 		if(wndHandler == null) {
 			// Создаем UI хэндлер
 			wndHandler = Handler(Looper.getMainLooper(), this)
 			// Инициализируем установки
-			Settings.initialize(getSharedPreferences(logTag,  Context.MODE_PRIVATE), arrayStr(R.array.settings))
+			Settings.initialize(getSharedPreferences(logTag, Context.MODE_PRIVATE), arrayStr(R.array.settings))
 			// Применяем тему и устанавливаем массивы
 			applyTheme()
 			// Запускаем звуки

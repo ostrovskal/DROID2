@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.ostrovskal.droid.forms
 
 import android.app.FragmentTransaction
@@ -51,8 +53,8 @@ class FormEditor : Form() {
 					ACTION_NEW      -> s.send(a1 = ACTION_NEW, a2 = arg2)
 					ACTION_SAVE     -> s.send(a1 = ACTION_SAVE, a2 = arg2)
 					ACTION_NAME     -> {
-						namePlanet?.text = Planet.MAP.name
-						KEY_EDIT_PLANET.optText = "${Planet.MAP.num}#${Planet.MAP.pack}"
+						namePlanet?.text = Planet.name
+						KEY_EDIT_PLANET.optText = "${Planet.num}#${Planet.pack}"
 					}
 					ACTION_EXIT     -> footer(BTN_NO, 0)
 				}
@@ -73,7 +75,7 @@ class FormEditor : Form() {
 				var y = if(port) 5 else 6
 				val dx = if(port) 0 else 4
 				val dy = if(port) 4 else 0
-				repeat(3) {row ->
+				repeat(3) { row ->
 					repeat(6) {
 						button(style_tile_droid) {
 							setOnClickListener(this@FormEditor)
@@ -99,11 +101,11 @@ class FormEditor : Form() {
 		val lst = KEY_EDIT_PLANET.optText.split('#')
 		if(lst.size == 2) {
 			editor.position = lst[0].ival(0, 10)
-			Planet.MAP.pack = lst[1]
+			Planet.pack = lst[1]
 		}
 		else {
 			editor.position = 0
-			Planet.MAP.pack = SYSTEM_DEFAULT
+			Planet.pack = SYSTEM_DEFAULT
 		}
 		Sound.playMusic(wnd, 0, true)
 	}

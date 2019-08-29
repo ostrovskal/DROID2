@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.ostrovskal.droid.forms
 
 import android.content.Context
@@ -96,7 +98,7 @@ class FormRecv: Form() {
 				view.setTag(pos)
 			}
 			else if(view is Text && idx == 1) {
-				view.text = sb.zero(rs.integer(idx), 3)
+				view.text = sb.padZero(rs.integer(idx), 3, false)
 			}
 			else if(view is Text && idx == 5) {
 				view.text = rs.integer(idx).datetime

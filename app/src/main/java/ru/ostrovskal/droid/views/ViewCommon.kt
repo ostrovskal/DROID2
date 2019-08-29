@@ -2,7 +2,6 @@ package ru.ostrovskal.droid.views
 
 import android.content.Context
 import android.graphics.*
-import android.os.Bundle
 import android.os.Message
 import android.view.Gravity
 import android.view.SurfaceHolder
@@ -37,7 +36,7 @@ open class ViewCommon(context: Context) : Surface(context) {
 	@JvmField protected var previewCO	= Point()
 	
 	// признак планеты
-	val isPlanet                        get() = Planet.MAP.buffer.size > 2
+	val isPlanet                        get() = Planet.buffer.size > 2
 	
 	// превью режим
 	@STORAGE @JvmField var preview		= false
@@ -71,7 +70,7 @@ open class ViewCommon(context: Context) : Surface(context) {
 	@STORAGE @JvmField var status 		= STATUS_UNK
 	
 	// ссылка на буфер
-	val buffer				            get() = Planet.MAP.buffer
+	val buffer				            get() = Planet.buffer
 	
 	// количество ячеек в карте
 	@JvmField var countMapCells 		= 0
@@ -85,14 +84,11 @@ open class ViewCommon(context: Context) : Surface(context) {
 	// экран в фактических блоках
 	@JvmField var canvasSize 			= Size()
 	
-	// количество столбцов в тайловой карте
-	private var tilesCol 				= 0
-	
 	// экран в блоках максимум
 	private var canvasMaxSize 			= Size()
 	
 	// тайлы
-	private val tiles: Bitmap?          get() = wnd.bitmapGetCache(if(classic) "classic_sprites" else "custom_sprites")
+	private val tiles: Bitmap          get() = wnd.bitmapGetCache(if(classic) "classic_sprites" else "custom_sprites") ?: error("")
 	
 	// ректы
 	private var canvasRect 				= Rect()
@@ -102,30 +98,37 @@ open class ViewCommon(context: Context) : Surface(context) {
 	private var messageRect 			= RectF()
 	
 	// кисть для отрисовки сообщения
-	private var sys 					= Paint()
+	private var sys 					= Paint().apply {
+		color = Theme.integer(context, ATTR_SSH_COLOR_MESSAGE or THEME)
+		textSize = Theme.dimen(context, R.dimen.msg).toFloat()
+		textAlign = Paint.Align.CENTER
+		typeface = context.makeFont("large")
+		setShadowLayer(Theme.dimen(context, R.dimen.shadowTextR) * 2f,
+		               Theme.dimen(context, R.dimen.shadowTextX) * 2f,
+		               Theme.dimen(context, R.dimen.shadowTextY) * 2f,
+		               0x0.color)
+		
+	}
 	
 	// "пустая" кисть
-	private var nil 					= Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+	private var nil 					= Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
+		textSize = 20f.dp
+		color = Color.WHITE
+		textAlign = Paint.Align.RIGHT
+		typeface = context.makeFont("small")
+	}
 	
 	// вернуть окно
 	val wnd: DroidWnd                   get() = context as DroidWnd
 	
 	init {
 		delay = DroidWnd.applySpeed(STD_GAME_SPEED)
-		tileBitmapSize = (tiles?.height ?: 0) / 4
-		tilesCol = 10
+		tileBitmapSize = tiles.height / 4
+		Planet.useMap = false
 	}
 	
-	override fun restoreState(state: Bundle, vararg params: Any?) {
-		super.restoreState(state, Planet.MAP, Stat)
-	}
-
-	override fun saveState(state: Bundle, vararg params: Any?) {
-		super.saveState(state, Planet.MAP, Stat)
-	}
-	
-	protected fun initMap(calcCanvas: Boolean) {
-		Planet.MAP.apply {
+	protected fun prepareMap(calcCanvas: Boolean) {
+		Planet.apply {
 			if(isPlanet) {
 				if(calcCanvas) {
 					val mapOffs 	= Point(this@ViewCommon.width - width * tileCanvasSize,
@@ -136,7 +139,7 @@ open class ViewCommon(context: Context) : Surface(context) {
 					canvasSize.set(if(canvasMaxSize.w > width) width else canvasMaxSize.w, if(canvasMaxSize.h > height) height else canvasMaxSize.h)
 					countMapCells = width * height
 					Touch.reset()
-					wnd.wndHandler?.send(MSG_FORM, 0, ACTION_NAME)
+					useMap = true
 				}
 				val pt = droidPos()
 				val droidOffs = Point(pt.x - canvasMaxSize.w / 2 , pt.y - canvasMaxSize.h / 2)
@@ -154,21 +157,9 @@ open class ViewCommon(context: Context) : Surface(context) {
 		tileCanvasSize = DroidWnd.applyScale((if(width > height) height else width) / (12 * config.multiplySW).toInt())
 		canvasMaxSize = Size(width / tileCanvasSize, height / tileCanvasSize)
 		messageRect.right = width.toFloat(); messageRect.bottom = height.toFloat()
-		sys.apply {
-			color = Theme.integer(context, ATTR_SSH_COLOR_MESSAGE or THEME)
-			textSize = Theme.dimen(context, R.dimen.msg).toFloat()
-			textAlign = Paint.Align.CENTER
-			typeface = context.makeFont("large")
-			setShadowLayer(Theme.dimen(context, R.dimen.shadowTextR) * 2f,
-			               Theme.dimen(context, R.dimen.shadowTextX) * 2f,
-			               Theme.dimen(context, R.dimen.shadowTextY) * 2f,
-			               0x0.color)
-		}
-		if(canvasSize.isEmpty()) initMap(true)
 	}
 	
-	override fun handleMessage(msg: Message): Boolean
-	{
+	override fun handleMessage(msg: Message): Boolean {
 		"onMessageCommonView(what: ${msg.what.msg} arg1: ${msg.arg1.msg} arg2: ${msg.arg2} obj: ${msg.obj})".debug()
 		val h = wnd.wndHandler
 		val s = surHandler
@@ -195,10 +186,10 @@ open class ViewCommon(context: Context) : Surface(context) {
 							ACTION_LOAD     -> {
 								// загружаем карту
 								position = msg.arg2
-								val success = if(record != 0L) Stat.load(position) else Planet.MAP.load(position)
+								val success = if(record != 0L) Stat.load(position) else Planet.load(position)
+								h.send(MSG_FORM, a1 = ACTION_NAME)
 								if(success) {
-									initMap(true)
-									if(editor != null) editor.modify = false else sysMsg = Planet.MAP.name
+									if(editor != null) editor.modify = false else sysMsg = Planet.name
 									s.send(STATUS_PREPARED, MESSAGE_DELAYED)
 								}
 								else {
@@ -211,7 +202,7 @@ open class ViewCommon(context: Context) : Surface(context) {
 								}
 							}
 							ACTION_SAVE     -> {
-								val success = Planet.MAP.store(context)
+								val success = Planet.store(context)
 								if(arg2 == 1) h.send(MSG_FORM, a1 = ACTION_EXIT)
 								else {
 									editor?.modify = false
@@ -221,20 +212,19 @@ open class ViewCommon(context: Context) : Surface(context) {
 								}
 							}
 							ACTION_DELETE   -> {
-								val count = Pack.countPlanets(Planet.MAP.pack) - 1
-								Planet.MAP.delete(true)
+								val count = Pack.countPlanets(Planet.pack) - 1
+								Planet.delete(true)
 								h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = if(position >= count) position - 1 else position)
 								editor?.modify = false
 							}
 							ACTION_NEW      -> {
-								Planet.MAP.generator(context, arg2)
+								Planet.generator(context, arg2)
 								editor?.modify = false
-								initMap(true)
 							}
 							ACTION_GENERATE -> {
 								Planet.default(context)
 								h.send(MSG_FORM, a1 = ACTION_LOAD, a2 = 0)
-								(this@ViewCommon as? ViewEditor)?.modify = false
+								editor?.modify = false
 							}
 						}
 						STATUS_EXIT	        -> h.send(MSG_FORM, a1 = ACTION_EXIT)
@@ -248,15 +238,16 @@ open class ViewCommon(context: Context) : Surface(context) {
 	override fun draw(canvas: Canvas) {
 		super.draw(canvas)
 		if(isPlanet) {
-			//if(canvasSize.isEmpty()) initMap(true)
-			for(y in 0 until previewMap.h) {
+			if(!Planet.useMap) prepareMap(true)
+
+			repeat(previewMap.h) { y ->
 				canvasRect.top = previewCO.y + y * previewBlk.h
 				canvasRect.bottom = canvasRect.top + previewBlk.h
-				for(x in 0 until previewMap.w) {
+				repeat(previewMap.w) { x ->
 					val v = remapTiles[buffer[previewMO.x + x, previewMO.y + y] and MSKT]
 					if(v != T_NULL) {
-						bitmapRect.left = v % tilesCol * tileBitmapSize
-						bitmapRect.top = v / tilesCol * tileBitmapSize
+						bitmapRect.left = v % 10 * tileBitmapSize
+						bitmapRect.top = v / 10 * tileBitmapSize
 						bitmapRect.right = bitmapRect.left + tileBitmapSize
 						bitmapRect.bottom = bitmapRect.top + tileBitmapSize
 						canvasRect.left = previewCO.x + x * previewBlk.w
@@ -269,14 +260,15 @@ open class ViewCommon(context: Context) : Surface(context) {
 		} else if(this is ViewEditor) {
 			sys.drawTextInBounds(canvas, context.getString(R.string.no_planet), messageRect, Gravity.CENTER)
 		}
+		nil.drawTextInBounds(canvas, "fps: $fps", messageRect, Gravity.END or Gravity.BOTTOM)
 	}
 	
 	fun updatePreview(v: Boolean, full: Boolean) {
 		previewMO.x = if(v) 0 else mapOffset.x
 		previewMO.y = if(v) 0 else mapOffset.y
 		if(full) {
-			val h = Planet.MAP.height.toFloat()
-			val w = Planet.MAP.width.toFloat()
+			val h = Planet.height.toFloat()
+			val w = Planet.width.toFloat()
 			previewMap.h = if(v) h.toInt() else canvasSize.h
 			previewMap.w = if(v) w.toInt() else canvasSize.w
 			previewBlk.h = if(v) (height / h).toInt() else tileCanvasSize

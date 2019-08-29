@@ -26,7 +26,6 @@ class FormMenu: Form() {
 	private val buttons     = mutableListOf<Tile>()
 	
 	override fun inflateContent(container: LayoutInflater) = UI {
-		//if(content != null) UiCtx.addView(this, content as View)
 		buttons.clear()
 		val vert = config.isVert
 		val coord = if(vert) coordPort else coordLand
@@ -36,6 +35,7 @@ class FormMenu: Form() {
 				buttons.add(button(style_tool) {
 					setOnClickListener(this@FormMenu)
 					iconResource = btnIcons[it]
+					num = 0
 				}.lps(coord[it * 2], coord[it * 2 + 1], 4, 4))
 			}
 		}
@@ -73,7 +73,7 @@ class FormMenu: Form() {
 		KEY_TMP_THEME.optInt = KEY_THEME.optInt
 		// Запомним текущую систему
 		val pack = KEY_PACK.optText
-		Planet.MAP.pack = pack
+		Planet.pack = pack
 		
 		val idx = buttons.indexOf(v)
 		var position = 0

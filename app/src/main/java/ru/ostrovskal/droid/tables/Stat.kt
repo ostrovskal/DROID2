@@ -4,7 +4,7 @@ import com.github.ostrovskal.ssh.Constants.*
 import com.github.ostrovskal.ssh.STORAGE
 import com.github.ostrovskal.ssh.SqlField
 import com.github.ostrovskal.ssh.sql.Table
-import com.github.ostrovskal.ssh.utils.flags
+import com.github.ostrovskal.ssh.utils.test
 import com.github.ostrovskal.ssh.utils.info
 import com.github.ostrovskal.ssh.utils.optText
 import com.github.ostrovskal.ssh.utils.release
@@ -107,8 +107,8 @@ object Stat: Table() {
 				this.master = master
 				this.god = god
 			} else {
-				if(name != Planet.MAP.name) {
-					Planet.MAP.apply {
+				if(name != Planet.name) {
+					Planet.apply {
 						val nameBytes = name.toByteArray()
 						val tmp = ByteArray(maps.size + buffer.size + nameBytes.size + 5)
 						// копируем старый во временный
@@ -136,14 +136,14 @@ object Stat: Table() {
 		if(!isRecord) {
 			// поместить в БД
 			// обрезать массив записи в соответствии с реальным объемом
-			val size = pos / 8 + if(pos flags 4) 1 else 0
-			rec = Arrays.copyOf(rec, size)
+			val size = pos / 8 + if(pos test 4) 1 else 0
+			rec = rec.copyOf(size)
 			// поместить в БД
 			insert {
 				it.autoValues(this@Stat)
 				it[fAuth] = KEY_PLAYER.optText
-				it[fPack] = Planet.MAP.pack
-				it[fPlanet] = Planet.MAP.name
+				it[fPack] = Planet.pack
+				it[fPlanet] = Planet.name
 				it[fSeed] = seed
 			}
 		} else {
@@ -164,7 +164,7 @@ object Stat: Table() {
 					rec = tmp
 				}
 				if(!suicide) {
-					val pt = Planet.MAP.droidPos()
+					val pt = Planet.droidPos()
 					action = if(dropBomb) REC_DROID_DROP else REC_DROID_NONE
 					if(x != pt.x) {
 						action = REC_DROID_MOVE or when {
@@ -209,13 +209,13 @@ object Stat: Table() {
 			}
 			// инициализируем данные
 			if(posMap >= maps.size) return false
-			val l 			= maps[posMap].toInt() + 1
-			Planet.MAP.name 	= String(maps.copyOfRange(posMap + 1, posMap + l))
-			Planet.MAP.time		= maps[posMap + l + 0].toInt() * 100 + maps[posMap + l + 1].toInt()
-			Planet.MAP.fuel		= maps[posMap + l + 2].toInt() * 100 + maps[posMap + l + 3].toInt()
-			val szBuffer	= maps[posMap + l + 4].toInt() * maps[posMap + l + 5].toInt() + 2
-			Planet.MAP.buffer	= maps.copyOfRange(posMap + l + 4, posMap + l + 4 + szBuffer)
-			return Planet.MAP.searchEntities()
+			val l 		= maps[posMap].toInt() + 1
+			Planet.name 	= String(maps.copyOfRange(posMap + 1, posMap + l))
+			Planet.time		= maps[posMap + l + 0].toInt() * 100 + maps[posMap + l + 1].toInt()
+			Planet.fuel		= maps[posMap + l + 2].toInt() * 100 + maps[posMap + l + 3].toInt()
+			val szBuffer= maps[posMap + l + 4].toInt() * maps[posMap + l + 5].toInt() + 2
+			Planet.buffer	= maps.copyOfRange(posMap + l + 4, posMap + l + 4 + szBuffer)
+			return Planet.searchEntities()
 		}
 		return false
 	}
@@ -225,8 +225,8 @@ object Stat: Table() {
 		val sh = pos and 4
 		val v = (rec[pos / 8].toInt() shr sh) and DIRS
 		val dir = when {
-			v flags REC_DROID_DROP -> DIR0// кидаем бомбу ?
-			v flags REC_DROID_MOVE -> 2 shl (v shr 2)// движемся ?
+			v test REC_DROID_DROP -> DIR0// кидаем бомбу ?
+			v test REC_DROID_MOVE -> 2 shl (v shr 2)// движемся ?
 			else                   -> DIRN
 		}
 		pos += 4
